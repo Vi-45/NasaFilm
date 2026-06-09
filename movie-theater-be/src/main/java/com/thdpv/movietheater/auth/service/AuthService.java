@@ -304,7 +304,26 @@ public class AuthService {
 
     @Transactional
     public void register(RegisterRequest request) {
+        // Check if phone number is already registered by another ACTIVE user
+        java.util.Optional<User> userWithPhoneOpt = userRepository.findByPhoneNumber(request.getPhoneNumber().trim());
+        if (userWithPhoneOpt.isPresent()) {
+            User userWithPhone = userWithPhoneOpt.get();
+            if (!userWithPhone.getEmail().equalsIgnoreCase(request.getEmail()) && userWithPhone.getStatus() == UserStatus.ACTIVE) {
+                throw new AppException(ErrorCode.PHONE_ALREADY_EXISTS);
+            }
+        }
+
         java.util.Optional<User> existingUserOpt = userRepository.findByEmailIgnoreCase(request.getEmail().trim());
+        java.time.LocalDate parsedDob;
+        try {
+            parsedDob = java.time.LocalDate.parse(request.getDayOfBirth().trim());
+        } catch (Exception e) {
+            throw new AppException(ErrorCode.BAD_REQUEST, "Ngay sinh khong dung dinh dang (yyyy-MM-dd)");
+        }
+        if (parsedDob.isAfter(java.time.LocalDate.now())) {
+            throw new AppException(ErrorCode.BAD_REQUEST, "Ngay sinh phai la mot ngay trong qua khuu");
+        }
+
         User user;
         if (existingUserOpt.isPresent()) {
             user = existingUserOpt.get();
@@ -313,11 +332,17 @@ public class AuthService {
             }
             user.setFullName(request.getFullName().trim());
             user.setPassword(passwordEncoder.encode(request.getPassword()));
+            user.setPhoneNumber(request.getPhoneNumber().trim());
+            user.setDayOfBirth(parsedDob);
+            user.setGender(request.getGender().trim());
         } else {
             user = new User();
             user.setEmail(request.getEmail().trim());
             user.setFullName(request.getFullName().trim());
             user.setPassword(passwordEncoder.encode(request.getPassword()));
+            user.setPhoneNumber(request.getPhoneNumber().trim());
+            user.setDayOfBirth(parsedDob);
+            user.setGender(request.getGender().trim());
             user.setStatus(UserStatus.PENDING_VERIFICATION);
             user.setAuthProvider(AuthProvider.LOCAL);
         }

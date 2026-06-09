@@ -3,11 +3,13 @@ package com.thdpv.movietheater.auth.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -29,10 +31,13 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.json.webtoken.JsonWebSignature;
 import com.thdpv.movietheater.auth.dto.GoogleLoginRequest;
 import com.thdpv.movietheater.auth.dto.JwtResponse;
+import com.thdpv.movietheater.auth.dto.RegisterRequest;
 import com.thdpv.movietheater.auth.entity.UserSession;
 import com.thdpv.movietheater.auth.repository.UserRoleRepository;
 import com.thdpv.movietheater.auth.repository.UserSessionRepository;
 import com.thdpv.movietheater.auth.util.RefreshTokenHasher;
+import com.thdpv.movietheater.common.exception.AppException;
+import com.thdpv.movietheater.common.exception.ErrorCode;
 import com.thdpv.movietheater.config.repository.RoleRepository;
 import com.thdpv.movietheater.security.JwtUtils;
 import com.thdpv.movietheater.user.entity.Role;
@@ -155,6 +160,56 @@ class AuthServiceTest {
         assertEquals("JUnit", savedSession.getUserAgent());
         assertEquals("127.0.0.1", savedSession.getIpAddress());
         assertEquals(RefreshTokenHasher.hash(response.getRefreshToken()), savedSession.getRefreshTokenHash());
+    }
+
+    @Test
+    void registerShouldSaveUserWithNewFields() {
+        RegisterRequest request = new RegisterRequest();
+        request.setEmail("newuser@example.com");
+        request.setPassword("password123");
+        request.setFullName("New User");
+        request.setPhoneNumber("0987654321");
+        request.setDayOfBirth("2000-01-01");
+        request.setGender("Nam");
+
+        when(userRepository.findByPhoneNumber("0987654321")).thenReturn(Optional.empty());
+        when(userRepository.findByEmailIgnoreCase("newuser@example.com")).thenReturn(Optional.empty());
+        when(passwordEncoder.encode("password123")).thenReturn("encodedPassword");
+
+        authService.register(request);
+
+        ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
+        verify(userRepository).save(userCaptor.capture());
+        User savedUser = userCaptor.getValue();
+
+        assertEquals("newuser@example.com", savedUser.getEmail());
+        assertEquals("New User", savedUser.getFullName());
+        assertEquals("encodedPassword", savedUser.getPassword());
+        assertEquals("0987654321", savedUser.getPhoneNumber());
+        assertEquals(LocalDate.of(2000, 1, 1), savedUser.getDayOfBirth());
+        assertEquals("Nam", savedUser.getGender());
+        assertEquals(UserStatus.PENDING_VERIFICATION, savedUser.getStatus());
+        assertEquals(AuthProvider.LOCAL, savedUser.getAuthProvider());
+        assertNotNull(savedUser.getVerificationCode());
+        assertNotNull(savedUser.getVerificationCodeExpiry());
+    }
+
+    @Test
+    void registerShouldThrowExceptionWhenPhoneNumberAlreadyExists() {
+        RegisterRequest request = new RegisterRequest();
+        request.setEmail("newuser@example.com");
+        request.setPhoneNumber("0987654321");
+        request.setDayOfBirth("2000-01-01");
+        request.setGender("Nam");
+
+        User activeUserWithPhone = new User();
+        activeUserWithPhone.setEmail("otheruser@example.com");
+        activeUserWithPhone.setStatus(UserStatus.ACTIVE);
+
+        when(userRepository.findByPhoneNumber("0987654321")).thenReturn(Optional.of(activeUserWithPhone));
+
+        AppException exception = assertThrows(AppException.class, () -> authService.register(request));
+        assertEquals(ErrorCode.PHONE_ALREADY_EXISTS, exception.getErrorCode());
     }
 
     private GoogleIdToken createGoogleIdToken(String email, String fullName, String avatarUrl, boolean emailVerified) {

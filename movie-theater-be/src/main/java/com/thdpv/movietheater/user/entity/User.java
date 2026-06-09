@@ -8,11 +8,13 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import com.thdpv.movietheater.user.enums.Gender;
 import com.thdpv.movietheater.user.enums.UserStatus;
 
 @Entity
@@ -36,6 +38,12 @@ public class User {
 
     private Integer score = 0;
 
+    @Column(name = "date_of_birth")
+    private LocalDate dateOfBirth;
+
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
+
     @CreationTimestamp
     private LocalDateTime createdAt;
 
@@ -43,6 +51,7 @@ public class User {
     private LocalDateTime updatedAt;
 
     public User(UUID id, String email, String password, String fullName, UserStatus status, Integer score,
+            LocalDate dateOfBirth, Gender gender,
             LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.email = email;
@@ -50,6 +59,8 @@ public class User {
         this.fullName = fullName;
         this.status = status;
         this.score = score;
+        this.dateOfBirth = dateOfBirth;
+        this.gender = gender;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
@@ -105,6 +116,22 @@ public class User {
         this.score = score;
     }
 
+    public LocalDate getDateOfBirth() {
+        return dateOfBirth;
+    }
+
+    public void setDateOfBirth(LocalDate dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
+    }
+
+    public Gender getGender() {
+        return gender;
+    }
+
+    public void setGender(Gender gender) {
+        this.gender = gender;
+    }
+
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
@@ -120,5 +147,4 @@ public class User {
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
-
 }

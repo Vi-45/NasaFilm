@@ -43,15 +43,21 @@ Ký hiệu:
 ---
 
 ### **Giai đoạn 2: Kết nối & Hoàn thiện Xác thực (Integration Phase)**
-* [/] Khắc phục lỗi CORS trên Spring Boot để cho phép React App (Port 5173) gọi API an toàn.
-* [/] Cấu hình tệp tin `.env.local` ở Client trỏ URL API chính xác tới Server (`http://localhost:8080/api`).
-* [ ] Phát triển API đăng ký tài khoản `POST /api/auth/register` ở Backend.
-* [ ] Phát triển API gia hạn token `POST /api/auth/refresh` ở Backend.
-* [ ] Tích hợp cơ chế tự động refresh JWT phía Client thông qua Axios Response Interceptor.
-* [ ] Phát triển API quên mật khẩu `POST /api/auth/forgot-password` và đặt lại mật khẩu `POST /api/auth/reset-password` ở Backend.
-* [ ] Cập nhật `authService.ts` ở Client để kết nối trực tiếp các hàm `register()`, `forgotPassword()`, `resetPassword()` thực tế với Server (thay vì giả lập lỗi như hiện tại).
+* [x] Khắc phục lỗi CORS trên Spring Boot để cho phép React App (Port 5173) gọi API an toàn.
+* [x] Cấu hình tệp tin `.env.local` ở Client trỏ URL API chính xác tới Server (`http://localhost:8080`).
+* [x] Phát triển API đăng ký tài khoản `POST /api/auth/register` và xác thực `/register/verify` ở Backend.
+* [x] Phát triển API gia hạn token `POST /api/auth/refresh` ở Backend.
+* [x] Tích hợp cơ chế tự động refresh JWT phía Client thông qua Axios Response Interceptor.
+* [x] Phát triển API quên mật khẩu `POST /api/auth/forgot-password` và đặt lại mật khẩu `POST /api/auth/reset-password` ở Backend.
+* [x] Cập nhật `authService.js` ở Client để kết nối trực tiếp các hàm `register()`, `forgotPassword()`, `resetPassword()` thực tế với Server.
 * [ ] Phát triển API IPN/Callback `GET/POST /api/payments/callback` — cần cấu hình sớm để đối tác thanh toán có thể kiểm thử tích hợp song song với Giai đoạn 3. (Bổ sung)
-* [ ] Viết test tự động / kiểm thử thủ công toàn bộ luồng đăng ký → đăng nhập → nhận token → truy cập trang Dashboard bảo mật.
+* [x] Viết test tự động / kiểm thử thủ công toàn bộ luồng đăng ký → đăng nhập → nhận token → truy cập trang Dashboard bảo mật.
+
+#### **Tài liệu Kỹ thuật Sprint 1 (Documentation)**
+* [x] Viết tài liệu hướng dẫn chạy Frontend & Google Login ([05_FRONTEND_RUN_GUIDE_GMAIL.md](file:///d:/IT/TEAMJAVA/java_06_team_03/docs/05_FRONTEND_RUN_GUIDE_GMAIL.md)).
+* [x] Viết tài liệu hướng dẫn kiểm thử giao diện Auth và nút Gmail ([06_TEST_GUIDE_AUTH_GMAIL.md](file:///d:/IT/TEAMJAVA/java_06_team_03/docs/06_TEST_GUIDE_AUTH_GMAIL.md)).
+* [x] Viết tài liệu cấu trúc database & seed dữ liệu mẫu cho user Gmail ([07_DATABASE_SAMPLE_DATA_GMAIL.md](file:///d:/IT/TEAMJAVA/java_06_team_03/docs/07_DATABASE_SAMPLE_DATA_GMAIL.md)).
+* [x] Viết tài liệu tổng hợp và tóm tắt tiến độ Sprint 1 ([08_SPRINT_1_SUMMARY.md](file:///d:/IT/TEAMJAVA/java_06_team_03/docs/08_SPRINT_1_SUMMARY.md)).
 
 ---
 

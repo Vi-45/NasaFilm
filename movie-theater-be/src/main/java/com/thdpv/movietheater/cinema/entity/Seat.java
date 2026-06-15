@@ -19,6 +19,11 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import com.thdpv.movietheater.cinema.enums.SeatStatus;
 
+import org.springframework.data.domain.Persistable;
+import jakarta.persistence.Transient;
+import jakarta.persistence.PostPersist;
+import jakarta.persistence.PostLoad;
+
 @Entity
 @Table(
         name = "seat",
@@ -29,12 +34,30 @@ import com.thdpv.movietheater.cinema.enums.SeatStatus;
                 @UniqueConstraint(name = "uk_seat_room_row_number", columnNames = {"cinema_room_uuid", "row_name", "seat_number"})
         }
 )
-public class Seat {
+public class Seat implements Persistable<UUID> {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "uuid", nullable = false, updatable = false)
     private UUID uuid;
+
+    @Transient
+    private boolean isNew = true;
+
+    @Override
+    public UUID getId() {
+        return uuid;
+    }
+
+    @Override
+    public boolean isNew() {
+        return isNew;
+    }
+
+    @PostPersist
+    @PostLoad
+    protected void markNotNew() {
+        this.isNew = false;
+    }
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "cinema_room_uuid", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))

@@ -219,15 +219,26 @@ public class DataSeeder implements CommandLineRunner {
         try {
             java.time.OffsetDateTime now = java.time.OffsetDateTime.now();
 
+            // Fetch a cinema to associate the rooms with (since cinema_uuid is NOT NULL)
+            java.util.List<java.util.UUID> cinemaUuids = jdbcTemplate.query(
+                "SELECT uuid FROM cinema LIMIT 1",
+                (rs, rowNum) -> (java.util.UUID) rs.getObject("uuid")
+            );
+            if (cinemaUuids.isEmpty()) {
+                logger.error("No cinema found, skipping booking data seed.");
+                return;
+            }
+            java.util.UUID cinemaUuid = cinemaUuids.get(0);
+
             // 1. Seed Cinema Rooms
             java.util.UUID room1Uuid = java.util.UUID.fromString("88888888-8888-8888-8888-888888888888");
             java.util.UUID room2Uuid = java.util.UUID.fromString("99999999-9999-9999-9999-999999999999");
             
             if (jdbcTemplate.queryForObject("SELECT count(1) FROM cinema_room WHERE uuid = ?", Integer.class, room1Uuid) == 0) {
-                jdbcTemplate.update("INSERT INTO cinema_room (uuid, name) VALUES (?, ?)", room1Uuid, "Phòng chiếu IMAX");
+                jdbcTemplate.update("INSERT INTO cinema_room (uuid, name, status, cinema_uuid) VALUES (?, ?, ?, ?)", room1Uuid, "Phòng chiếu IMAX", "ACTIVE", cinemaUuid);
             }
             if (jdbcTemplate.queryForObject("SELECT count(1) FROM cinema_room WHERE uuid = ?", Integer.class, room2Uuid) == 0) {
-                jdbcTemplate.update("INSERT INTO cinema_room (uuid, name) VALUES (?, ?)", room2Uuid, "Phòng chiếu VIP");
+                jdbcTemplate.update("INSERT INTO cinema_room (uuid, name, status, cinema_uuid) VALUES (?, ?, ?, ?)", room2Uuid, "Phòng chiếu VIP", "ACTIVE", cinemaUuid);
             }
 
             // 2. Seed Seat Types

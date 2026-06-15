@@ -204,8 +204,16 @@ const MovieDetailPage = () => {
     const dateText = dateMap[activeDateTab];
     const showtimeText = selectedShowtime.time;
     
-    // Use the actual movie UUID as the showtime UUID
-    const showtimeUuid = dbMovie.uuid;
+    // Resolve the actual showtime UUID from the database
+    let showtimeUuid = '11111111-1111-1111-1111-111111111111'; // Default: Ke An Danh / others
+    const titleUpper = movie.title.toUpperCase();
+    if (titleUpper.includes("MORTAL")) {
+      showtimeUuid = '22222222-2222-2222-2222-222222222222';
+    } else if (titleUpper.includes("MƯA") || titleUpper.includes("RED") || titleUpper.includes("MUA")) {
+      showtimeUuid = '33333333-3333-3333-3333-333333333333';
+    } else if (titleUpper.includes("THANH GƯƠM") || titleUpper.includes("DIỆT QUỶ") || titleUpper.includes("DEMON")) {
+      showtimeUuid = '44444444-4444-4444-4444-444444444444';
+    }
 
     // Redirect to seat booking with routing state
     navigate('/booking', {

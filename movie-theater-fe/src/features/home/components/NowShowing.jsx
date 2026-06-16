@@ -4,113 +4,7 @@ import MovieCard from './MovieCard';
 import MovieCardSkeleton from './MovieCardSkeleton';
 import { notificationService } from '../../../shared/services/notificationService';
 import { movieService } from '../../../shared/services/movieService';
-import doraemonPoster from '../../../shared/assets/Doraemon_Movie_2026_Poster.png';
-import ngoiDenPoster from '../../../shared/assets/ngoidenkyquai.webp';
-import ocMuonHonPoster from '../../../shared/assets/ocmuonhon.jpg';
-import maXoPoster from '../../../shared/assets/maxo.jpg';
-import kumanthongPoster from '../../../shared/assets/kumanthong.jpg';
-import gohanPoster from '../../../shared/assets/tam-biet-gohan.webp';
-import baTronPoster from '../../../shared/assets/batron.webp';
-import khachPoster from '../../../shared/assets/khach.webp';
 
-const staticMovies = [
-  {
-    title: 'Doraemon: Nobita và lâu đài dưới đáy biển',
-    rating: 4.8,
-    poster: doraemonPoster,
-    hoverDetails: {
-      fullTitle: 'PHIM ĐIỆN ẢNH DORAEMON: NOBITA VÀ LÂU ĐÀI DƯỚI ĐÁY BIỂN (PHIÊN BẢN MỚI) LT (P)',
-      genre: 'Hoạt hình, Phiêu Lưu',
-      duration: "101'",
-      country: 'Nhật Bản',
-      language: 'Lồng Tiếng'
-    }
-  },
-  {
-    title: 'NGÔI ĐỀN KỲ QUÁI 5 (T16)',
-    rating: 4.7,
-    poster: ngoiDenPoster,
-    hoverDetails: {
-      fullTitle: 'NGÔI ĐỀN KỲ QUÁI 5 (T16)',
-      genre: 'Hài, Kinh Dị',
-      duration: "118'",
-      country: 'Thái Lan',
-      language: 'Phụ Đề'
-    }
-  },
-  {
-    title: 'ỐC MƯỢN HỒN (T16)',
-    rating: 4.6,
-    poster: ocMuonHonPoster,
-    hoverDetails: {
-      fullTitle: 'ỐC MƯỢN HỒN (T16)',
-      genre: 'Tâm Lý',
-      duration: "109'",
-      country: 'Việt Nam',
-      language: 'VN'
-    }
-  },
-  {
-    title: 'MA XÓ (T18)',
-    rating: 4.9,
-    poster: maXoPoster,
-    hoverDetails: {
-      fullTitle: 'MA XÓ (T18)',
-      genre: 'Kinh Dị',
-      duration: "102'",
-      country: 'Khác',
-      language: 'VN'
-    }
-  },
-  {
-    title: 'KUMANTHONG: ÁC QUỶ DẪN ĐƯỜNG (T18)',
-    rating: 4.5,
-    poster: kumanthongPoster,
-    hoverDetails: {
-      fullTitle: 'KUMANTHONG: ÁC QUỶ DẪN ĐƯỜNG (T18)',
-      genre: 'Kinh Dị',
-      duration: "94'",
-      country: 'Thái Lan',
-      language: 'Lồng Tiếng'
-    }
-  },
-  {
-    title: 'TẠM BIỆT GOHAN (K)',
-    rating: 4.8,
-    poster: gohanPoster,
-    hoverDetails: {
-      fullTitle: 'TẠM BIỆT GOHAN (K)',
-      genre: 'Tình Cảm, Chữa Lành',
-      duration: "110'",
-      country: 'Thái Lan',
-      language: 'Phụ Đề'
-    }
-  },
-  {
-    title: 'BA TRỢN (T18)',
-    rating: 4.6,
-    poster: baTronPoster,
-    hoverDetails: {
-      fullTitle: 'BA TRỢN (T18)',
-      genre: 'Hoạt Hình, Gia Đình',
-      duration: "90'",
-      country: 'Việt Nam',
-      language: 'Lồng Tiếng'
-    }
-  },
-  {
-    title: 'KHÁCH (T16)',
-    rating: 4.3,
-    poster: khachPoster,
-    hoverDetails: {
-      fullTitle: 'KHÁCH (T16)',
-      genre: 'Kinh Dị',
-      duration: "95'",
-      country: 'Mỹ',
-      language: 'Phụ Đề'
-    }
-  }
-];
 
 const NowShowing = () => {
   const scrollerRef = useRef(null);
@@ -160,18 +54,18 @@ const NowShowing = () => {
   const scroll = (direction) => {
     const el = scrollerRef.current;
     if (!el) return;
-    
+
     const scrollAmount = getScrollAmount();
     const gap = 24; // gap-6 is 24px
     // Correct the visible cards calculation by adding the gap back
     const visibleCards = Math.max(1, Math.floor((el.clientWidth + gap) / scrollAmount));
-    
+
     if (visibleCards >= 4) {
       // On desktop, scroll page-by-page (4 cards) using absolute scrollTo for perfect alignment
       const currentPageIndex = Math.round(el.scrollLeft / (scrollAmount * 4));
       const targetPageIndex = direction === 'right' ? currentPageIndex + 1 : currentPageIndex - 1;
       const nextPageIndex = Math.max(0, Math.min(targetPageIndex, totalPages - 1));
-      
+
       el.scrollTo({
         left: nextPageIndex * scrollAmount * 4,
         behavior: 'smooth'
@@ -189,7 +83,7 @@ const NowShowing = () => {
   const handleScroll = () => {
     const el = scrollerRef.current;
     if (!el) return;
-    
+
     const scrollAmount = getScrollAmount();
     const scrollLeft = el.scrollLeft;
     // Calculate page index (based on 4 cards per page on desktop)
@@ -210,25 +104,25 @@ const NowShowing = () => {
       </div>
 
       {/* arrows positioned outside scroller (borderless, transparent, no focus ring/background circles) */}
-      <button 
-        onClick={handlePrev} 
-        style={{ left: '-48px' }} 
+      <button
+        onClick={handlePrev}
+        style={{ left: '-48px' }}
         className="hidden md:flex absolute top-1/2 -translate-y-1/2 text-white/50 hover:text-white transition-colors z-20 border-none outline-none focus:outline-none focus:ring-0 bg-transparent hover:bg-transparent shadow-none"
         aria-label="Previous page"
       >
         <ChevronLeft size={44} />
       </button>
-      <button 
-        onClick={handleNext} 
-        style={{ right: '-48px' }} 
+      <button
+        onClick={handleNext}
+        style={{ right: '-48px' }}
         className="hidden md:flex absolute top-1/2 -translate-y-1/2 text-white/50 hover:text-white transition-colors z-20 border-none outline-none focus:outline-none focus:ring-0 bg-transparent hover:bg-transparent shadow-none"
         aria-label="Next page"
       >
         <ChevronRight size={44} />
       </button>
 
-      <div 
-        ref={scrollerRef} 
+      <div
+        ref={scrollerRef}
         onScroll={handleScroll}
         className="no-scrollbar flex gap-6 overflow-x-auto pb-4 pr-1 snap-x snap-mandatory"
       >
@@ -269,9 +163,8 @@ const NowShowing = () => {
                 behavior: 'smooth'
               });
             }}
-            className={`h-2 rounded-full transition-all duration-300 ${
-              currentPage === index ? 'bg-white w-5' : 'bg-white/30 w-2 hover:bg-white/50'
-            }`}
+            className={`h-2 rounded-full transition-all duration-300 ${currentPage === index ? 'bg-white w-5' : 'bg-white/30 w-2 hover:bg-white/50'
+              }`}
             aria-label={`Go to page ${index + 1}`}
           />
         ))}

@@ -127,6 +127,7 @@ export const ProfilePage = () => {
       selectedSeats: selectedSeats,
       tickets: [{ ticketCode: tkt.id }],
       totalPrice: tkt.price ? parseInt(tkt.price.replace(/[^\d]/g, ""), 10) : 0,
+      combos: tkt.combo || "",
     };
 
     navigate("/booking-confirmed", { state: bookingData });

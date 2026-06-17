@@ -43,11 +43,19 @@ export const BookingConfirmedPage = () => {
     showtime = '',
     selectedSeats = [],
     tickets = [],
-    totalPrice = 0
+    totalPrice = 0,
+    combos = []
   } = bookingData;
 
   const bookingId = `#CL-${bookingUuid.substring(0, 8).toUpperCase()}`;
   const firstTicketCode = tickets[0]?.ticketCode || 'NASAFILM';
+
+  let combosStr = '';
+  if (typeof combos === 'string') {
+    combosStr = combos;
+  } else if (Array.isArray(combos) && combos.length > 0) {
+    combosStr = combos.map(c => `${c.quantity}x ${c.name}`).join(', ');
+  }
   
   // Real QR generation using api.qrserver.com
   const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(firstTicketCode)}`;
@@ -132,6 +140,15 @@ export const BookingConfirmedPage = () => {
                     {selectedSeats.map(s => s.id).join(', ')}
                   </span>
                 </div>
+
+                {combosStr && combosStr.trim() !== '' && combosStr !== 'Không kèm bắp nước' && (
+                  <div className="stagger-item col-span-2" style={{ animationDelay: '0.75s' }}>
+                    <span className="block text-gray-500 text-[10px] font-black uppercase tracking-wider mb-1">Bắp nước kèm theo</span>
+                    <span className="text-sm font-bold text-yellow-400">
+                      {combosStr}
+                    </span>
+                  </div>
+                )}
               </div>
               
               {/* QR Code Section */}

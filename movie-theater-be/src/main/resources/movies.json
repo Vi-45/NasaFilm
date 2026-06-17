@@ -1041,5 +1041,1869 @@
         "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/TheSecretinTheirEyes_Trailer.mp4"
       }
     ]
+  },
+
+
+
+
+  {
+    "durationMinutes": 100,
+    "medias": [
+      {
+        "isPrimary": true,
+        "sortOrder": 1,
+        "type": "POSTER",
+        "title": "Joker Poster",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/Joker_Poster.jpg"
+      },
+      {
+        "isPrimary": false,
+        "sortOrder": 2,
+        "type": "TRAILER",
+        "title": "Joker Trailer",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/Joker_Trailer.mp4"
+      }
+    ],
+    "releaseDate": "1990-07-01",
+    "genres": [
+      "Chính kịch",
+      "Phiêu lưu"
+    ],
+    "description": "Phim nổi tiếng: Joker.",
+    "ageRating": "T13",
+    "countries": [
+      "US"
+    ],
+    "title": "Joker",
+    "status": "COMING_SOON"
+  },
+  {
+    "durationMinutes": 101,
+    "medias": [
+      {
+        "isPrimary": true,
+        "sortOrder": 1,
+        "type": "POSTER",
+        "title": "Oppenheimer Poster",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/Oppenheimer_Poster.jpg"
+      },
+      {
+        "isPrimary": false,
+        "sortOrder": 2,
+        "type": "TRAILER",
+        "title": "Oppenheimer Trailer",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/Oppenheimer_Trailer.mp4"
+      }
+    ],
+    "releaseDate": "1991-07-01",
+    "genres": [
+      "Hành động",
+      "Kịch tính"
+    ],
+    "description": "Phim nổi tiếng: Oppenheimer.",
+    "ageRating": "T13",
+    "countries": [
+      "US"
+    ],
+    "title": "Oppenheimer",
+    "status": "COMING_SOON"
+  },
+  {
+    "durationMinutes": 102,
+    "medias": [
+      {
+        "isPrimary": true,
+        "sortOrder": 1,
+        "type": "POSTER",
+        "title": "Dune Poster",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/Dune_Poster.jpg"
+      },
+      {
+        "isPrimary": false,
+        "sortOrder": 2,
+        "type": "TRAILER",
+        "title": "Dune Trailer",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/Dune_Trailer.mp4"
+      }
+    ],
+    "releaseDate": "1992-07-01",
+    "genres": [
+      "Hành động",
+      "Kịch tính"
+    ],
+    "description": "Phim nổi tiếng: Dune.",
+    "ageRating": "T13",
+    "countries": [
+      "US"
+    ],
+    "title": "Dune",
+    "status": "COMING_SOON"
+  },
+  {
+    "durationMinutes": 103,
+    "medias": [
+      {
+        "isPrimary": true,
+        "sortOrder": 1,
+        "type": "POSTER",
+        "title": "DunePartTwo Poster",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/DunePartTwo_Poster.jpg"
+      },
+      {
+        "isPrimary": false,
+        "sortOrder": 2,
+        "type": "TRAILER",
+        "title": "DunePartTwo Trailer",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/DunePartTwo_Trailer.mp4"
+      }
+    ],
+    "releaseDate": "1993-07-01",
+    "genres": [
+      "Chính kịch",
+      "Phiêu lưu"
+    ],
+    "description": "Phim nổi tiếng: Dune Part Two.",
+    "ageRating": "T13",
+    "countries": [
+      "US"
+    ],
+    "title": "Dune Part Two",
+    "status": "COMING_SOON"
+  },
+  {
+    "durationMinutes": 104,
+    "medias": [
+      {
+        "isPrimary": true,
+        "sortOrder": 1,
+        "type": "POSTER",
+        "title": "TopGunMaverick Poster",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/TopGunMaverick_Poster.jpg"
+      },
+      {
+        "isPrimary": false,
+        "sortOrder": 2,
+        "type": "TRAILER",
+        "title": "TopGunMaverick Trailer",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/TopGunMaverick_Trailer.mp4"
+      }
+    ],
+    "releaseDate": "1994-07-01",
+    "genres": [
+      "Hành động",
+      "Kịch tính"
+    ],
+    "description": "Phim nổi tiếng: Top Gun Maverick.",
+    "ageRating": "T13",
+    "countries": [
+      "US"
+    ],
+    "title": "Top Gun Maverick",
+    "status": "COMING_SOON"
+  },
+  {
+    "durationMinutes": 105,
+    "medias": [
+      {
+        "isPrimary": true,
+        "sortOrder": 1,
+        "type": "POSTER",
+        "title": "Avatar Poster",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/Avatar_Poster.jpg"
+      },
+      {
+        "isPrimary": false,
+        "sortOrder": 2,
+        "type": "TRAILER",
+        "title": "Avatar Trailer",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/Avatar_Trailer.mp4"
+      }
+    ],
+    "releaseDate": "1995-07-01",
+    "genres": [
+      "Hành động",
+      "Kịch tính"
+    ],
+    "description": "Phim nổi tiếng: Avatar.",
+    "ageRating": "T13",
+    "countries": [
+      "US"
+    ],
+    "title": "Avatar",
+    "status": "COMING_SOON"
+  },
+  {
+    "durationMinutes": 106,
+    "medias": [
+      {
+        "isPrimary": true,
+        "sortOrder": 1,
+        "type": "POSTER",
+        "title": "AvatarTheWayofWater Poster",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/AvatarTheWayofWater_Poster.jpg"
+      },
+      {
+        "isPrimary": false,
+        "sortOrder": 2,
+        "type": "TRAILER",
+        "title": "AvatarTheWayofWater Trailer",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/AvatarTheWayofWater_Trailer.mp4"
+      }
+    ],
+    "releaseDate": "1996-07-01",
+    "genres": [
+      "Chính kịch",
+      "Phiêu lưu"
+    ],
+    "description": "Phim nổi tiếng: Avatar The Way of Water.",
+    "ageRating": "T13",
+    "countries": [
+      "US"
+    ],
+    "title": "Avatar The Way of Water",
+    "status": "COMING_SOON"
+  },
+  {
+    "durationMinutes": 107,
+    "medias": [
+      {
+        "isPrimary": true,
+        "sortOrder": 1,
+        "type": "POSTER",
+        "title": "Titanic Poster",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/Titanic_Poster.jpg"
+      },
+      {
+        "isPrimary": false,
+        "sortOrder": 2,
+        "type": "TRAILER",
+        "title": "Titanic Trailer",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/Titanic_Trailer.mp4"
+      }
+    ],
+    "releaseDate": "1997-07-01",
+    "genres": [
+      "Hành động",
+      "Kịch tính"
+    ],
+    "description": "Phim nổi tiếng: Titanic.",
+    "ageRating": "T13",
+    "countries": [
+      "US"
+    ],
+    "title": "Titanic",
+    "status": "COMING_SOON"
+  },
+  {
+    "durationMinutes": 108,
+    "medias": [
+      {
+        "isPrimary": true,
+        "sortOrder": 1,
+        "type": "POSTER",
+        "title": "TheRevenant Poster",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/TheRevenant_Poster.jpg"
+      },
+      {
+        "isPrimary": false,
+        "sortOrder": 2,
+        "type": "TRAILER",
+        "title": "TheRevenant Trailer",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/TheRevenant_Trailer.mp4"
+      }
+    ],
+    "releaseDate": "1998-07-01",
+    "genres": [
+      "Hành động",
+      "Kịch tính"
+    ],
+    "description": "Phim nổi tiếng: The Revenant.",
+    "ageRating": "T13",
+    "countries": [
+      "US"
+    ],
+    "title": "The Revenant",
+    "status": "COMING_SOON"
+  },
+  {
+    "durationMinutes": 109,
+    "medias": [
+      {
+        "isPrimary": true,
+        "sortOrder": 1,
+        "type": "POSTER",
+        "title": "TheWolfofWallStreet Poster",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/TheWolfofWallStreet_Poster.jpg"
+      },
+      {
+        "isPrimary": false,
+        "sortOrder": 2,
+        "type": "TRAILER",
+        "title": "TheWolfofWallStreet Trailer",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/TheWolfofWallStreet_Trailer.mp4"
+      }
+    ],
+    "releaseDate": "1999-07-01",
+    "genres": [
+      "Chính kịch",
+      "Phiêu lưu"
+    ],
+    "description": "Phim nổi tiếng: The Wolf of Wall Street.",
+    "ageRating": "T13",
+    "countries": [
+      "US"
+    ],
+    "title": "The Wolf of Wall Street",
+    "status": "COMING_SOON"
+  },
+  {
+    "durationMinutes": 110,
+    "medias": [
+      {
+        "isPrimary": true,
+        "sortOrder": 1,
+        "type": "POSTER",
+        "title": "ShutterIsland Poster",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/ShutterIsland_Poster.jpg"
+      },
+      {
+        "isPrimary": false,
+        "sortOrder": 2,
+        "type": "TRAILER",
+        "title": "ShutterIsland Trailer",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/ShutterIsland_Trailer.mp4"
+      }
+    ],
+    "releaseDate": "2000-07-01",
+    "genres": [
+      "Hành động",
+      "Kịch tính"
+    ],
+    "description": "Phim nổi tiếng: Shutter Island.",
+    "ageRating": "T13",
+    "countries": [
+      "US"
+    ],
+    "title": "Shutter Island",
+    "status": "COMING_SOON"
+  },
+  {
+    "durationMinutes": 111,
+    "medias": [
+      {
+        "isPrimary": true,
+        "sortOrder": 1,
+        "type": "POSTER",
+        "title": "DjangoUnchained Poster",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/DjangoUnchained_Poster.jpg"
+      },
+      {
+        "isPrimary": false,
+        "sortOrder": 2,
+        "type": "TRAILER",
+        "title": "DjangoUnchained Trailer",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/DjangoUnchained_Trailer.mp4"
+      }
+    ],
+    "releaseDate": "2001-07-01",
+    "genres": [
+      "Hành động",
+      "Kịch tính"
+    ],
+    "description": "Phim nổi tiếng: Django Unchained.",
+    "ageRating": "T13",
+    "countries": [
+      "US"
+    ],
+    "title": "Django Unchained",
+    "status": "COMING_SOON"
+  },
+  {
+    "durationMinutes": 112,
+    "medias": [
+      {
+        "isPrimary": true,
+        "sortOrder": 1,
+        "type": "POSTER",
+        "title": "PulpFiction Poster",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/PulpFiction_Poster.jpg"
+      },
+      {
+        "isPrimary": false,
+        "sortOrder": 2,
+        "type": "TRAILER",
+        "title": "PulpFiction Trailer",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/PulpFiction_Trailer.mp4"
+      }
+    ],
+    "releaseDate": "2002-07-01",
+    "genres": [
+      "Chính kịch",
+      "Phiêu lưu"
+    ],
+    "description": "Phim nổi tiếng: Pulp Fiction.",
+    "ageRating": "T13",
+    "countries": [
+      "US"
+    ],
+    "title": "Pulp Fiction",
+    "status": "COMING_SOON"
+  },
+  {
+    "durationMinutes": 113,
+    "medias": [
+      {
+        "isPrimary": true,
+        "sortOrder": 1,
+        "type": "POSTER",
+        "title": "KillBillVol1 Poster",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/KillBillVol1_Poster.jpg"
+      },
+      {
+        "isPrimary": false,
+        "sortOrder": 2,
+        "type": "TRAILER",
+        "title": "KillBillVol1 Trailer",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/KillBillVol1_Trailer.mp4"
+      }
+    ],
+    "releaseDate": "2003-07-01",
+    "genres": [
+      "Hành động",
+      "Kịch tính"
+    ],
+    "description": "Phim nổi tiếng: Kill Bill Vol 1.",
+    "ageRating": "T13",
+    "countries": [
+      "US"
+    ],
+    "title": "Kill Bill Vol 1",
+    "status": "COMING_SOON"
+  },
+  {
+    "durationMinutes": 114,
+    "medias": [
+      {
+        "isPrimary": true,
+        "sortOrder": 1,
+        "type": "POSTER",
+        "title": "KillBillVol2 Poster",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/KillBillVol2_Poster.jpg"
+      },
+      {
+        "isPrimary": false,
+        "sortOrder": 2,
+        "type": "TRAILER",
+        "title": "KillBillVol2 Trailer",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/KillBillVol2_Trailer.mp4"
+      }
+    ],
+    "releaseDate": "2004-07-01",
+    "genres": [
+      "Hành động",
+      "Kịch tính"
+    ],
+    "description": "Phim nổi tiếng: Kill Bill Vol 2.",
+    "ageRating": "T13",
+    "countries": [
+      "US"
+    ],
+    "title": "Kill Bill Vol 2",
+    "status": "COMING_SOON"
+  },
+  {
+    "durationMinutes": 115,
+    "medias": [
+      {
+        "isPrimary": true,
+        "sortOrder": 1,
+        "type": "POSTER",
+        "title": "InglouriousBasterds Poster",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/InglouriousBasterds_Poster.jpg"
+      },
+      {
+        "isPrimary": false,
+        "sortOrder": 2,
+        "type": "TRAILER",
+        "title": "InglouriousBasterds Trailer",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/InglouriousBasterds_Trailer.mp4"
+      }
+    ],
+    "releaseDate": "2005-07-01",
+    "genres": [
+      "Chính kịch",
+      "Phiêu lưu"
+    ],
+    "description": "Phim nổi tiếng: Inglourious Basterds.",
+    "ageRating": "T13",
+    "countries": [
+      "US"
+    ],
+    "title": "Inglourious Basterds",
+    "status": "COMING_SOON"
+  },
+  {
+    "durationMinutes": 116,
+    "medias": [
+      {
+        "isPrimary": true,
+        "sortOrder": 1,
+        "type": "POSTER",
+        "title": "NoCountryforOldMen Poster",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/NoCountryforOldMen_Poster.jpg"
+      },
+      {
+        "isPrimary": false,
+        "sortOrder": 2,
+        "type": "TRAILER",
+        "title": "NoCountryforOldMen Trailer",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/NoCountryforOldMen_Trailer.mp4"
+      }
+    ],
+    "releaseDate": "2006-07-01",
+    "genres": [
+      "Hành động",
+      "Kịch tính"
+    ],
+    "description": "Phim nổi tiếng: No Country for Old Men.",
+    "ageRating": "T13",
+    "countries": [
+      "US"
+    ],
+    "title": "No Country for Old Men",
+    "status": "COMING_SOON"
+  },
+  {
+    "durationMinutes": 117,
+    "medias": [
+      {
+        "isPrimary": true,
+        "sortOrder": 1,
+        "type": "POSTER",
+        "title": "ThereWillBeBlood Poster",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/ThereWillBeBlood_Poster.jpg"
+      },
+      {
+        "isPrimary": false,
+        "sortOrder": 2,
+        "type": "TRAILER",
+        "title": "ThereWillBeBlood Trailer",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/ThereWillBeBlood_Trailer.mp4"
+      }
+    ],
+    "releaseDate": "2007-07-01",
+    "genres": [
+      "Hành động",
+      "Kịch tính"
+    ],
+    "description": "Phim nổi tiếng: There Will Be Blood.",
+    "ageRating": "T13",
+    "countries": [
+      "US"
+    ],
+    "title": "There Will Be Blood",
+    "status": "COMING_SOON"
+  },
+  {
+    "durationMinutes": 118,
+    "medias": [
+      {
+        "isPrimary": true,
+        "sortOrder": 1,
+        "type": "POSTER",
+        "title": "LaLaLand Poster",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/LaLaLand_Poster.jpg"
+      },
+      {
+        "isPrimary": false,
+        "sortOrder": 2,
+        "type": "TRAILER",
+        "title": "LaLaLand Trailer",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/LaLaLand_Trailer.mp4"
+      }
+    ],
+    "releaseDate": "2008-07-01",
+    "genres": [
+      "Chính kịch",
+      "Phiêu lưu"
+    ],
+    "description": "Phim nổi tiếng: La La Land.",
+    "ageRating": "T13",
+    "countries": [
+      "US"
+    ],
+    "title": "La La Land",
+    "status": "COMING_SOON"
+  },
+  {
+    "durationMinutes": 119,
+    "medias": [
+      {
+        "isPrimary": true,
+        "sortOrder": 1,
+        "type": "POSTER",
+        "title": "TheTrumanShow Poster",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/TheTrumanShow_Poster.jpg"
+      },
+      {
+        "isPrimary": false,
+        "sortOrder": 2,
+        "type": "TRAILER",
+        "title": "TheTrumanShow Trailer",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/TheTrumanShow_Trailer.mp4"
+      }
+    ],
+    "releaseDate": "2009-07-01",
+    "genres": [
+      "Hành động",
+      "Kịch tính"
+    ],
+    "description": "Phim nổi tiếng: The Truman Show.",
+    "ageRating": "T13",
+    "countries": [
+      "US"
+    ],
+    "title": "The Truman Show",
+    "status": "COMING_SOON"
+  },
+  {
+    "durationMinutes": 120,
+    "medias": [
+      {
+        "isPrimary": true,
+        "sortOrder": 1,
+        "type": "POSTER",
+        "title": "ABeautifulMind Poster",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/ABeautifulMind_Poster.jpg"
+      },
+      {
+        "isPrimary": false,
+        "sortOrder": 2,
+        "type": "TRAILER",
+        "title": "ABeautifulMind Trailer",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/ABeautifulMind_Trailer.mp4"
+      }
+    ],
+    "releaseDate": "2010-07-01",
+    "genres": [
+      "Hành động",
+      "Kịch tính"
+    ],
+    "description": "Phim nổi tiếng: A Beautiful Mind.",
+    "ageRating": "T13",
+    "countries": [
+      "US"
+    ],
+    "title": "A Beautiful Mind",
+    "status": "COMING_SOON"
+  },
+  {
+    "durationMinutes": 121,
+    "medias": [
+      {
+        "isPrimary": true,
+        "sortOrder": 1,
+        "type": "POSTER",
+        "title": "TheImitationGame Poster",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/TheImitationGame_Poster.jpg"
+      },
+      {
+        "isPrimary": false,
+        "sortOrder": 2,
+        "type": "TRAILER",
+        "title": "TheImitationGame Trailer",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/TheImitationGame_Trailer.mp4"
+      }
+    ],
+    "releaseDate": "2011-07-01",
+    "genres": [
+      "Chính kịch",
+      "Phiêu lưu"
+    ],
+    "description": "Phim nổi tiếng: The Imitation Game.",
+    "ageRating": "T13",
+    "countries": [
+      "US"
+    ],
+    "title": "The Imitation Game",
+    "status": "COMING_SOON"
+  },
+  {
+    "durationMinutes": 122,
+    "medias": [
+      {
+        "isPrimary": true,
+        "sortOrder": 1,
+        "type": "POSTER",
+        "title": "TheSocialNetwork Poster",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/TheSocialNetwork_Poster.jpg"
+      },
+      {
+        "isPrimary": false,
+        "sortOrder": 2,
+        "type": "TRAILER",
+        "title": "TheSocialNetwork Trailer",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/TheSocialNetwork_Trailer.mp4"
+      }
+    ],
+    "releaseDate": "2012-07-01",
+    "genres": [
+      "Hành động",
+      "Kịch tính"
+    ],
+    "description": "Phim nổi tiếng: The Social Network.",
+    "ageRating": "T13",
+    "countries": [
+      "US"
+    ],
+    "title": "The Social Network",
+    "status": "COMING_SOON"
+  },
+  {
+    "durationMinutes": 123,
+    "medias": [
+      {
+        "isPrimary": true,
+        "sortOrder": 1,
+        "type": "POSTER",
+        "title": "Moneyball Poster",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/Moneyball_Poster.jpg"
+      },
+      {
+        "isPrimary": false,
+        "sortOrder": 2,
+        "type": "TRAILER",
+        "title": "Moneyball Trailer",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/Moneyball_Trailer.mp4"
+      }
+    ],
+    "releaseDate": "2013-07-01",
+    "genres": [
+      "Hành động",
+      "Kịch tính"
+    ],
+    "description": "Phim nổi tiếng: Moneyball.",
+    "ageRating": "T13",
+    "countries": [
+      "US"
+    ],
+    "title": "Moneyball",
+    "status": "COMING_SOON"
+  },
+  {
+    "durationMinutes": 124,
+    "medias": [
+      {
+        "isPrimary": true,
+        "sortOrder": 1,
+        "type": "POSTER",
+        "title": "CastAway Poster",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/CastAway_Poster.jpg"
+      },
+      {
+        "isPrimary": false,
+        "sortOrder": 2,
+        "type": "TRAILER",
+        "title": "CastAway Trailer",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/CastAway_Trailer.mp4"
+      }
+    ],
+    "releaseDate": "2014-07-01",
+    "genres": [
+      "Chính kịch",
+      "Phiêu lưu"
+    ],
+    "description": "Phim nổi tiếng: Cast Away.",
+    "ageRating": "T13",
+    "countries": [
+      "US"
+    ],
+    "title": "Cast Away",
+    "status": "COMING_SOON"
+  },
+  {
+    "durationMinutes": 125,
+    "medias": [
+      {
+        "isPrimary": true,
+        "sortOrder": 1,
+        "type": "POSTER",
+        "title": "TheMartian Poster",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/TheMartian_Poster.jpg"
+      },
+      {
+        "isPrimary": false,
+        "sortOrder": 2,
+        "type": "TRAILER",
+        "title": "TheMartian Trailer",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/TheMartian_Trailer.mp4"
+      }
+    ],
+    "releaseDate": "2015-07-01",
+    "genres": [
+      "Hành động",
+      "Kịch tính"
+    ],
+    "description": "Phim nổi tiếng: The Martian.",
+    "ageRating": "T13",
+    "countries": [
+      "US"
+    ],
+    "title": "The Martian",
+    "status": "COMING_SOON"
+  },
+  {
+    "durationMinutes": 126,
+    "medias": [
+      {
+        "isPrimary": true,
+        "sortOrder": 1,
+        "type": "POSTER",
+        "title": "Gravity Poster",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/Gravity_Poster.jpg"
+      },
+      {
+        "isPrimary": false,
+        "sortOrder": 2,
+        "type": "TRAILER",
+        "title": "Gravity Trailer",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/Gravity_Trailer.mp4"
+      }
+    ],
+    "releaseDate": "2016-07-01",
+    "genres": [
+      "Hành động",
+      "Kịch tính"
+    ],
+    "description": "Phim nổi tiếng: Gravity.",
+    "ageRating": "T13",
+    "countries": [
+      "US"
+    ],
+    "title": "Gravity",
+    "status": "COMING_SOON"
+  },
+  {
+    "durationMinutes": 127,
+    "medias": [
+      {
+        "isPrimary": true,
+        "sortOrder": 1,
+        "type": "POSTER",
+        "title": "EdgeofTomorrow Poster",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/EdgeofTomorrow_Poster.jpg"
+      },
+      {
+        "isPrimary": false,
+        "sortOrder": 2,
+        "type": "TRAILER",
+        "title": "EdgeofTomorrow Trailer",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/EdgeofTomorrow_Trailer.mp4"
+      }
+    ],
+    "releaseDate": "2017-07-01",
+    "genres": [
+      "Chính kịch",
+      "Phiêu lưu"
+    ],
+    "description": "Phim nổi tiếng: Edge of Tomorrow.",
+    "ageRating": "T13",
+    "countries": [
+      "US"
+    ],
+    "title": "Edge of Tomorrow",
+    "status": "COMING_SOON"
+  },
+  {
+    "durationMinutes": 128,
+    "medias": [
+      {
+        "isPrimary": true,
+        "sortOrder": 1,
+        "type": "POSTER",
+        "title": "Alien Poster",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/Alien_Poster.jpg"
+      },
+      {
+        "isPrimary": false,
+        "sortOrder": 2,
+        "type": "TRAILER",
+        "title": "Alien Trailer",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/Alien_Trailer.mp4"
+      }
+    ],
+    "releaseDate": "2018-07-01",
+    "genres": [
+      "Hành động",
+      "Kịch tính"
+    ],
+    "description": "Phim nổi tiếng: Alien.",
+    "ageRating": "T13",
+    "countries": [
+      "US"
+    ],
+    "title": "Alien",
+    "status": "COMING_SOON"
+  },
+  {
+    "durationMinutes": 129,
+    "medias": [
+      {
+        "isPrimary": true,
+        "sortOrder": 1,
+        "type": "POSTER",
+        "title": "Aliens Poster",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/Aliens_Poster.jpg"
+      },
+      {
+        "isPrimary": false,
+        "sortOrder": 2,
+        "type": "TRAILER",
+        "title": "Aliens Trailer",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/Aliens_Trailer.mp4"
+      }
+    ],
+    "releaseDate": "2019-07-01",
+    "genres": [
+      "Hành động",
+      "Kịch tính"
+    ],
+    "description": "Phim nổi tiếng: Aliens.",
+    "ageRating": "T13",
+    "countries": [
+      "US"
+    ],
+    "title": "Aliens",
+    "status": "COMING_SOON"
+  },
+  {
+    "durationMinutes": 130,
+    "medias": [
+      {
+        "isPrimary": true,
+        "sortOrder": 1,
+        "type": "POSTER",
+        "title": "Terminator2JudgmentDay Poster",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/Terminator2JudgmentDay_Poster.jpg"
+      },
+      {
+        "isPrimary": false,
+        "sortOrder": 2,
+        "type": "TRAILER",
+        "title": "Terminator2JudgmentDay Trailer",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/Terminator2JudgmentDay_Trailer.mp4"
+      }
+    ],
+    "releaseDate": "2020-07-01",
+    "genres": [
+      "Chính kịch",
+      "Phiêu lưu"
+    ],
+    "description": "Phim nổi tiếng: Terminator 2 Judgment Day.",
+    "ageRating": "T13",
+    "countries": [
+      "US"
+    ],
+    "title": "Terminator 2 Judgment Day",
+    "status": "COMING_SOON"
+  },
+  {
+    "durationMinutes": 131,
+    "medias": [
+      {
+        "isPrimary": true,
+        "sortOrder": 1,
+        "type": "POSTER",
+        "title": "BacktotheFuture Poster",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/BacktotheFuture_Poster.jpg"
+      },
+      {
+        "isPrimary": false,
+        "sortOrder": 2,
+        "type": "TRAILER",
+        "title": "BacktotheFuture Trailer",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/BacktotheFuture_Trailer.mp4"
+      }
+    ],
+    "releaseDate": "2021-07-01",
+    "genres": [
+      "Hành động",
+      "Kịch tính"
+    ],
+    "description": "Phim nổi tiếng: Back to the Future.",
+    "ageRating": "T13",
+    "countries": [
+      "US"
+    ],
+    "title": "Back to the Future",
+    "status": "COMING_SOON"
+  },
+  {
+    "durationMinutes": 132,
+    "medias": [
+      {
+        "isPrimary": true,
+        "sortOrder": 1,
+        "type": "POSTER",
+        "title": "JurassicPark Poster",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/JurassicPark_Poster.jpg"
+      },
+      {
+        "isPrimary": false,
+        "sortOrder": 2,
+        "type": "TRAILER",
+        "title": "JurassicPark Trailer",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/JurassicPark_Trailer.mp4"
+      }
+    ],
+    "releaseDate": "2022-07-01",
+    "genres": [
+      "Hành động",
+      "Kịch tính"
+    ],
+    "description": "Phim nổi tiếng: Jurassic Park.",
+    "ageRating": "T13",
+    "countries": [
+      "US"
+    ],
+    "title": "Jurassic Park",
+    "status": "COMING_SOON"
+  },
+  {
+    "durationMinutes": 133,
+    "medias": [
+      {
+        "isPrimary": true,
+        "sortOrder": 1,
+        "type": "POSTER",
+        "title": "Jaws Poster",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/Jaws_Poster.jpg"
+      },
+      {
+        "isPrimary": false,
+        "sortOrder": 2,
+        "type": "TRAILER",
+        "title": "Jaws Trailer",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/Jaws_Trailer.mp4"
+      }
+    ],
+    "releaseDate": "2023-07-01",
+    "genres": [
+      "Chính kịch",
+      "Phiêu lưu"
+    ],
+    "description": "Phim nổi tiếng: Jaws.",
+    "ageRating": "T13",
+    "countries": [
+      "US"
+    ],
+    "title": "Jaws",
+    "status": "COMING_SOON"
+  },
+  {
+    "durationMinutes": 134,
+    "medias": [
+      {
+        "isPrimary": true,
+        "sortOrder": 1,
+        "type": "POSTER",
+        "title": "Rocky Poster",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/Rocky_Poster.jpg"
+      },
+      {
+        "isPrimary": false,
+        "sortOrder": 2,
+        "type": "TRAILER",
+        "title": "Rocky Trailer",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/Rocky_Trailer.mp4"
+      }
+    ],
+    "releaseDate": "2024-07-01",
+    "genres": [
+      "Hành động",
+      "Kịch tính"
+    ],
+    "description": "Phim nổi tiếng: Rocky.",
+    "ageRating": "T13",
+    "countries": [
+      "US"
+    ],
+    "title": "Rocky",
+    "status": "COMING_SOON"
+  },
+  {
+    "durationMinutes": 135,
+    "medias": [
+      {
+        "isPrimary": true,
+        "sortOrder": 1,
+        "type": "POSTER",
+        "title": "RagingBull Poster",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/RagingBull_Poster.jpg"
+      },
+      {
+        "isPrimary": false,
+        "sortOrder": 2,
+        "type": "TRAILER",
+        "title": "RagingBull Trailer",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/RagingBull_Trailer.mp4"
+      }
+    ],
+    "releaseDate": "1990-07-01",
+    "genres": [
+      "Hành động",
+      "Kịch tính"
+    ],
+    "description": "Phim nổi tiếng: Raging Bull.",
+    "ageRating": "T13",
+    "countries": [
+      "US"
+    ],
+    "title": "Raging Bull",
+    "status": "COMING_SOON"
+  },
+  {
+    "durationMinutes": 136,
+    "medias": [
+      {
+        "isPrimary": true,
+        "sortOrder": 1,
+        "type": "POSTER",
+        "title": "FordvFerrari Poster",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/FordvFerrari_Poster.jpg"
+      },
+      {
+        "isPrimary": false,
+        "sortOrder": 2,
+        "type": "TRAILER",
+        "title": "FordvFerrari Trailer",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/FordvFerrari_Trailer.mp4"
+      }
+    ],
+    "releaseDate": "1991-07-01",
+    "genres": [
+      "Chính kịch",
+      "Phiêu lưu"
+    ],
+    "description": "Phim nổi tiếng: Ford v Ferrari.",
+    "ageRating": "T13",
+    "countries": [
+      "US"
+    ],
+    "title": "Ford v Ferrari",
+    "status": "COMING_SOON"
+  },
+  {
+    "durationMinutes": 137,
+    "medias": [
+      {
+        "isPrimary": true,
+        "sortOrder": 1,
+        "type": "POSTER",
+        "title": "Rush Poster",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/Rush_Poster.jpg"
+      },
+      {
+        "isPrimary": false,
+        "sortOrder": 2,
+        "type": "TRAILER",
+        "title": "Rush Trailer",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/Rush_Trailer.mp4"
+      }
+    ],
+    "releaseDate": "1992-07-01",
+    "genres": [
+      "Hành động",
+      "Kịch tính"
+    ],
+    "description": "Phim nổi tiếng: Rush.",
+    "ageRating": "T13",
+    "countries": [
+      "US"
+    ],
+    "title": "Rush",
+    "status": "COMING_SOON"
+  },
+  {
+    "durationMinutes": 138,
+    "medias": [
+      {
+        "isPrimary": true,
+        "sortOrder": 1,
+        "type": "POSTER",
+        "title": "ThePianist Poster",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/ThePianist_Poster.jpg"
+      },
+      {
+        "isPrimary": false,
+        "sortOrder": 2,
+        "type": "TRAILER",
+        "title": "ThePianist Trailer",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/ThePianist_Trailer.mp4"
+      }
+    ],
+    "releaseDate": "1993-07-01",
+    "genres": [
+      "Hành động",
+      "Kịch tính"
+    ],
+    "description": "Phim nổi tiếng: The Pianist.",
+    "ageRating": "T13",
+    "countries": [
+      "US"
+    ],
+    "title": "The Pianist",
+    "status": "COMING_SOON"
+  },
+  {
+    "durationMinutes": 139,
+    "medias": [
+      {
+        "isPrimary": true,
+        "sortOrder": 1,
+        "type": "POSTER",
+        "title": "SchindlersList Poster",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/SchindlersList_Poster.jpg"
+      },
+      {
+        "isPrimary": false,
+        "sortOrder": 2,
+        "type": "TRAILER",
+        "title": "SchindlersList Trailer",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/SchindlersList_Trailer.mp4"
+      }
+    ],
+    "releaseDate": "1994-07-01",
+    "genres": [
+      "Chính kịch",
+      "Phiêu lưu"
+    ],
+    "description": "Phim nổi tiếng: Schindlers List.",
+    "ageRating": "T13",
+    "countries": [
+      "US"
+    ],
+    "title": "Schindlers List",
+    "status": "COMING_SOON"
+  },
+  {
+    "durationMinutes": 140,
+    "medias": [
+      {
+        "isPrimary": true,
+        "sortOrder": 1,
+        "type": "POSTER",
+        "title": "JojoRabbit Poster",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/JojoRabbit_Poster.jpg"
+      },
+      {
+        "isPrimary": false,
+        "sortOrder": 2,
+        "type": "TRAILER",
+        "title": "JojoRabbit Trailer",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/JojoRabbit_Trailer.mp4"
+      }
+    ],
+    "releaseDate": "1995-07-01",
+    "genres": [
+      "Hành động",
+      "Kịch tính"
+    ],
+    "description": "Phim nổi tiếng: Jojo Rabbit.",
+    "ageRating": "T13",
+    "countries": [
+      "US"
+    ],
+    "title": "Jojo Rabbit",
+    "status": "COMING_SOON"
+  },
+  {
+    "durationMinutes": 141,
+    "medias": [
+      {
+        "isPrimary": true,
+        "sortOrder": 1,
+        "type": "POSTER",
+        "title": "EverythingEverywhereAllatOnce Poster",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/EverythingEverywhereAllatOnce_Poster.jpg"
+      },
+      {
+        "isPrimary": false,
+        "sortOrder": 2,
+        "type": "TRAILER",
+        "title": "EverythingEverywhereAllatOnce Trailer",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/EverythingEverywhereAllatOnce_Trailer.mp4"
+      }
+    ],
+    "releaseDate": "1996-07-01",
+    "genres": [
+      "Hành động",
+      "Kịch tính"
+    ],
+    "description": "Phim nổi tiếng: Everything Everywhere All at Once.",
+    "ageRating": "T13",
+    "countries": [
+      "US"
+    ],
+    "title": "Everything Everywhere All at Once",
+    "status": "COMING_SOON"
+  },
+  {
+    "durationMinutes": 142,
+    "medias": [
+      {
+        "isPrimary": true,
+        "sortOrder": 1,
+        "type": "POSTER",
+        "title": "TheSixthSense Poster",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/TheSixthSense_Poster.jpg"
+      },
+      {
+        "isPrimary": false,
+        "sortOrder": 2,
+        "type": "TRAILER",
+        "title": "TheSixthSense Trailer",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/TheSixthSense_Trailer.mp4"
+      }
+    ],
+    "releaseDate": "1997-07-01",
+    "genres": [
+      "Chính kịch",
+      "Phiêu lưu"
+    ],
+    "description": "Phim nổi tiếng: The Sixth Sense.",
+    "ageRating": "T13",
+    "countries": [
+      "US"
+    ],
+    "title": "The Sixth Sense",
+    "status": "COMING_SOON"
+  },
+  {
+    "durationMinutes": 143,
+    "medias": [
+      {
+        "isPrimary": true,
+        "sortOrder": 1,
+        "type": "POSTER",
+        "title": "Memento Poster",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/Memento_Poster.jpg"
+      },
+      {
+        "isPrimary": false,
+        "sortOrder": 2,
+        "type": "TRAILER",
+        "title": "Memento Trailer",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/Memento_Trailer.mp4"
+      }
+    ],
+    "releaseDate": "1998-07-01",
+    "genres": [
+      "Hành động",
+      "Kịch tính"
+    ],
+    "description": "Phim nổi tiếng: Memento.",
+    "ageRating": "T13",
+    "countries": [
+      "US"
+    ],
+    "title": "Memento",
+    "status": "COMING_SOON"
+  },
+  {
+    "durationMinutes": 144,
+    "medias": [
+      {
+        "isPrimary": true,
+        "sortOrder": 1,
+        "type": "POSTER",
+        "title": "GoneGirl Poster",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/GoneGirl_Poster.jpg"
+      },
+      {
+        "isPrimary": false,
+        "sortOrder": 2,
+        "type": "TRAILER",
+        "title": "GoneGirl Trailer",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/GoneGirl_Trailer.mp4"
+      }
+    ],
+    "releaseDate": "1999-07-01",
+    "genres": [
+      "Hành động",
+      "Kịch tính"
+    ],
+    "description": "Phim nổi tiếng: Gone Girl.",
+    "ageRating": "T13",
+    "countries": [
+      "US"
+    ],
+    "title": "Gone Girl",
+    "status": "COMING_SOON"
+  },
+  {
+    "durationMinutes": 145,
+    "medias": [
+      {
+        "isPrimary": true,
+        "sortOrder": 1,
+        "type": "POSTER",
+        "title": "Prisoners Poster",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/Prisoners_Poster.jpg"
+      },
+      {
+        "isPrimary": false,
+        "sortOrder": 2,
+        "type": "TRAILER",
+        "title": "Prisoners Trailer",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/Prisoners_Trailer.mp4"
+      }
+    ],
+    "releaseDate": "2000-07-01",
+    "genres": [
+      "Chính kịch",
+      "Phiêu lưu"
+    ],
+    "description": "Phim nổi tiếng: Prisoners.",
+    "ageRating": "T13",
+    "countries": [
+      "US"
+    ],
+    "title": "Prisoners",
+    "status": "COMING_SOON"
+  },
+  {
+    "durationMinutes": 146,
+    "medias": [
+      {
+        "isPrimary": true,
+        "sortOrder": 1,
+        "type": "POSTER",
+        "title": "Nightcrawler Poster",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/Nightcrawler_Poster.jpg"
+      },
+      {
+        "isPrimary": false,
+        "sortOrder": 2,
+        "type": "TRAILER",
+        "title": "Nightcrawler Trailer",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/Nightcrawler_Trailer.mp4"
+      }
+    ],
+    "releaseDate": "2001-07-01",
+    "genres": [
+      "Hành động",
+      "Kịch tính"
+    ],
+    "description": "Phim nổi tiếng: Nightcrawler.",
+    "ageRating": "T13",
+    "countries": [
+      "US"
+    ],
+    "title": "Nightcrawler",
+    "status": "COMING_SOON"
+  },
+  {
+    "durationMinutes": 147,
+    "medias": [
+      {
+        "isPrimary": true,
+        "sortOrder": 1,
+        "type": "POSTER",
+        "title": "Drive Poster",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/Drive_Poster.jpg"
+      },
+      {
+        "isPrimary": false,
+        "sortOrder": 2,
+        "type": "TRAILER",
+        "title": "Drive Trailer",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/Drive_Trailer.mp4"
+      }
+    ],
+    "releaseDate": "2002-07-01",
+    "genres": [
+      "Hành động",
+      "Kịch tính"
+    ],
+    "description": "Phim nổi tiếng: Drive.",
+    "ageRating": "T13",
+    "countries": [
+      "US"
+    ],
+    "title": "Drive",
+    "status": "COMING_SOON"
+  },
+  {
+    "durationMinutes": 148,
+    "medias": [
+      {
+        "isPrimary": true,
+        "sortOrder": 1,
+        "type": "POSTER",
+        "title": "TheBatman Poster",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/TheBatman_Poster.jpg"
+      },
+      {
+        "isPrimary": false,
+        "sortOrder": 2,
+        "type": "TRAILER",
+        "title": "TheBatman Trailer",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/TheBatman_Trailer.mp4"
+      }
+    ],
+    "releaseDate": "2003-07-01",
+    "genres": [
+      "Chính kịch",
+      "Phiêu lưu"
+    ],
+    "description": "Phim nổi tiếng: The Batman.",
+    "ageRating": "T13",
+    "countries": [
+      "US"
+    ],
+    "title": "The Batman",
+    "status": "COMING_SOON"
+  },
+  {
+    "durationMinutes": 149,
+    "medias": [
+      {
+        "isPrimary": true,
+        "sortOrder": 1,
+        "type": "POSTER",
+        "title": "Logan Poster",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/Logan_Poster.jpg"
+      },
+      {
+        "isPrimary": false,
+        "sortOrder": 2,
+        "type": "TRAILER",
+        "title": "Logan Trailer",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/Logan_Trailer.mp4"
+      }
+    ],
+    "releaseDate": "2004-07-01",
+    "genres": [
+      "Hành động",
+      "Kịch tính"
+    ],
+    "description": "Phim nổi tiếng: Logan.",
+    "ageRating": "T13",
+    "countries": [
+      "US"
+    ],
+    "title": "Logan",
+    "status": "COMING_SOON"
+  },
+  {
+    "durationMinutes": 150,
+    "medias": [
+      {
+        "isPrimary": true,
+        "sortOrder": 1,
+        "type": "POSTER",
+        "title": "Deadpool Poster",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/Deadpool_Poster.jpg"
+      },
+      {
+        "isPrimary": false,
+        "sortOrder": 2,
+        "type": "TRAILER",
+        "title": "Deadpool Trailer",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/Deadpool_Trailer.mp4"
+      }
+    ],
+    "releaseDate": "2005-07-01",
+    "genres": [
+      "Hành động",
+      "Kịch tính"
+    ],
+    "description": "Phim nổi tiếng: Deadpool.",
+    "ageRating": "T13",
+    "countries": [
+      "US"
+    ],
+    "title": "Deadpool",
+    "status": "COMING_SOON"
+  },
+  {
+    "durationMinutes": 151,
+    "medias": [
+      {
+        "isPrimary": true,
+        "sortOrder": 1,
+        "type": "POSTER",
+        "title": "BlackSwan Poster",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/BlackSwan_Poster.jpg"
+      },
+      {
+        "isPrimary": false,
+        "sortOrder": 2,
+        "type": "TRAILER",
+        "title": "BlackSwan Trailer",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/BlackSwan_Trailer.mp4"
+      }
+    ],
+    "releaseDate": "2006-07-01",
+    "genres": [
+      "Chính kịch",
+      "Phiêu lưu"
+    ],
+    "description": "Phim nổi tiếng: Black Swan.",
+    "ageRating": "T13",
+    "countries": [
+      "US"
+    ],
+    "title": "Black Swan",
+    "status": "COMING_SOON"
+  },
+  {
+    "durationMinutes": 152,
+    "medias": [
+      {
+        "isPrimary": true,
+        "sortOrder": 1,
+        "type": "POSTER",
+        "title": "TheMenu Poster",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/TheMenu_Poster.jpg"
+      },
+      {
+        "isPrimary": false,
+        "sortOrder": 2,
+        "type": "TRAILER",
+        "title": "TheMenu Trailer",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/TheMenu_Trailer.mp4"
+      }
+    ],
+    "releaseDate": "2007-07-01",
+    "genres": [
+      "Hành động",
+      "Kịch tính"
+    ],
+    "description": "Phim nổi tiếng: The Menu.",
+    "ageRating": "T13",
+    "countries": [
+      "US"
+    ],
+    "title": "The Menu",
+    "status": "COMING_SOON"
+  },
+  {
+    "durationMinutes": 153,
+    "medias": [
+      {
+        "isPrimary": true,
+        "sortOrder": 1,
+        "type": "POSTER",
+        "title": "KnivesOut Poster",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/KnivesOut_Poster.jpg"
+      },
+      {
+        "isPrimary": false,
+        "sortOrder": 2,
+        "type": "TRAILER",
+        "title": "KnivesOut Trailer",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/KnivesOut_Trailer.mp4"
+      }
+    ],
+    "releaseDate": "2008-07-01",
+    "genres": [
+      "Hành động",
+      "Kịch tính"
+    ],
+    "description": "Phim nổi tiếng: Knives Out.",
+    "ageRating": "T13",
+    "countries": [
+      "US"
+    ],
+    "title": "Knives Out",
+    "status": "COMING_SOON"
+  },
+  {
+    "durationMinutes": 154,
+    "medias": [
+      {
+        "isPrimary": true,
+        "sortOrder": 1,
+        "type": "POSTER",
+        "title": "GlassOnion Poster",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/GlassOnion_Poster.jpg"
+      },
+      {
+        "isPrimary": false,
+        "sortOrder": 2,
+        "type": "TRAILER",
+        "title": "GlassOnion Trailer",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/GlassOnion_Trailer.mp4"
+      }
+    ],
+    "releaseDate": "2009-07-01",
+    "genres": [
+      "Chính kịch",
+      "Phiêu lưu"
+    ],
+    "description": "Phim nổi tiếng: Glass Onion.",
+    "ageRating": "T13",
+    "countries": [
+      "US"
+    ],
+    "title": "Glass Onion",
+    "status": "COMING_SOON"
+  },
+  {
+    "durationMinutes": 155,
+    "medias": [
+      {
+        "isPrimary": true,
+        "sortOrder": 1,
+        "type": "POSTER",
+        "title": "TheBansheesofInisherin Poster",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/TheBansheesofInisherin_Poster.jpg"
+      },
+      {
+        "isPrimary": false,
+        "sortOrder": 2,
+        "type": "TRAILER",
+        "title": "TheBansheesofInisherin Trailer",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/TheBansheesofInisherin_Trailer.mp4"
+      }
+    ],
+    "releaseDate": "2010-07-01",
+    "genres": [
+      "Hành động",
+      "Kịch tính"
+    ],
+    "description": "Phim nổi tiếng: The Banshees of Inisherin.",
+    "ageRating": "T13",
+    "countries": [
+      "US"
+    ],
+    "title": "The Banshees of Inisherin",
+    "status": "COMING_SOON"
+  },
+  {
+    "durationMinutes": 156,
+    "medias": [
+      {
+        "isPrimary": true,
+        "sortOrder": 1,
+        "type": "POSTER",
+        "title": "Her Poster",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/Her_Poster.jpg"
+      },
+      {
+        "isPrimary": false,
+        "sortOrder": 2,
+        "type": "TRAILER",
+        "title": "Her Trailer",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/Her_Trailer.mp4"
+      }
+    ],
+    "releaseDate": "2011-07-01",
+    "genres": [
+      "Hành động",
+      "Kịch tính"
+    ],
+    "description": "Phim nổi tiếng: Her.",
+    "ageRating": "T13",
+    "countries": [
+      "US"
+    ],
+    "title": "Her",
+    "status": "COMING_SOON"
+  },
+  {
+    "durationMinutes": 157,
+    "medias": [
+      {
+        "isPrimary": true,
+        "sortOrder": 1,
+        "type": "POSTER",
+        "title": "ExMachina Poster",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/ExMachina_Poster.jpg"
+      },
+      {
+        "isPrimary": false,
+        "sortOrder": 2,
+        "type": "TRAILER",
+        "title": "ExMachina Trailer",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/ExMachina_Trailer.mp4"
+      }
+    ],
+    "releaseDate": "2012-07-01",
+    "genres": [
+      "Chính kịch",
+      "Phiêu lưu"
+    ],
+    "description": "Phim nổi tiếng: Ex Machina.",
+    "ageRating": "T13",
+    "countries": [
+      "US"
+    ],
+    "title": "Ex Machina",
+    "status": "COMING_SOON"
+  },
+  {
+    "durationMinutes": 158,
+    "medias": [
+      {
+        "isPrimary": true,
+        "sortOrder": 1,
+        "type": "POSTER",
+        "title": "TheTheoryofEverything Poster",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/TheTheoryofEverything_Poster.jpg"
+      },
+      {
+        "isPrimary": false,
+        "sortOrder": 2,
+        "type": "TRAILER",
+        "title": "TheTheoryofEverything Trailer",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/TheTheoryofEverything_Trailer.mp4"
+      }
+    ],
+    "releaseDate": "2013-07-01",
+    "genres": [
+      "Hành động",
+      "Kịch tính"
+    ],
+    "description": "Phim nổi tiếng: The Theory of Everything.",
+    "ageRating": "T13",
+    "countries": [
+      "US"
+    ],
+    "title": "The Theory of Everything",
+    "status": "COMING_SOON"
+  },
+  {
+    "durationMinutes": 159,
+    "medias": [
+      {
+        "isPrimary": true,
+        "sortOrder": 1,
+        "type": "POSTER",
+        "title": "Spotlight Poster",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/Spotlight_Poster.jpg"
+      },
+      {
+        "isPrimary": false,
+        "sortOrder": 2,
+        "type": "TRAILER",
+        "title": "Spotlight Trailer",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/Spotlight_Trailer.mp4"
+      }
+    ],
+    "releaseDate": "2014-07-01",
+    "genres": [
+      "Hành động",
+      "Kịch tính"
+    ],
+    "description": "Phim nổi tiếng: Spotlight.",
+    "ageRating": "T13",
+    "countries": [
+      "US"
+    ],
+    "title": "Spotlight",
+    "status": "COMING_SOON"
   }
 ]

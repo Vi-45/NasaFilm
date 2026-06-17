@@ -668,7 +668,13 @@ public class DataSeeder implements CommandLineRunner {
         // Add Genres
         for (String genreName : genreNames) {
             Genre genre = genreRepository.findByNameIgnoreCase(genreName)
-                    .orElseThrow(() -> new RuntimeException("Genre not found: " + genreName));
+                    .orElseGet(() -> {
+                        Genre newGenre = new Genre();
+                        newGenre.setName(genreName);
+                        Genre saved = genreRepository.save(newGenre);
+                        logger.info("Automatically seeded missing genre: {}", genreName);
+                        return saved;
+                    });
             MovieGenre movieGenre = new MovieGenre();
             movieGenre.setMovie(movie);
             movieGenre.setGenre(genre);
@@ -678,7 +684,26 @@ public class DataSeeder implements CommandLineRunner {
         // Add Countries
         for (String countryCode : countryCodes) {
             Country country = countryRepository.findByCodeIgnoreCase(countryCode)
-                    .orElseThrow(() -> new RuntimeException("Country not found: " + countryCode));
+                    .orElseGet(() -> {
+                        Country newCountry = new Country();
+                        newCountry.setCode(countryCode);
+                        String cName = countryCode;
+                        switch (countryCode.toUpperCase()) {
+                            case "DE": cName = "Đức"; break;
+                            case "FR": cName = "Pháp"; break;
+                            case "IT": cName = "Ý"; break;
+                            case "GB": cName = "Anh"; break;
+                            case "KR": cName = "Hàn Quốc"; break;
+                            case "IN": cName = "Ấn Độ"; break;
+                            case "TH": cName = "Thái Lan"; break;
+                            case "IR": cName = "Iran"; break;
+                            case "AR": cName = "Argentina"; break;
+                        }
+                        newCountry.setName(cName);
+                        Country saved = countryRepository.save(newCountry);
+                        logger.info("Automatically seeded missing country: {} ({})", countryCode, cName);
+                        return saved;
+                    });
             MovieCountry movieCountry = new MovieCountry();
             movieCountry.setMovie(movie);
             movieCountry.setCountry(country);

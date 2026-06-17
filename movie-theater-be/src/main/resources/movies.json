@@ -388,4 +388,658 @@
   "countries" : [ "CN" ],
   "title" : "TEST",
   "status" : "NOW_SHOWING"
-} ]
+},
+
+
+  {
+    "title": "The Dark Knight",
+    "countries": [
+      "US"
+    ],
+    "releaseDate": "2008-07-18",
+    "durationMinutes": 152,
+    "genres": [
+      "Hành động",
+      "Tội phạm",
+      "Chính kịch"
+    ],
+    "description": "Batman đối đầu Joker.",
+    "ageRating": "T13",
+    "status": "COMING_SOON",
+    "medias": [
+      {
+        "isPrimary": true,
+        "sortOrder": 1,
+        "type": "POSTER",
+        "title": "TheDarkKnight Poster",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/TheDarkKnight_Poster.jpg"
+      },
+      {
+        "isPrimary": false,
+        "sortOrder": 2,
+        "type": "TRAILER",
+        "title": "TheDarkKnight Trailer",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/TheDarkKnight_Trailer.mp4"
+      }
+    ]
+  },
+  {
+    "title": "Inception",
+    "countries": [
+      "US"
+    ],
+    "releaseDate": "2010-07-16",
+    "durationMinutes": 148,
+    "genres": [
+      "Khoa học viễn tưởng",
+      "Hành động"
+    ],
+    "description": "Đánh cắp bí mật qua giấc mơ.",
+    "ageRating": "T13",
+    "status": "COMING_SOON",
+    "medias": [
+      {
+        "isPrimary": true,
+        "sortOrder": 1,
+        "type": "POSTER",
+        "title": "Inception Poster",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/Inception_Poster.jpg"
+      },
+      {
+        "isPrimary": false,
+        "sortOrder": 2,
+        "type": "TRAILER",
+        "title": "Inception Trailer",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/Inception_Trailer.mp4"
+      }
+    ]
+  },
+  {
+    "title": "Gladiator",
+    "countries": [
+      "US"
+    ],
+    "releaseDate": "2000-05-05",
+    "durationMinutes": 155,
+    "genres": [
+      "Hành động",
+      "Phiêu lưu",
+      "Chính kịch"
+    ],
+    "description": "Vị tướng La Mã tìm cách báo thù.",
+    "ageRating": "T16",
+    "status": "COMING_SOON",
+    "medias": [
+      {
+        "isPrimary": true,
+        "sortOrder": 1,
+        "type": "POSTER",
+        "title": "Gladiator Poster",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/Gladiator_Poster.jpg"
+      },
+      {
+        "isPrimary": false,
+        "sortOrder": 2,
+        "type": "TRAILER",
+        "title": "Gladiator Trailer",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/Gladiator_Trailer.mp4"
+      }
+    ]
+  },
+  {
+    "title": "Fight Club",
+    "countries": [
+      "US"
+    ],
+    "releaseDate": "1999-10-15",
+    "durationMinutes": 139,
+    "genres": [
+      "Chính kịch",
+      "Kịch tính"
+    ],
+    "description": "Câu lạc bộ đánh nhau bí mật.",
+    "ageRating": "T18",
+    "status": "COMING_SOON",
+    "medias": [
+      {
+        "isPrimary": true,
+        "sortOrder": 1,
+        "type": "POSTER",
+        "title": "FightClub Poster",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/FightClub_Poster.jpg"
+      },
+      {
+        "isPrimary": false,
+        "sortOrder": 2,
+        "type": "TRAILER",
+        "title": "FightClub Trailer",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/FightClub_Trailer.mp4"
+      }
+    ]
+  },
+  {
+    "title": "Whiplash",
+    "countries": [
+      "US"
+    ],
+    "releaseDate": "2014-10-10",
+    "durationMinutes": 106,
+    "genres": [
+      "Chính kịch",
+      "Âm nhạc"
+    ],
+    "description": "Tay trống trẻ và người thầy khắc nghiệt.",
+    "ageRating": "T13",
+    "status": "COMING_SOON",
+    "medias": [
+      {
+        "isPrimary": true,
+        "sortOrder": 1,
+        "type": "POSTER",
+        "title": "Whiplash Poster",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/Whiplash_Poster.jpg"
+      },
+      {
+        "isPrimary": false,
+        "sortOrder": 2,
+        "type": "TRAILER",
+        "title": "Whiplash Trailer",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/Whiplash_Trailer.mp4"
+      }
+    ]
+  },
+  {
+    "title": "The Green Mile",
+    "countries": [
+      "US"
+    ],
+    "releaseDate": "1999-12-10",
+    "durationMinutes": 189,
+    "genres": [
+      "Chính kịch",
+      "Giả tưởng"
+    ],
+    "description": "Tử tù với năng lực kỳ lạ.",
+    "ageRating": "T16",
+    "status": "COMING_SOON",
+    "medias": [
+      {
+        "isPrimary": true,
+        "sortOrder": 1,
+        "type": "POSTER",
+        "title": "TheGreenMile Poster",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/TheGreenMile_Poster.jpg"
+      },
+      {
+        "isPrimary": false,
+        "sortOrder": 2,
+        "type": "TRAILER",
+        "title": "TheGreenMile Trailer",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/TheGreenMile_Trailer.mp4"
+      }
+    ]
+  },
+  {
+    "title": "Good Will Hunting",
+    "countries": [
+      "US"
+    ],
+    "releaseDate": "1997-12-05",
+    "durationMinutes": 126,
+    "genres": [
+      "Chính kịch"
+    ],
+    "description": "Thiên tài toán học làm lao công.",
+    "ageRating": "T13",
+    "status": "COMING_SOON",
+    "medias": [
+      {
+        "isPrimary": true,
+        "sortOrder": 1,
+        "type": "POSTER",
+        "title": "GoodWillHunting Poster",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/GoodWillHunting_Poster.jpg"
+      },
+      {
+        "isPrimary": false,
+        "sortOrder": 2,
+        "type": "TRAILER",
+        "title": "GoodWillHunting Trailer",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/GoodWillHunting_Trailer.mp4"
+      }
+    ]
+  },
+  {
+    "title": "The Silence of the Lambs",
+    "countries": [
+      "US"
+    ],
+    "releaseDate": "1991-02-14",
+    "durationMinutes": 118,
+    "genres": [
+      "Kinh dị",
+      "Tội phạm"
+    ],
+    "description": "Điều tra án mạng với sự trợ giúp của sát nhân.",
+    "ageRating": "T18",
+    "status": "COMING_SOON",
+    "medias": [
+      {
+        "isPrimary": true,
+        "sortOrder": 1,
+        "type": "POSTER",
+        "title": "TheSilenceoftheLambs Poster",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/TheSilenceoftheLambs_Poster.jpg"
+      },
+      {
+        "isPrimary": false,
+        "sortOrder": 2,
+        "type": "TRAILER",
+        "title": "TheSilenceoftheLambs Trailer",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/TheSilenceoftheLambs_Trailer.mp4"
+      }
+    ]
+  },
+  {
+    "title": "The Lion King",
+    "countries": [
+      "US"
+    ],
+    "releaseDate": "1994-06-24",
+    "durationMinutes": 88,
+    "genres": [
+      "Hoạt hình",
+      "Gia đình"
+    ],
+    "description": "Hành trình của Simba.",
+    "ageRating": "P",
+    "status": "COMING_SOON",
+    "medias": [
+      {
+        "isPrimary": true,
+        "sortOrder": 1,
+        "type": "POSTER",
+        "title": "TheLionKing Poster",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/TheLionKing_Poster.jpg"
+      },
+      {
+        "isPrimary": false,
+        "sortOrder": 2,
+        "type": "TRAILER",
+        "title": "TheLionKing Trailer",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/TheLionKing_Trailer.mp4"
+      }
+    ]
+  },
+  {
+    "title": "Toy Story",
+    "countries": [
+      "US"
+    ],
+    "releaseDate": "1995-11-22",
+    "durationMinutes": 81,
+    "genres": [
+      "Hoạt hình",
+      "Hài hước"
+    ],
+    "description": "Đồ chơi có sự sống.",
+    "ageRating": "P",
+    "status": "COMING_SOON",
+    "medias": [
+      {
+        "isPrimary": true,
+        "sortOrder": 1,
+        "type": "POSTER",
+        "title": "ToyStory Poster",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/ToyStory_Poster.jpg"
+      },
+      {
+        "isPrimary": false,
+        "sortOrder": 2,
+        "type": "TRAILER",
+        "title": "ToyStory Trailer",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/ToyStory_Trailer.mp4"
+      }
+    ]
+  },
+  {
+    "title": "Coco",
+    "countries": [
+      "US"
+    ],
+    "releaseDate": "2017-11-22",
+    "durationMinutes": 105,
+    "genres": [
+      "Hoạt hình",
+      "Phiêu lưu"
+    ],
+    "description": "Hành trình tới vùng đất người chết.",
+    "ageRating": "P",
+    "status": "COMING_SOON",
+    "medias": [
+      {
+        "isPrimary": true,
+        "sortOrder": 1,
+        "type": "POSTER",
+        "title": "Coco Poster",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/Coco_Poster.jpg"
+      },
+      {
+        "isPrimary": false,
+        "sortOrder": 2,
+        "type": "TRAILER",
+        "title": "Coco Trailer",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/Coco_Trailer.mp4"
+      }
+    ]
+  },
+  {
+    "title": "The Grand Budapest Hotel",
+    "countries": [
+      "DE"
+    ],
+    "releaseDate": "2014-03-28",
+    "durationMinutes": 99,
+    "genres": [
+      "Hài hước",
+      "Phiêu lưu"
+    ],
+    "description": "Những cuộc phiêu lưu tại khách sạn nổi tiếng.",
+    "ageRating": "T13",
+    "status": "COMING_SOON",
+    "medias": [
+      {
+        "isPrimary": true,
+        "sortOrder": 1,
+        "type": "POSTER",
+        "title": "TheGrandBudapestHotel Poster",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/TheGrandBudapestHotel_Poster.jpg"
+      },
+      {
+        "isPrimary": false,
+        "sortOrder": 2,
+        "type": "TRAILER",
+        "title": "TheGrandBudapestHotel Trailer",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/TheGrandBudapestHotel_Trailer.mp4"
+      }
+    ]
+  },
+  {
+    "title": "Amelie",
+    "countries": [
+      "FR"
+    ],
+    "releaseDate": "2001-04-25",
+    "durationMinutes": 122,
+    "genres": [
+      "Lãng mạn",
+      "Hài hước"
+    ],
+    "description": "Cô gái Paris thay đổi cuộc sống mọi người.",
+    "ageRating": "T13",
+    "status": "COMING_SOON",
+    "medias": [
+      {
+        "isPrimary": true,
+        "sortOrder": 1,
+        "type": "POSTER",
+        "title": "Amelie Poster",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/Amelie_Poster.jpg"
+      },
+      {
+        "isPrimary": false,
+        "sortOrder": 2,
+        "type": "TRAILER",
+        "title": "Amelie Trailer",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/Amelie_Trailer.mp4"
+      }
+    ]
+  },
+  {
+    "title": "Life Is Beautiful",
+    "countries": [
+      "IT"
+    ],
+    "releaseDate": "1997-12-20",
+    "durationMinutes": 116,
+    "genres": [
+      "Chính kịch",
+      "Chiến tranh"
+    ],
+    "description": "Người cha bảo vệ con giữa chiến tranh.",
+    "ageRating": "T13",
+    "status": "COMING_SOON",
+    "medias": [
+      {
+        "isPrimary": true,
+        "sortOrder": 1,
+        "type": "POSTER",
+        "title": "LifeIsBeautiful Poster",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/LifeIsBeautiful_Poster.jpg"
+      },
+      {
+        "isPrimary": false,
+        "sortOrder": 2,
+        "type": "TRAILER",
+        "title": "LifeIsBeautiful Trailer",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/LifeIsBeautiful_Trailer.mp4"
+      }
+    ]
+  },
+  {
+    "title": "The Lives of Others",
+    "countries": [
+      "DE"
+    ],
+    "releaseDate": "2006-03-23",
+    "durationMinutes": 137,
+    "genres": [
+      "Chính kịch",
+      "Kịch tính"
+    ],
+    "description": "Sĩ quan theo dõi người khác và thay đổi.",
+    "ageRating": "T13",
+    "status": "COMING_SOON",
+    "medias": [
+      {
+        "isPrimary": true,
+        "sortOrder": 1,
+        "type": "POSTER",
+        "title": "TheLivesofOthers Poster",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/TheLivesofOthers_Poster.jpg"
+      },
+      {
+        "isPrimary": false,
+        "sortOrder": 2,
+        "type": "TRAILER",
+        "title": "TheLivesofOthers Trailer",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/TheLivesofOthers_Trailer.mp4"
+      }
+    ]
+  },
+  {
+    "title": "A Separation",
+    "countries": [
+      "IR"
+    ],
+    "releaseDate": "2011-02-09",
+    "durationMinutes": 123,
+    "genres": [
+      "Chính kịch"
+    ],
+    "description": "Mâu thuẫn gia đình dẫn đến biến cố.",
+    "ageRating": "T13",
+    "status": "COMING_SOON",
+    "medias": [
+      {
+        "isPrimary": true,
+        "sortOrder": 1,
+        "type": "POSTER",
+        "title": "ASeparation Poster",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/ASeparation_Poster.jpg"
+      },
+      {
+        "isPrimary": false,
+        "sortOrder": 2,
+        "type": "TRAILER",
+        "title": "ASeparation Trailer",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/ASeparation_Trailer.mp4"
+      }
+    ]
+  },
+  {
+    "title": "Dangal",
+    "countries": [
+      "IN"
+    ],
+    "releaseDate": "2016-12-21",
+    "durationMinutes": 161,
+    "genres": [
+      "Thể thao",
+      "Tiểu sử"
+    ],
+    "description": "Cha huấn luyện các con gái trở thành đô vật.",
+    "ageRating": "T13",
+    "status": "COMING_SOON",
+    "medias": [
+      {
+        "isPrimary": true,
+        "sortOrder": 1,
+        "type": "POSTER",
+        "title": "Dangal Poster",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/Dangal_Poster.jpg"
+      },
+      {
+        "isPrimary": false,
+        "sortOrder": 2,
+        "type": "TRAILER",
+        "title": "Dangal Trailer",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/Dangal_Trailer.mp4"
+      }
+    ]
+  },
+  {
+    "title": "Crouching Tiger Hidden Dragon",
+    "countries": [
+      "CN"
+    ],
+    "releaseDate": "2000-07-06",
+    "durationMinutes": 120,
+    "genres": [
+      "Võ thuật",
+      "Lãng mạn"
+    ],
+    "description": "Thanh kiếm thất lạc và những cuộc truy đuổi.",
+    "ageRating": "T13",
+    "status": "COMING_SOON",
+    "medias": [
+      {
+        "isPrimary": true,
+        "sortOrder": 1,
+        "type": "POSTER",
+        "title": "CrouchingTigerHiddenDragon Poster",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/CrouchingTigerHiddenDragon_Poster.jpg"
+      },
+      {
+        "isPrimary": false,
+        "sortOrder": 2,
+        "type": "TRAILER",
+        "title": "CrouchingTigerHiddenDragon Trailer",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/CrouchingTigerHiddenDragon_Trailer.mp4"
+      }
+    ]
+  },
+  {
+    "title": "The Handmaiden",
+    "countries": [
+      "KR"
+    ],
+    "releaseDate": "2016-06-01",
+    "durationMinutes": 145,
+    "genres": [
+      "Bí ẩn",
+      "Kịch tính"
+    ],
+    "description": "Âm mưu lừa đảo xoay quanh nữ thừa kế.",
+    "ageRating": "T18",
+    "status": "COMING_SOON",
+    "medias": [
+      {
+        "isPrimary": true,
+        "sortOrder": 1,
+        "type": "POSTER",
+        "title": "TheHandmaiden Poster",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/TheHandmaiden_Poster.jpg"
+      },
+      {
+        "isPrimary": false,
+        "sortOrder": 2,
+        "type": "TRAILER",
+        "title": "TheHandmaiden Trailer",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/TheHandmaiden_Trailer.mp4"
+      }
+    ]
+  },
+  {
+    "title": "Akira",
+    "countries": [
+      "JP"
+    ],
+    "releaseDate": "1988-07-16",
+    "durationMinutes": 124,
+    "genres": [
+      "Hoạt hình",
+      "Khoa học viễn tưởng"
+    ],
+    "description": "Tokyo tương lai và sức mạnh tâm linh.",
+    "ageRating": "T16",
+    "status": "COMING_SOON",
+    "medias": [
+      {
+        "isPrimary": true,
+        "sortOrder": 1,
+        "type": "POSTER",
+        "title": "Akira Poster",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/Akira_Poster.jpg"
+      },
+      {
+        "isPrimary": false,
+        "sortOrder": 2,
+        "type": "TRAILER",
+        "title": "Akira Trailer",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/Akira_Trailer.mp4"
+      }
+    ]
+  },
+  {
+    "title": "The Secret in Their Eyes",
+    "countries": [
+      "AR"
+    ],
+    "releaseDate": "2009-08-13",
+    "durationMinutes": 129,
+    "genres": [
+      "Tội phạm",
+      "Bí ẩn"
+    ],
+    "description": "Vụ án chưa có lời giải.",
+    "ageRating": "T13",
+    "status": "COMING_SOON",
+    "medias": [
+      {
+        "isPrimary": true,
+        "sortOrder": 1,
+        "type": "POSTER",
+        "title": "TheSecretinTheirEyes Poster",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/TheSecretinTheirEyes_Poster.jpg"
+      },
+      {
+        "isPrimary": false,
+        "sortOrder": 2,
+        "type": "TRAILER",
+        "title": "TheSecretinTheirEyes Trailer",
+        "url": "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/TheSecretinTheirEyes_Trailer.mp4"
+      }
+    ]
+  }
+]

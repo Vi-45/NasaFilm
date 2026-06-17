@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Calendar, Clock, Armchair, Wallet, CreditCard, Landmark, Info, AlertTriangle } from 'lucide-react';
 import Navbar from '../components/Navbar';
@@ -58,6 +58,41 @@ const getMovieInfo = (title) => {
     format: 'IMAX 3D',
     age: 'PG-13'
   };
+};
+
+const comboMeta = {
+  "combo bắp nước": {
+    image: "https://images.unsplash.com/photo-1578632767115-351597cf2477?w=500&auto=format&fit=crop&q=60",
+    description: "1 Bắp lớn + 2 Nước ngọt cỡ vừa. Sự lựa chọn hoàn hảo cho các cặp đôi khi đi xem phim."
+  },
+  "combo solo": {
+    image: "https://images.unsplash.com/photo-1513151233558-d860c5398176?w=500&auto=format&fit=crop&q=60",
+    description: "1 Bắp lớn + 1 Nước ngọt cỡ vừa. Thích hợp cho trải nghiệm một mình trọn vẹn."
+  },
+  "combo gia đình": {
+    image: "https://images.unsplash.com/photo-1585647347483-22b66260dfff?w=500&auto=format&fit=crop&q=60",
+    description: "2 Bắp lớn + 4 Nước ngọt lớn. Đủ dùng thoải mái cho cả gia đình hoặc nhóm bạn thân."
+  }
+};
+
+const getMeta = (name) => {
+  const lowercase = name.toLowerCase();
+  const key = Object.keys(comboMeta).find(k => lowercase.includes(k));
+  return key ? comboMeta[key] : {
+    image: "https://images.unsplash.com/photo-1578632767115-351597cf2477?w=500&auto=format&fit=crop&q=60",
+    description: "Sản phẩm bắp và nước ngọt chất lượng cao đi kèm suất chiếu."
+  };
+};
+
+const getCategory = (name) => {
+  const lowercase = name.toLowerCase();
+  const isFood = lowercase.includes('bắp') || lowercase.includes('popcorn') || lowercase.includes('snack') || lowercase.includes('khoai') || lowercase.includes('bánh') || lowercase.includes('kẹo') || lowercase.includes('ăn') || lowercase.includes('food');
+  const isDrink = lowercase.includes('nước') || lowercase.includes('pepsi') || lowercase.includes('coca') || lowercase.includes('sprite') || lowercase.includes('soda') || lowercase.includes('fanta') || lowercase.includes('trà') || lowercase.includes('uống') || lowercase.includes('drink');
+  
+  if (isFood && isDrink) return 'both';
+  if (isFood) return 'food';
+  if (isDrink) return 'drink';
+  return 'food';
 };
 
 const CheckoutPage = () => {
@@ -120,6 +155,53 @@ const CheckoutPage = () => {
   const [combosList, setCombosList] = useState([]);
   const [myVouchers, setMyVouchers] = useState([]);
   const [loadingVouchers, setLoadingVouchers] = useState(true);
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filterTab, setFilterTab] = useState('all');
+
+  const scrollContainerRef = useRef(null);
+
+  const scrollLeft = () => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollBy({ left: -200, behavior: 'smooth' });
+    }
+  };
+
+  const scrollRight = () => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollBy({ left: 200, behavior: 'smooth' });
+    }
+  };
+
+  const handleIncreaseCombo = (combo) => {
+    setCheckoutCombos(prev => {
+      const existing = prev.find(c => c.comboUuid === combo.uuid);
+      if (existing) {
+        return prev.map(c => c.comboUuid === combo.uuid ? { ...c, quantity: c.quantity + 1 } : c);
+      } else {
+        return [...prev, { comboUuid: combo.uuid, name: combo.name, price: combo.price, quantity: 1 }];
+      }
+    });
+  };
+
+  const handleDecreaseCombo = (combo) => {
+    setCheckoutCombos(prev => {
+      const existing = prev.find(c => c.comboUuid === combo.uuid);
+      if (existing) {
+        if (existing.quantity <= 1) {
+          return prev.filter(c => c.comboUuid !== combo.uuid);
+        }
+        return prev.map(c => c.comboUuid === combo.uuid ? { ...c, quantity: c.quantity - 1 } : c);
+      }
+      return prev;
+    });
+  };
+
+  const getComboQuantity = (comboUuid) => {
+    const found = checkoutCombos.find(c => c.comboUuid === comboUuid);
+    return found ? found.quantity : 0;
+  };
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -358,6 +440,97 @@ const CheckoutPage = () => {
                   </div>
                 </div>
               </div>
+            </section>
+
+            {/* Chọn Bắp & Nước Section */}
+            <section className="glass-panel p-6 rounded-2xl">
+              <div className="flex justify-between items-center mb-6">
+                <div className="flex items-center gap-4">
+                  <h2 className="text-xl font-bold border-l-4 border-red-600 pl-4 uppercase tracking-wider text-white">Chọn Bắp & Nước</h2>
+                  <button 
+                    onClick={() => setIsModalOpen(true)}
+                    className="text-xs font-bold text-red-500 hover:text-red-400 hover:underline cursor-pointer transition-colors"
+                  >
+                    Xem tất cả
+                  </button>
+                </div>
+                
+                {/* Slider Navigation Buttons */}
+                {combosList.length > 0 && (
+                  <div className="flex gap-2 shrink-0">
+                    <button 
+                      onClick={scrollLeft}
+                      className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 active:scale-95 transition-all text-gray-300 hover:text-white cursor-pointer"
+                      title="Xem trước"
+                    >
+                      &larr;
+                    </button>
+                    <button 
+                      onClick={scrollRight}
+                      className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 active:scale-95 transition-all text-gray-300 hover:text-white cursor-pointer"
+                      title="Xem tiếp"
+                    >
+                      &rarr;
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {combosList.length === 0 ? (
+                <p className="text-gray-500 font-medium text-xs py-3 text-center italic">Đang tải danh sách bắp nước...</p>
+              ) : (
+                <div 
+                  ref={scrollContainerRef}
+                  className="flex overflow-x-auto gap-4 pb-4 snap-x snap-mandatory scroll-smooth pr-4 no-scrollbar"
+                >
+                  {combosList.map((combo) => {
+                    const qty = getComboQuantity(combo.uuid);
+                    const meta = getMeta(combo.name);
+                    return (
+                      <div 
+                        key={combo.uuid}
+                        className="min-w-[200px] max-w-[200px] snap-start bg-[#111215]/50 border border-white/5 rounded-xl overflow-hidden hover:border-white/10 transition-all duration-300 shadow-lg flex flex-col backdrop-blur-md shrink-0"
+                      >
+                        <div className="w-full h-28 overflow-hidden relative bg-[#0f121d]">
+                          <img src={meta.image} alt={combo.name} className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
+                          {qty > 0 && (
+                            <span className="absolute top-2 right-2 bg-red-600 text-white font-extrabold text-[9px] px-2 py-0.5 rounded-full shadow-md">
+                              Đã chọn: {qty}
+                            </span>
+                          )}
+                        </div>
+                        <div className="p-3 flex-grow flex flex-col justify-between gap-3">
+                          <div>
+                            <h3 className="text-xs font-bold text-white line-clamp-1 uppercase" title={combo.name}>{combo.name}</h3>
+                            <p className="text-[9px] text-gray-400 line-clamp-2 leading-tight mt-1 min-h-[24px]">{meta.description}</p>
+                          </div>
+                          <div className="flex justify-between items-center pt-1">
+                            <span className="text-xs font-black text-yellow-400">{(combo.price).toLocaleString('vi-VN')} đ</span>
+                            <div className="flex items-center gap-1.5">
+                              <button 
+                                disabled={qty === 0}
+                                onClick={() => handleDecreaseCombo(combo)}
+                                className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
+                                  qty === 0 ? 'bg-neutral-800 text-neutral-600 cursor-not-allowed' : 'bg-white/5 hover:bg-white/10 border border-white/10 cursor-pointer active:scale-95'
+                                }`}
+                              >
+                                -
+                              </button>
+                              <span className="text-xs font-mono font-bold text-white w-4 text-center">{qty}</span>
+                              <button 
+                                onClick={() => handleIncreaseCombo(combo)}
+                                className="w-6 h-6 rounded-full bg-[#E61E2A] text-white hover:bg-red-700 flex items-center justify-center text-xs font-bold cursor-pointer transition-all active:scale-95"
+                              >
+                                +
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </section>
 
             <section className="glass-panel p-6 rounded-2xl">
@@ -612,6 +785,133 @@ const CheckoutPage = () => {
           </div>
         </div>
       </main>
+
+      {/* Concessions / Bắp nước Modal Overlay */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+          <div className="glass-panel max-w-2xl w-full rounded-2xl border border-white/10 bg-[#111215] shadow-2xl p-6 flex flex-col max-h-[85vh] text-left">
+            {/* Modal Header */}
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-lg font-black text-white uppercase tracking-wider border-l-4 border-red-600 pl-3">
+                Danh sách Bắp & Nước
+              </h3>
+              <button 
+                onClick={() => {
+                  setIsModalOpen(false);
+                  setSearchQuery('');
+                  setFilterTab('all');
+                }}
+                className="text-gray-400 hover:text-white text-xs font-bold uppercase tracking-wider cursor-pointer border border-white/10 rounded-lg px-3 py-1 bg-white/5 active:scale-95 transition-all"
+              >
+                Đóng
+              </button>
+            </div>
+
+            {/* Search and Category Filters */}
+            <div className="space-y-4 mb-6">
+              <input 
+                type="text" 
+                placeholder="Tìm kiếm bắp nước..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 focus:outline-none focus:border-red-500/50 text-xs text-white transition-colors"
+              />
+              
+              <div className="flex gap-2 border-b border-white/5 pb-2">
+                {[
+                  { id: 'all', label: 'Tất cả' },
+                  { id: 'food', label: 'Đồ ăn' },
+                  { id: 'drink', label: 'Nước uống' }
+                ].map(tab => (
+                  <button
+                    key={tab.id}
+                    onClick={() => setFilterTab(tab.id)}
+                    className={`px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                      filterTab === tab.id 
+                        ? 'bg-[#E61E2A] text-white' 
+                        : 'bg-white/5 text-gray-400 hover:text-white'
+                    }`}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Modal Grid of Concessions */}
+            <div className="flex-grow overflow-y-auto pr-1 custom-scrollbar max-h-[50vh]">
+              {(() => {
+                const filtered = combosList.filter(combo => {
+                  const matchesSearch = combo.name.toLowerCase().includes(searchQuery.toLowerCase());
+                  if (!matchesSearch) return false;
+                  
+                  if (filterTab === 'all') return true;
+                  
+                  const category = getCategory(combo.name);
+                  if (filterTab === 'food') {
+                    return category === 'food' || category === 'both';
+                  }
+                  if (filterTab === 'drink') {
+                    return category === 'drink' || category === 'both';
+                  }
+                  return true;
+                });
+
+                if (filtered.length === 0) {
+                  return (
+                    <p className="text-gray-500 text-center text-xs font-semibold py-8 italic">
+                      Không tìm thấy sản phẩm phù hợp.
+                    </p>
+                  );
+                }
+
+                return (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {filtered.map(combo => {
+                      const qty = getComboQuantity(combo.uuid);
+                      const meta = getMeta(combo.name);
+                      return (
+                        <div key={combo.uuid} className="flex p-3 rounded-xl border border-white/5 bg-white/[0.02] gap-3">
+                          <div className="w-20 h-20 rounded-lg overflow-hidden shrink-0 bg-[#0f121d]">
+                            <img src={meta.image} alt={combo.name} className="w-full h-full object-cover" />
+                          </div>
+                          <div className="flex flex-col justify-between flex-grow">
+                            <div>
+                              <span className="text-xs font-bold text-white block uppercase line-clamp-1">{combo.name}</span>
+                              <span className="text-[9px] text-gray-400 block line-clamp-2 mt-0.5 leading-tight">{meta.description}</span>
+                            </div>
+                            <div className="flex justify-between items-center mt-2">
+                              <span className="text-xs font-black text-yellow-400">{(combo.price).toLocaleString('vi-VN')} đ</span>
+                              <div className="flex items-center gap-1.5">
+                                <button 
+                                  disabled={qty === 0}
+                                  onClick={() => handleDecreaseCombo(combo)}
+                                  className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
+                                    qty === 0 ? 'bg-neutral-800 text-neutral-600 cursor-not-allowed' : 'bg-white/5 hover:bg-white/10 border border-white/10 cursor-pointer active:scale-95'
+                                  }`}
+                                >
+                                  -
+                                </button>
+                                <span className="text-xs font-mono font-bold text-white w-4 text-center">{qty}</span>
+                                <button 
+                                  onClick={() => handleIncreaseCombo(combo)}
+                                  className="w-5 h-5 rounded-full bg-[#E61E2A] text-white hover:bg-red-700 flex items-center justify-center text-xs font-bold cursor-pointer transition-all active:scale-95"
+                                >
+                                  +
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                );
+              })()}
+            </div>
+          </div>
+        </div>
+      )}
 
       <Footer />
 

@@ -1,0 +1,391 @@
+[ {
+  "durationMinutes" : 110,
+  "medias" : [ {
+    "isPrimary" : true,
+    "sortOrder" : 1,
+    "type" : "POSTER",
+    "title" : "KeAnDanh Poster",
+    "url" : "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/KeAnDanh_Poster.jpg"
+  }, {
+    "isPrimary" : false,
+    "sortOrder" : 2,
+    "type" : "TRAILER",
+    "title" : "KeAnDanh Trailer",
+    "url" : "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/KeAnDanh_Trailer.mp4"
+  } ],
+  "releaseDate" : "2023-08-25",
+  "genres" : [ "Hành động", "Kịch tính" ],
+  "description" : "Lâm - một cựu giang hồ ẩn danh muốn sống yên bình bên gia đình, nhưng số phận đẩy anh vào một cuộc chiến sinh tử để cứu con gái.",
+  "ageRating" : "T13",
+  "countries" : [ "VN" ],
+  "title" : "Kẻ Ẩn Danh",
+  "status" : "NOW_SHOWING"
+}, {
+  "durationMinutes" : 125,
+  "medias" : [ {
+    "isPrimary" : true,
+    "sortOrder" : 1,
+    "type" : "POSTER",
+    "title" : "MortalKombat2 Poster",
+    "url" : "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/MortalKombat2_Poster.jpg"
+  }, {
+    "isPrimary" : false,
+    "sortOrder" : 2,
+    "type" : "TRAILER",
+    "title" : "MortalKombat2 Trailer",
+    "url" : "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/MortalKombat2_Trailer.mp4"
+  } ],
+  "releaseDate" : "2025-10-24",
+  "genres" : [ "Hành động", "Viễn tưởng" ],
+  "description" : "Cuộc chiến giành số phận Earthrealm tiếp tục diễn ra với những võ sĩ huyền thoại chống lại các thế lực Outworld.",
+  "ageRating" : "T18",
+  "countries" : [ "US" ],
+  "title" : "Mortal Kombat 2",
+  "status" : "NOW_SHOWING"
+}, {
+  "durationMinutes" : 95,
+  "medias" : [ {
+    "isPrimary" : true,
+    "sortOrder" : 1,
+    "type" : "POSTER",
+    "title" : "MuaDo Poster",
+    "url" : "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/MuaDo_Poster.jpg"
+  }, {
+    "isPrimary" : false,
+    "sortOrder" : 2,
+    "type" : "TRAILER",
+    "title" : "MuaDo Trailer",
+    "url" : "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/MuaDo_Trailer.mp4"
+  } ],
+  "releaseDate" : "2024-04-30",
+  "genres" : [ "Tình cảm", "Chiến tranh" ],
+  "description" : "Tác phẩm nghệ thuật đầy bi tráng về tình yêu và lòng quả cảm trong những năm tháng chiến tranh khốc liệt.",
+  "ageRating" : "T13",
+  "countries" : [ "VN" ],
+  "title" : "Mưa Đỏ",
+  "status" : "NOW_SHOWING"
+}, {
+  "durationMinutes" : 105,
+  "medias" : [ {
+    "isPrimary" : true,
+    "sortOrder" : 1,
+    "type" : "POSTER",
+    "title" : "ThanhGuongDietQuy Poster",
+    "url" : "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/ThanhGuongDietQuy_Poster.gif"
+  }, {
+    "isPrimary" : false,
+    "sortOrder" : 2,
+    "type" : "TRAILER",
+    "title" : "ThanhGuongDietQuy Trailer",
+    "url" : "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/ThanhGuongDietQuy_Trailer.mp4"
+  } ],
+  "releaseDate" : "2024-02-23",
+  "genres" : [ "Hoạt hình", "Hành động" ],
+  "description" : "Tanjirou cùng các trụ cột bước vào cuộc chiến sinh tử chống lại chúa quỷ Muzan trong pháo đài vô tận.",
+  "ageRating" : "T16",
+  "countries" : [ "JP" ],
+  "title" : "Thanh Gươm Diệt Quỷ",
+  "status" : "NOW_SHOWING"
+}, {
+  "durationMinutes" : 100,
+  "medias" : [ {
+    "isPrimary" : true,
+    "sortOrder" : 1,
+    "type" : "POSTER",
+    "title" : "TruyTimLongDienHuong Poster",
+    "url" : "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/TruyTimLongDienHuong_Poster.jpg"
+  }, {
+    "isPrimary" : false,
+    "sortOrder" : 2,
+    "type" : "TRAILER",
+    "title" : "TruyTimLongDienHuong Trailer",
+    "url" : "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/TruyTimLongDienHuong_Trailer.mp4"
+  } ],
+  "releaseDate" : "2024-06-01",
+  "genres" : [ "Phiêu lưu", "Kịch tính" ],
+  "description" : "Cuộc phiêu lưu mạo hiểm tìm kiếm báu vật vô giá Long Diên Hương dưới đáy biển sâu thẳm.",
+  "ageRating" : "P",
+  "countries" : [ "CN" ],
+  "title" : "Truy Tìm Long Diên Hương",
+  "status" : "NOW_SHOWING"
+}, {
+  "durationMinutes" : 101,
+  "medias" : [ {
+    "isPrimary" : true,
+    "sortOrder" : 1,
+    "type" : "POSTER",
+    "title" : "SAO Progressive Poster",
+    "url" : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ7-6TbT5SwzJt4e3085ccNhHNddbdKY2MEt44CXpF5ZA&s=10"
+  }, {
+    "isPrimary" : false,
+    "sortOrder" : 2,
+    "type" : "TRAILER",
+    "title" : "SAO Progressive Trailer",
+    "url" : "https://vs-prodamdfandango.akamaized.net/out/v1/b8926cbbb6524b64b320ecd281f84f4e/24179244572d48768920647994272718/55cfc6748196457d965dfd98aa2d46b8/d18057147c904ac6acda75542d2a2d01/1af7b8b9f8ca4653ae82f69b3af973ab/index_1.m3u8"
+  } ],
+  "releaseDate" : "2026-06-15",
+  "genres" : [ "Hoạt hình", "Hành động" ],
+  "description" : "Lấy bối cảnh hai tháng sau khi thế giới ảo tử thần bắt đầu, phim xoay quanh hành trình của Kirito và Asuna khám phá tầng 4 của pháo đài Aincrad cùng môi trường bí ẩn và các con trùm khó nhằn.",
+  "ageRating" : "T13",
+  "countries" : [ "JP" ],
+  "title" : "Sword Art Online The Movie: Progressive Scherzo of Deep Night",
+  "status" : "NOW_SHOWING"
+}, {
+  "durationMinutes" : 169,
+  "medias" : [ {
+    "isPrimary" : true,
+    "sortOrder" : 1,
+    "type" : "POSTER",
+    "title" : "Hố Đen Tử Thần – Interstellar Poster",
+    "url" : "https://motchilltv.pm/wp-content/uploads/2025/03/rct7HdAfPyvSqbr4H86b6z10tCE-200x300.jpg"
+  }, {
+    "isPrimary" : false,
+    "sortOrder" : 2,
+    "type" : "TRAILER",
+    "title" : "Hố Đen Tử Thần – Interstellar Trailer",
+    "url" : "https://www.youtube.com/watch?v=QqSp_dwslro"
+  } ],
+  "releaseDate" : "2026-06-20",
+  "genres" : [ "Hành động", "Viễn tưởng", "Tình cảm", "Phiêu lưu" ],
+  "description" : "Hố Đen Tử Thần (Interstellar) là một bộ phim khoa học viễn tưởng kinh điển của đạo diễn Christopher Nolan, xoay quanh câu chuyện đầy bi kịch về sự tồn vong của loài người. Trái Đất, nơi chôn rau cắt rốn của nhân loại, đang dần dần chìm vào vực thẳm hủy diệt. Mùa màng chết lụi, dịch bệnh lan tràn, thực phẩm khanhiếm, loài người đứng trước bờ vực của tuyệt chủng.\n\nChính trong bối cảnh ấy, phi hành gia Cooper cùng với đồng đội Amelia và các thành viên của phi hành đoàn Eagle Program đã lên đường một chuyến hành trình nguy hiểm: Bên ngoài không gian, để tìm kiếm một hành tinh mới cho loài người sinh sống. Mục tiêu của họ là tìm ra một hành tinh mang đầy đủ điều kiện để sinh tồn, một nơi có thể mang lại hy vọng cho nhân loại khỏi hoàn cảnh diệt vong. Dọc theo hành trình, Cooper và phi hành đoàn phải đối mặt với vô vàn thử thách. Cuộc hành trình xuyên không gian dài, đầy rẫy hiểm nguy từ lực hấp dẫn của các thiên thể đến những giông biến trời vũ trụ. Nhưng vượt lên trên tất cả là nỗi nhớ về gia đình và niềm tin vào một tương lai tươi sáng.\n\nTrong khi đó, Amelia, người tình đồng đội của Cooper, phát hiện ra một bí mật chưa từng được tiết lộ về Mặt Trời và thời không. Nhờ vào sự hiểu biết mới về vũ trụ, Cooper và Amelia cùng nhau tìm ra lời giải đáp cho một bí ẩn có thể mang đến thay đổi lớn đối với nhân loại.\n\nPhim “Interstellar” không chỉ là một tác phẩm điện ảnh tuyệt vời về không gian và thời gian, mà còn là một lời nhắn nhủ về tình yêu gia đình, hy vọng và sức mạnh của con người. Tóm lại, “Hố Đen Tử Thần” là một tác phẩm bất hủ thách thức suy nghĩ của người xem về vũ trụ và cuộc sống.",
+  "ageRating" : null,
+  "countries" : [ "US" ],
+  "title" : "Hố Đen Tử Thần – Interstellar",
+  "status" : "COMING_SOON"
+}, {
+  "durationMinutes" : 132,
+  "medias" : [ {
+    "isPrimary" : true,
+    "sortOrder" : 1,
+    "type" : "POSTER",
+    "title" : "Ký sinh trùng Poster",
+    "url" : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ5yBEK3snF3bqFKQ5Q3ZbCbMLDgWChw3MUYpd3hclnAg&s=10"
+  }, {
+    "isPrimary" : false,
+    "sortOrder" : 2,
+    "type" : "TRAILER",
+    "title" : "Ký sinh trùng Trailer",
+    "url" : "https://www.youtube.com/watch?v=o3ESQWArU2w"
+  } ],
+  "releaseDate" : "2026-06-17",
+  "genres" : [ "Hành động", "Kịch tính", "Chiến tranh" ],
+  "description" : "Ra mắt vào năm 2019, Ký Sinh Trùng là bộ phim thuộc thể loại tâm lý, giật gân, pha chút hài đen, đến từ nền điện ảnh Hàn Quốc. Dưới bàn tay đạo diễn bậc thầy Bong Joon-ho, bộ phim không chỉ gây chấn động tại Liên hoan phim Cannes mà còn làm nên lịch sử khi trở thành tác phẩm châu Á đầu tiên giành giải Oscar Phim xuất sắc nhất.\nKý Sinh Trùng kể về hai gia đình thuộc hai tầng lớp hoàn toàn đối lập trong xã hội — một bên nghèo túng, sống chật vật dưới tầng hầm ẩm thấp, một bên giàu sang, sống trong căn biệt thự hiện đại bậc nhất. Từng chi tiết, từng khung hình trong phim đều được sắp đặt tinh tế, mở ra một thế giới tưởng chừng hài hước nhưng ẩn chứa sự căng thẳng ngột ngạt, nơi lòng tham, sự phân tầng giai cấp và bản năng sinh tồn được phơi bày trần trụi.\n\nĐiểm đặc trưng của Ký Sinh Trùng nằm ở cách dẫn dắt câu chuyện lắt léo, không thể đoán trước. Nhân vật được xây dựng sống động với những chuyển biến tâm lý sâu sắc. Một trong những cảnh phim đáng nhớ là khi gia đình nghèo len lỏi vào cuộc sống của gia đình giàu — vừa kịch tính vừa nghẹt thở, hé lộ một loạt sự kiện không ai ngờ tới.\n\nTác phẩm là lời ẩn dụ sắc bén về bất bình đẳng xã hội, khi \"ký sinh\" không chỉ là sự sống bám mà còn là bản chất của những mối quan hệ trong xã hội hiện đại. Đằng sau những tình huống tưởng như hài hước là sự châm biếm sâu cay, buộc người xem phải suy ngẫm về ranh giới giữa thiện và ác, giữa con người với nhau.",
+  "ageRating" : null,
+  "countries" : [ "VN" ],
+  "title" : "Ký sinh trùng",
+  "status" : "COMING_SOON"
+}, {
+  "durationMinutes" : 181,
+  "medias" : [ {
+    "isPrimary" : true,
+    "sortOrder" : 1,
+    "type" : "POSTER",
+    "title" : "Oppenheimer Poster",
+    "url" : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTcDMdoWIoLFLA8hnBR4qW3SZcteSusRBBwOxz5uDg5cw&s=10"
+  }, {
+    "isPrimary" : false,
+    "sortOrder" : 2,
+    "type" : "TRAILER",
+    "title" : "Oppenheimer Trailer",
+    "url" : "https://www.youtube.com/watch?v=uYPbbksJxIg"
+  } ],
+  "releaseDate" : "2026-06-20",
+  "genres" : [ "Hành động", "Kịch tính", "Viễn tưởng", "Chiến tranh" ],
+  "description" : "J. Robert Oppenheimer là một trong những nhân vật lịch sử quan trọng nhất của thế kỷ 20, người đã đóng vai trò quyết định trong việc phát triển bom nguyên tử trong Thế Chiến II. Với sự tham gia của Cillian Murphy, bộ phim về Oppenheimer được sản xuất vào năm 2023 và hứa hẹn sẽ đưa khán giả vào một chuyến hành trình đầy cảm xúc và suy tư.\n\nVới sự tham gia của Cillian Murphy, bộ phim về Oppenheimer được sản xuất vào năm 2023 và hứa hẹn sẽ đưa khán giả vào một chuyến hành trình đầy cảm xúc và suy tư. Được biết đến với tư duy sắc bén và trí tuệ vượt trội, J. Robert Oppenheimer là một nhà vật lý hạt nhân xuất sắc. Ông đã đóng vai trò quan trọng trong dự án Manhattan - dự án quy mô lớn nhất trong lịch sử của Hoa Kỳ để phát triển bom nguyên tử.\n\nÔng đã đóng vai trò quan trọng trong dự án Manhattan - dự án quy mô lớn nhất trong lịch sử của Hoa Kỳ để phát triển bom nguyên tử. Bằng sự thông minh và kiến thức chuyên môn sâu rộng, Oppenheimer đã đưa dự án này tới thành công vượt bậc, nhưng cũng với nỗi ám ảnh và hối tiếc về hậu quả kinh khủng mà bom nguyên tử mang lại.\n\nBộ phim về Oppenheimer không chỉ là một câu chuyện về sự nghiệp và thành công của một nhà khoa học tài năng, mà còn là câu chuyện về những đau thương và tâm trạng phức tạp đằng sau mỗi quyết định. Cillian Murphy, với sự diễn xuất đầy tinh tế và sâu sắc, đã tái hiện lại hình ảnh của Oppenheimer một cách rất đằng sau lưng, khiến khán giả cảm nhận được sự đau đớn và nổi loạn trong tâm hồn của nhà vật lý vĩ đại này.",
+  "ageRating" : null,
+  "countries" : [ "US" ],
+  "title" : "Oppenheimer",
+  "status" : "COMING_SOON"
+}, {
+  "durationMinutes" : 163,
+  "medias" : [ {
+    "isPrimary" : true,
+    "sortOrder" : 1,
+    "type" : "POSTER",
+    "title" : "Tội phạm nhân bản 2049 Poster",
+    "url" : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQM1A0B8CWvV0UorLPBIyqVhGP12Ri0LGXQsezpetEUKw&s=10"
+  }, {
+    "isPrimary" : false,
+    "sortOrder" : 2,
+    "type" : "TRAILER",
+    "title" : "Tội phạm nhân bản 2049 Trailer",
+    "url" : "https://www.youtube.com/watch?v=gCcx85zbxz4"
+  } ],
+  "releaseDate" : "2026-06-25",
+  "genres" : [ "Hành động", "Kịch tính", "Viễn tưởng", "Chiến tranh", "Phiêu lưu" ],
+  "description" : "Blade Runner 2049\nMột chàng trai trẻ khám phá ra bí mật khiến xã hội rơi vào cảnh hỗn mang. Anh lên đường đi tìm một người khác đã mất tích cách đây ba mươi năm, để rồi cả hai cùng bước vào hành trình cứu thế giới.\n\n35 năm sau ngày phần đầu tiên ra mắt, Blade Runner trở lại với những gương mặt mới, câu chuyện mới, đầy hứa hẹn vẫn sẽ giữ được cái “chất” khiến thương hiệu này trở thành tác phẩm kinh điển trong lịch sử điện ảnh. Nhà sản xuất vừa tung ra trailer đầu tiên của phim do bộ đôi Ridley Scott - sản xuất và Denis Villeneuve - đạo diễn với vô số tình tiết bất ngờ có thể hứa hẹn đây là sẽ bom tấn đáng để chúng ta ra rạp thưởng thức.\n\nPhim được xem là tác phẩm kinh điển của thể loại khoa học viễn tưởng.",
+  "ageRating" : null,
+  "countries" : [ "US" ],
+  "title" : "Tội phạm nhân bản 2049",
+  "status" : "COMING_SOON"
+}, {
+  "durationMinutes" : 1,
+  "medias" : [ {
+    "isPrimary" : true,
+    "sortOrder" : 1,
+    "type" : "POSTER",
+    "title" : "http://localhost:5173/admin/movies Poster",
+    "url" : "http://localhost:5173/admin/movies"
+  }, {
+    "isPrimary" : false,
+    "sortOrder" : 2,
+    "type" : "TRAILER",
+    "title" : "http://localhost:5173/admin/movies Trailer",
+    "url" : "http://localhost:5173/admin/movies"
+  } ],
+  "releaseDate" : "2026-06-17",
+  "genres" : [ "Hành động", "Kịch tính", "Viễn tưởng", "Tình cảm", "Chiến tranh", "Hoạt hình", "Phiêu lưu" ],
+  "description" : "http://localhost:5173/admin/movieshttp://localhost:5173/admin/movieshttp://localhost:5173/admin/movieshttp://localhost:5173/admin/movies",
+  "ageRating" : "P",
+  "countries" : [ "VN", "US", "JP", "CN" ],
+  "title" : "http://localhost:5173/admin/movies",
+  "status" : "NOW_SHOWING"
+}, {
+  "durationMinutes" : 116,
+  "medias" : [ {
+    "isPrimary" : true,
+    "sortOrder" : 1,
+    "type" : "POSTER",
+    "title" : "Cuộc Đổ Bộ Bí Ẩn Poster",
+    "url" : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR7-L4OOvyK-kRsQmWnekJQSIulwgEBayYTnX-xr3YQlg&s=10"
+  }, {
+    "isPrimary" : false,
+    "sortOrder" : 2,
+    "type" : "TRAILER",
+    "title" : "Cuộc Đổ Bộ Bí Ẩn Trailer",
+    "url" : "https://www.youtube.com/watch?v=tFMo3UJ4B4g"
+  } ],
+  "releaseDate" : "2026-06-17",
+  "genres" : [ "Hành động", "Viễn tưởng", "Phiêu lưu" ],
+  "description" : "Giáo sư Ngôn ngữ học Louise Banks dẫn đầu một nhóm nghiên cứu ưu tú khi tàu vũ trụ khổng lồ chạm xuống tại 12 địa điểm trên toàn thế giới. Khi các quốc gia tăng tốc trên bờ vực của Chiến tranh toàn cầu, các ngân hàng và phi hành đoàn của cô phải chạy đua với thời gian để tìm cách giao tiếp với khách truy cập ngoài hành tinh. Hy vọng sẽ làm sáng tỏ bí ẩn, cô có một cơ hội có thể đe dọa cuộc sống của mình và có thể là tất cả mọi người.",
+  "ageRating" : null,
+  "countries" : [ "US" ],
+  "title" : "Cuộc Đổ Bộ Bí Ẩn",
+  "status" : "COMING_SOON"
+}, {
+  "durationMinutes" : 136,
+  "medias" : [ {
+    "isPrimary" : true,
+    "sortOrder" : 1,
+    "type" : "POSTER",
+    "title" : "The Matrix Poster",
+    "url" : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSFLr71r0vAybRg9z9g9vze7AHaKHeLySDRxG2Qc_zfgw&s=10"
+  }, {
+    "isPrimary" : false,
+    "sortOrder" : 2,
+    "type" : "TRAILER",
+    "title" : "The Matrix Trailer",
+    "url" : "https://www.youtube.com/watch?v=vKQi3bBA1y8"
+  } ],
+  "releaseDate" : "2026-06-16",
+  "genres" : [ "Hành động", "Kịch tính" ],
+  "description" : "The Matrix (MaTrận) là bộ phim khoa học giả tưởng hấp dẫn với câu chuyện về tương lai đầy bí ẩn và hấp dẫn. Bộ phim được sản xuất vào năm 1999 và đã đạt được sự thành công lớn trên toàn thế giới. Bài viết này sẽ giới thiệu đến bạn đọc về nội dung cuốn phim độc đáo này.\n\nBài viết này sẽ giới thiệu đến bạn đọc về nội dung cuốn phim độc đáo này. The Matrix kể về cuộc sống của Thomas, còn được gọi là Neo, một hacker tài năng luôn cảm thấy có điều gì đó khác biệt về thế giới thực xung quanh mình. Mọi thứ thay đổi khi anh gặp được Morpheus, một người đàn ông bí ẩn tự xưng có khả năng mở ra sự thật về thế giới hỗn loạn mà chúng ta đang sống trong đó.\n\nMorpheus tiết lộ cho Neo rằng thế giới mà mọi người biết đến và tin rằng đó là thực chất chỉ là một chương trình máy tính mạnh mẽ mà những máy móc đã sử dụng để kiểm soát con người. Chỉ có một người có khả năng phá đảo Ma trận, và tất cả những người sống sót cuối cùng và những nhân viên của Ma trận đều đang tìm kiếm người đó. Và người đó không ai khác chính là Neo.\n\nVà người đó không ai khác chính là Neo. The Matrix là sự kết hợp hoàn hảo giữa kịch bản độc đáo, hình ảnh đẹp mắt và diễn xuất tuyệt vời của các diễn viên, đặc biệt là Keanu Reeves trong vai Neo. Bộ phim đã để lại dấu ấn sâu đậm trong lòng của khán giả và trở thành một tác phẩm vĩ đại của thể loại khoa học giả tưởng.",
+  "ageRating" : null,
+  "countries" : [ "US" ],
+  "title" : "The Matrix",
+  "status" : "COMING_SOON"
+}, {
+  "durationMinutes" : 175,
+  "medias" : [ {
+    "isPrimary" : true,
+    "sortOrder" : 1,
+    "type" : "POSTER",
+    "title" : "Bố Già Poster",
+    "url" : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRg8ZBBUbkiDl8y-uQAt8OyUKjcUXnhMvEnMqGL7F_ebw&s=10"
+  }, {
+    "isPrimary" : false,
+    "sortOrder" : 2,
+    "type" : "TRAILER",
+    "title" : "Bố Già Trailer",
+    "url" : "https://www.youtube.com/watch?v=UaVTIH8mujA"
+  } ],
+  "releaseDate" : "2026-06-20",
+  "genres" : [ "Hành động", "Kịch tính", "Tình cảm" ],
+  "description" : "The Godfather\n\n\"Bố Già\" - bộ phim kinh điển không chỉ góp phần định hình thể loại phim tội phạm mà còn vang danh qua các thế hệ khán giả. Được đạo diễn bởi talanted Francis Ford Coppola và ra mắt vào năm 1972, Bố Già đã trở thành một biểu tượng với dàn diễn viên nổi tiếng như Marlon Brando, Al Pacino, James Caan. Câu chuyện bắt đầu tại một đám cưới, nơi khán giả được giới thiệu với Don Vito Corleone - một ông trùm Mafia lừng danh tại New York. Với khả năng thuyết phục và quyền lực, Don Corleone được tôn trọng và sợ hãi trong cộng đồng ngầm. Con trai út của ông, Michael, một cựu chiến binh trở về và dần bị cuốn vào gia đình Mafia mặc dù anh không muốn dính líu vào thế giới đen tối này. Điểm đặc biệt của Bố Già chính là cách thể hiện một cách chân thực và tinh tế những mặt tối của xã hội. Phim khắc họa một cách không lóa mắt cuộc sống ngầm, sự đau lòng khi phải chọn lựa giữa gia đình và công lý, cũng như mưu mô, tham vọng và đau buồn. Tất cả được đan xen một cách khéo léo, tạo nên một bức tranh tăm tối nhưng đầy sức hút. Marlon Brando và Al Pacino đã thể hiện vai diễn của mình một cách xuất sắc, đem lại sự thuyết phục và độ chân thực cho bộ phim. Sức lan tỏa và sức mạnh của họ vượt ra ngoài màn ảnh và in sâu vào tâm trí của người xem, tạo nên những dấu ấn khó phai. \"Bố Già\" không chỉ là một bộ phim thú vị với những tình tiết gay cấn và bất ngờ, mà còn là một tác phẩm nghệ thuật có giá trị về cả mặt nghệ thuật và xã hội. Khán giả sẽ được đắm chìm vào câu chuyện, cảm nhận được tất cả những cảm xúc từ hạnh phúc, đau khổ cho đến tuyệt vọng. Với những đề cập về quyền lực, tình thân, và bản chất con người, \"Bố Già\" chắc chắn là một tác phẩm không thể bỏ lỡ đối với yêu điện ảnh.",
+  "ageRating" : null,
+  "countries" : [ "US" ],
+  "title" : "Bố Già",
+  "status" : "COMING_SOON"
+}, {
+  "durationMinutes" : 151,
+  "medias" : [ {
+    "isPrimary" : true,
+    "sortOrder" : 1,
+    "type" : "POSTER",
+    "title" : "Điệp Vụ Boston Poster",
+    "url" : "https://m.media-amazon.com/images/M/MV5BMTI1MTY2OTIxNV5BMl5BanBnXkFtZTYwNjQ4NjY3._V1_FMjpg_UX1000_.jpg"
+  }, {
+    "isPrimary" : false,
+    "sortOrder" : 2,
+    "type" : "TRAILER",
+    "title" : "Điệp Vụ Boston Trailer",
+    "url" : "https://www.youtube.com/watch?v=iojhqm0JTW4"
+  } ],
+  "releaseDate" : "2026-06-24",
+  "genres" : [ "Hành động", "Kịch tính", "Chiến tranh" ],
+  "description" : "The Departed\n\nMột cảnh sát bí mật và một nốt ruồi trong cảnh sát cố gắng xác định nhau trong khi xâm nhập vào một băng đảng Ailen ở Nam Boston.",
+  "ageRating" : null,
+  "countries" : [ "US" ],
+  "title" : "Điệp Vụ Boston",
+  "status" : "COMING_SOON"
+}, {
+  "durationMinutes" : 127,
+  "medias" : [ {
+    "isPrimary" : true,
+    "sortOrder" : 1,
+    "type" : "POSTER",
+    "title" : "Se7en Poster",
+    "url" : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQQ7hgYQDGx4B4qlryk2-EUhDUGn0a_EzflhOrc3Qv-iw&s=10"
+  }, {
+    "isPrimary" : false,
+    "sortOrder" : 2,
+    "type" : "TRAILER",
+    "title" : "Se7en Trailer",
+    "url" : "https://www.youtube.com/watch?v=KPOuJGkpblk"
+  } ],
+  "releaseDate" : "2026-06-28",
+  "genres" : [ "Hành động", "Kịch tính", "Phiêu lưu" ],
+  "description" : "Một bộ phim về hai thám tử giết người '(Morgan Freeman và Brad Pitt) Hunt dành cho một kẻ giết người hàng loạt, người biện minh cho tội ác của mình như là sự vắng mặt cho sự thiếu hiểu biết của thế giới của bảy tội lỗi chết người. Bộ phim đưa chúng ta đến từ phần còn lại bị tra tấn của một nạn nhân của một nạn nhân tiếp theo là \"John Doe\" (Kevin Spacey) của Sociopathic (Kevin Spacey) để khám phá Somerset và Mills - một tội lỗi tại một thời điểm. Sin of Gluttony đến trước và khả năng khủng khiếp của kẻ giết người được thể hiện bằng đồ họa trong bóng tối và khuất phục đặc trưng của phim Noir. Các cuộc tấn công dày dạn và nuôi cấy",
+  "ageRating" : null,
+  "countries" : [ "US" ],
+  "title" : "Se7en",
+  "status" : "COMING_SOON"
+}, {
+  "durationMinutes" : 130,
+  "medias" : [ {
+    "isPrimary" : true,
+    "sortOrder" : 1,
+    "type" : "POSTER",
+    "title" : "Hồi ức kẻ sát nhân Poster",
+    "url" : "https://en.wikipedia.org/wiki/Memories_of_Murder"
+  }, {
+    "isPrimary" : false,
+    "sortOrder" : 2,
+    "type" : "TRAILER",
+    "title" : "Hồi ức kẻ sát nhân Trailer",
+    "url" : "https://www.youtube.com/watch?v=0n_HQwQU8ls"
+  } ],
+  "releaseDate" : "2026-06-23",
+  "genres" : [ "Hành động", "Kịch tính" ],
+  "description" : "Che giấu quá khứ giết người của chính mình, người đàn ông mắc bệnh Alzheimer phải bảo vệ con gái mình khỏi tên bạn trai vì nghi ngờ hắn cũng là sát nhân hàng loạt.",
+  "ageRating" : null,
+  "countries" : [ "JP" ],
+  "title" : "Hồi ức kẻ sát nhân",
+  "status" : "COMING_SOON"
+}, {
+  "durationMinutes" : 123,
+  "medias" : [ {
+    "isPrimary" : true,
+    "sortOrder" : 1,
+    "type" : "POSTER",
+    "title" : "TEST Poster",
+    "url" : "http://localhost:5173/admin/movies"
+  } ],
+  "releaseDate" : "2026-06-17",
+  "genres" : [ "Tình cảm", "Chiến tranh" ],
+  "description" : null,
+  "ageRating" : "P",
+  "countries" : [ "CN" ],
+  "title" : "TEST",
+  "status" : "NOW_SHOWING"
+} ]

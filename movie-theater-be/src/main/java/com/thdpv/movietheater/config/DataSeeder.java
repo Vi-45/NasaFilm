@@ -34,6 +34,10 @@ import com.thdpv.movietheater.cinema.repository.CinemaRoomRepository;
 import com.thdpv.movietheater.cinema.service.CinemaService;
 import java.time.LocalDate;
 import java.util.List;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 
 @Component
 public class DataSeeder implements CommandLineRunner {
@@ -51,6 +55,8 @@ public class DataSeeder implements CommandLineRunner {
     private final CinemaRepository cinemaRepository;
     private final CinemaRoomRepository cinemaRoomRepository;
     private final CinemaService cinemaService;
+    private final ObjectMapper objectMapper;
+    private final ResourceLoader resourceLoader;
 
     @Value("${app.auth.seed.admin-email}")
     private String adminEmail;
@@ -89,7 +95,9 @@ public class DataSeeder implements CommandLineRunner {
             org.springframework.jdbc.core.JdbcTemplate jdbcTemplate,
             CinemaRepository cinemaRepository,
             CinemaRoomRepository cinemaRoomRepository,
-            CinemaService cinemaService) {
+            CinemaService cinemaService,
+            ObjectMapper objectMapper,
+            ResourceLoader resourceLoader) {
         this.roleRepository = roleRepository;
         this.userRepository = userRepository;
         this.userRoleRepository = userRoleRepository;
@@ -101,6 +109,8 @@ public class DataSeeder implements CommandLineRunner {
         this.cinemaRepository = cinemaRepository;
         this.cinemaRoomRepository = cinemaRoomRepository;
         this.cinemaService = cinemaService;
+        this.objectMapper = objectMapper;
+        this.resourceLoader = resourceLoader;
     }
 
     @Override
@@ -549,9 +559,49 @@ public class DataSeeder implements CommandLineRunner {
         }
     }
 
+    public static class MovieJsonDto {
+        private String title;
+        private String description;
+        private int durationMinutes;
+        private String releaseDate;
+        private String status;
+        private List<String> genres;
+        private List<String> countries;
+        private List<MovieMediaData> medias;
+        private String ageRating;
+
+        public MovieJsonDto() {}
+
+        public String getTitle() { return title; }
+        public void setTitle(String title) { this.title = title; }
+
+        public String getDescription() { return description; }
+        public void setDescription(String description) { this.description = description; }
+
+        public int getDurationMinutes() { return durationMinutes; }
+        public void setDurationMinutes(int durationMinutes) { this.durationMinutes = durationMinutes; }
+
+        public String getReleaseDate() { return releaseDate; }
+        public void setReleaseDate(String releaseDate) { this.releaseDate = releaseDate; }
+
+        public String getStatus() { return status; }
+        public void setStatus(String status) { this.status = status; }
+
+        public List<String> getGenres() { return genres; }
+        public void setGenres(List<String> genres) { this.genres = genres; }
+
+        public List<String> getCountries() { return countries; }
+        public void setCountries(List<String> countries) { this.countries = countries; }
+
+        public List<MovieMediaData> getMedias() { return medias; }
+        public void setMedias(List<MovieMediaData> medias) { this.medias = medias; }
+
+        public String getAgeRating() { return ageRating; }
+        public void setAgeRating(String ageRating) { this.ageRating = ageRating; }
+    }
+
     private void seedMovies() {
-        // Tự động chuyển đổi các phim cũ có status "LIVE" thành "NOW_SHOWING" để đồng
-        // bộ hóa
+        // Tự động chuyển đổi các phim cũ có status "LIVE" thành "NOW_SHOWING" để đồng bộ hóa
         List<Movie> existingMovies = movieRepository.findAll();
         for (Movie m : existingMovies) {
             if ("LIVE".equalsIgnoreCase(m.getStatus())) {
@@ -561,109 +611,35 @@ public class DataSeeder implements CommandLineRunner {
             }
         }
 
-        // 1. Kẻ Ẩn Danh
-        createMovieIfNotExists(
-                "Kẻ Ẩn Danh",
-                "Lâm - một cựu giang hồ ẩn danh muốn sống yên bình bên gia đình, nhưng số phận đẩy anh vào một cuộc chiến sinh tử để cứu con gái.",
-                110,
-                LocalDate.of(2023, 8, 25),
-                "NOW_SHOWING",
-                List.of("Hành động", "Kịch tính"),
-                List.of("VN"),
-                List.of(
-                        new MovieMediaData("https://java-06.s3.ap-southeast-1.amazonaws.com/poster/KeAnDanh_Poster.jpg",
-                                "POSTER", "KeAnDanh Poster", true, 1),
-                        new MovieMediaData(
-                                "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/KeAnDanh_Trailer.mp4",
-                                "TRAILER", "KeAnDanh Trailer", false, 2)),
-                "T13");
-
-        // 2. Mortal Kombat 2
-        createMovieIfNotExists(
-                "Mortal Kombat 2",
-                "Cuộc chiến giành số phận Earthrealm tiếp tục diễn ra với những võ sĩ huyền thoại chống lại các thế lực Outworld.",
-                125,
-                LocalDate.of(2025, 10, 24),
-                "NOW_SHOWING",
-                List.of("Hành động", "Viễn tưởng"),
-                List.of("US"),
-                List.of(
-                        new MovieMediaData(
-                                "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/MortalKombat2_Poster.jpg",
-                                "POSTER", "MortalKombat2 Poster", true, 1),
-                        new MovieMediaData(
-                                "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/MortalKombat2_Trailer.mp4",
-                                "TRAILER", "MortalKombat2 Trailer", false, 2)),
-                "T18");
-
-        // 3. Mưa Đỏ
-        createMovieIfNotExists(
-                "Mưa Đỏ",
-                "Tác phẩm nghệ thuật đầy bi tráng về tình yêu và lòng quả cảm trong những năm tháng chiến tranh khốc liệt.",
-                95,
-                LocalDate.of(2024, 4, 30),
-                "NOW_SHOWING",
-                List.of("Tình cảm", "Chiến tranh"),
-                List.of("VN"),
-                List.of(
-                        new MovieMediaData("https://java-06.s3.ap-southeast-1.amazonaws.com/poster/MuaDo_Poster.jpg",
-                                "POSTER", "MuaDo Poster", true, 1),
-                        new MovieMediaData("https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/MuaDo_Trailer.mp4",
-                                "TRAILER", "MuaDo Trailer", false, 2)),
-                "T13");
-
-        // 4. Thanh Gươm Diệt Quỷ
-        createMovieIfNotExists(
-                "Thanh Gươm Diệt Quỷ",
-                "Tanjirou cùng các trụ cột bước vào cuộc chiến sinh tử chống lại chúa quỷ Muzan trong pháo đài vô tận.",
-                105,
-                LocalDate.of(2024, 2, 23),
-                "NOW_SHOWING",
-                List.of("Hoạt hình", "Hành động"),
-                List.of("JP"),
-                List.of(
-                        new MovieMediaData(
-                                "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/ThanhGuongDietQuy_Poster.gif",
-                                "POSTER", "ThanhGuongDietQuy Poster", true, 1),
-                        new MovieMediaData(
-                                "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/ThanhGuongDietQuy_Trailer.mp4",
-                                "TRAILER", "ThanhGuongDietQuy Trailer", false, 2)),
-                "T16");
-
-        // 5. Truy Tìm Long Diên Hương
-        createMovieIfNotExists(
-                "Truy Tìm Long Diên Hương",
-                "Cuộc phiêu lưu mạo hiểm tìm kiếm báu vật vô giá Long Diên Hương dưới đáy biển sâu thẳm.",
-                100,
-                LocalDate.of(2024, 6, 1),
-                "NOW_SHOWING",
-                List.of("Phiêu lưu", "Kịch tính"),
-                List.of("CN"),
-                List.of(
-                        new MovieMediaData(
-                                "https://java-06.s3.ap-southeast-1.amazonaws.com/poster/TruyTimLongDienHuong_Poster.jpg",
-                                "POSTER", "TruyTimLongDienHuong Poster", true, 1),
-                        new MovieMediaData(
-                                "https://java-06.s3.ap-southeast-1.amazonaws.com/trailer/TruyTimLongDienHuong_Trailer.mp4",
-                                "TRAILER", "TruyTimLongDienHuong Trailer", false, 2)),
-                "P");
-        // 6. Sword Art Online The Movie: Progressive Scherzo of Deep Night
-        createMovieIfNotExists(
-                "Sword Art Online The Movie: Progressive Scherzo of Deep Night",
-                "Lấy bối cảnh hai tháng sau khi thế giới ảo tử thần bắt đầu, phim xoay quanh hành trình của Kirito và Asuna khám phá tầng 4 của pháo đài Aincrad cùng môi trường bí ẩn và các con trùm khó nhằn.",
-                101,
-                LocalDate.of(2026, 6, 15),
-                "NOW_SHOWING",
-                List.of("Hoạt hình", "Hành động"),
-                List.of("JP"),
-                List.of(
-                        new MovieMediaData(
-                                "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ7-6TbT5SwzJt4e3085ccNhHNddbdKY2MEt44CXpF5ZA&s=10",
-                                "POSTER", "SAO Progressive Poster", true, 1),
-                        new MovieMediaData(
-                                "https://vs-prodamdfandango.akamaized.net/out/v1/b8926cbbb6524b64b320ecd281f84f4e/24179244572d48768920647994272718/55cfc6748196457d965dfd98aa2d46b8/d18057147c904ac6acda75542d2a2d01/1af7b8b9f8ca4653ae82f69b3af973ab/index_1.m3u8",
-                                "TRAILER", "SAO Progressive Trailer", false, 2)),
-                "T13");
+        try {
+            Resource resource = resourceLoader.getResource("classpath:movies.json");
+            if (resource.exists()) {
+                List<MovieJsonDto> movies = objectMapper.readValue(
+                        resource.getInputStream(),
+                        new TypeReference<List<MovieJsonDto>>() {}
+                );
+                
+                logger.info("Seeding {} movies from JSON configuration...", movies.size());
+                for (MovieJsonDto m : movies) {
+                    LocalDate releaseDate = m.getReleaseDate() != null ? LocalDate.parse(m.getReleaseDate()) : null;
+                    createMovieIfNotExists(
+                            m.getTitle(),
+                            m.getDescription(),
+                            m.getDurationMinutes(),
+                            releaseDate,
+                            m.getStatus(),
+                            m.getGenres() != null ? m.getGenres() : List.of(),
+                            m.getCountries() != null ? m.getCountries() : List.of(),
+                            m.getMedias() != null ? m.getMedias() : List.of(),
+                            m.getAgeRating()
+                    );
+                }
+            } else {
+                logger.warn("movies.json file not found in classpath. Skipping movie seeding.");
+            }
+        } catch (Exception e) {
+            logger.error("Failed to seed movies from movies.json: {}", e.getMessage(), e);
+        }
     }
 
     private void createMovieIfNotExists(
@@ -732,6 +708,9 @@ public class DataSeeder implements CommandLineRunner {
         boolean isPrimary;
         int sortOrder;
 
+        public MovieMediaData() {
+        }
+
         MovieMediaData(String url, String type, String title, boolean isPrimary, int sortOrder) {
             this.url = url;
             this.type = type;
@@ -739,6 +718,21 @@ public class DataSeeder implements CommandLineRunner {
             this.isPrimary = isPrimary;
             this.sortOrder = sortOrder;
         }
+
+        public String getUrl() { return url; }
+        public void setUrl(String url) { this.url = url; }
+
+        public String getType() { return type; }
+        public void setType(String type) { this.type = type; }
+
+        public String getTitle() { return title; }
+        public void setTitle(String title) { this.title = title; }
+
+        public boolean getIsPrimary() { return isPrimary; }
+        public void setIsPrimary(boolean primary) { isPrimary = primary; }
+
+        public int getSortOrder() { return sortOrder; }
+        public void setSortOrder(int sortOrder) { this.sortOrder = sortOrder; }
     }
 
     private void seedCinemasAndRooms() {

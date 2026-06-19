@@ -294,7 +294,7 @@ const AuthControls = () => {
               </Link>
 
               <Link
-                to="/stream"
+                to="/stream/history"
                 onClick={() => setIsOpen(false)}
                 className="dropdown-menu-link"
               >

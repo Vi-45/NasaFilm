@@ -21,6 +21,9 @@ const CheckoutPage = lazy(() => import('../pages/CheckoutPage'));
 const BookingConfirmedPage = lazy(() => import('../pages/BookingConfirmedPage'));
 const WatchHistoryPage = lazy(() => import('../pages/WatchHistoryPage'));
 const StreamPlayerPage = lazy(() => import('../pages/StreamPlayerPage'));
+const StreamingHomePage = lazy(() => import('../pages/StreamingHomePage'));
+const StreamingActivatePage = lazy(() => import('../pages/StreamingActivatePage'));
+const StreamingMovieDetailPage = lazy(() => import('../pages/StreamingMovieDetailPage'));
 
 const PageLoader = () => (
   <div className="min-h-screen bg-[#090b11] flex items-center justify-center">
@@ -106,7 +109,31 @@ export const HomeRoutes = () => {
           path="stream"
           element={
             <ProtectedRoute>
+              <StreamingHomePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="stream/history"
+          element={
+            <ProtectedRoute>
               <WatchHistoryPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="stream/activate"
+          element={
+            <ProtectedRoute>
+              <StreamingActivatePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="stream/movie/:id"
+          element={
+            <ProtectedRoute>
+              <StreamingMovieDetailPage />
             </ProtectedRoute>
           }
         />

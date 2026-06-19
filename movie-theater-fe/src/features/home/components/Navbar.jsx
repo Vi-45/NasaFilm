@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Bell, Menu, ShieldCheck, ChevronDown, User, Wallet, Calendar, LogOut, Star } from 'lucide-react';
+import { Bell, Menu, ShieldCheck, ChevronDown, User, Wallet, Calendar, LogOut, Star, Tv } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../../auth/hooks/useAuthContext';
 import nasaFilmLogo from '../../../shared/assets/NASAFILM.jpg';
@@ -37,8 +37,8 @@ const Navbar = () => {
         <nav className="navbar-nav">
           <Link to="/movies" className="navbar-nav-link">Phim</Link>
           <Link to="/cinemas" className="navbar-nav-link">Rạp Chiếu</Link>
-          <Link to="/offers" className="navbar-nav-link">Ưu Đãi</Link>
-          <Link to="/about" className="navbar-nav-link">Giới Thiệu</Link>
+          <Link to="/stream" className="navbar-nav-link">Xem Online</Link>
+          <Link to="/vip" className="navbar-nav-link">VIP</Link>
         </nav>
 
         <div className="navbar-actions">
@@ -291,6 +291,15 @@ const AuthControls = () => {
               >
                 <User className="h-4 w-4" />
                 <span>Thông tin cá nhân</span>
+              </Link>
+
+              <Link
+                to="/stream"
+                onClick={() => setIsOpen(false)}
+                className="dropdown-menu-link"
+              >
+                <Tv className="h-4 w-4" />
+                <span>Lịch sử xem phim</span>
               </Link>
               
               <Link

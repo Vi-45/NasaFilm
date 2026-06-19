@@ -1,0 +1,71 @@
+/* Online Streaming Management Page isolated CSS */
+
+.streaming-console-page {
+  background-color: #0f172a;
+  color: #f1f5f9;
+  border-color: #1e293b;
+}
+
+/* Local sidebar */
+.streaming-sub-sidebar {
+  background-color: #0f172a;
+  border-color: rgba(30, 41, 59, 0.6);
+}
+
+/* Metric boxes */
+.metric-box {
+  background: rgba(18, 24, 38, 0.7);
+  border-color: #1A2238;
+  transition: all 0.3s ease;
+}
+
+.metric-box:hover {
+  border-color: rgba(239, 68, 68, 0.35); /* Red/Rose border glow */
+  box-shadow: 0 0 15px rgba(239, 68, 68, 0.05);
+}
+
+/* Local input controls */
+.streaming-console-page select,
+.streaming-console-page input[type="text"],
+.streaming-console-page input[type="date"] {
+  border: 1px solid #1A2238;
+  background-color: #0F1322;
+  color: #f1f5f9;
+}
+
+.streaming-console-page select:focus,
+.streaming-console-page input[type="text"]:focus,
+.streaming-console-page input[type="date"]:focus {
+  border-color: #ef4444; /* Red focus */
+  box-shadow: 0 0 8px rgba(239, 68, 68, 0.1);
+}
+
+/* Table stylings */
+.streaming-console-page table th {
+  border-bottom: 2px solid #1A2238;
+  color: #94a3b8;
+  font-family: 'Inter', -apple-system, sans-serif;
+}
+
+.streaming-console-page table td {
+  border-bottom: 1px solid rgba(30, 41, 59, 0.4);
+}
+
+/* Modals */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.2s ease-out forwards;
+}
+
+/* Logger output panel scrollbar hiding */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

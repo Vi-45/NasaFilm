@@ -11,6 +11,7 @@ const CinemasPage = lazy(() => import('../pages/CinemasPage'));
 const UsersPage = lazy(() => import('../pages/UsersPage'));
 const VouchersPage = lazy(() => import('../pages/VouchersPage'));
 const AdminCombosPage = lazy(() => import('../pages/AdminCombosPage'));
+const OnlineStreamingManagementPage = lazy(() => import('../pages/OnlineStreamingManagementPage'));
 
 const AdminPageLoader = () => (
   <div className="flex items-center justify-center p-20">
@@ -32,6 +33,7 @@ export const AdminRoutes = () => {
           <Route path="users" element={<UsersPage />} />
           <Route path="vouchers" element={<VouchersPage />} />
           <Route path="combos" element={<AdminCombosPage />} />
+          <Route path="streaming" element={<OnlineStreamingManagementPage />} />
         </Route>
       </Routes>
     </Suspense>

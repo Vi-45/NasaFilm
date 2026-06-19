@@ -208,6 +208,33 @@ const Sidebar = ({ isOpen, onToggle, onClose }) => {
             </NavLink>
           </div>
         </div>
+
+        {/* Streaming Group */}
+        <div>
+          {isOpen && <div className="px-3 mb-2 text-[9px] font-bold tracking-wider text-gray-500 uppercase">Streaming</div>}
+          <div className="space-y-1">
+            <NavLink
+              to="/admin/streaming"
+              className={({ isActive }) =>
+                `flex items-center rounded-lg transition-all duration-200 text-xs font-semibold ${
+                  isOpen ? 'px-3 py-2 gap-3 justify-start' : 'p-2 justify-center'
+                } ${
+                  isActive
+                    ? 'bg-red-600 text-white shadow-md shadow-red-600/10'
+                    : 'text-gray-400 hover:text-white hover:bg-white/5'
+                }`
+              }
+              onClick={onClose}
+            >
+              {({ isActive }) => (
+                <>
+                  <Tv className={`w-4 h-4 shrink-0 transition-colors ${isActive ? 'text-white' : 'text-red-400'}`} />
+                  {isOpen && <span className="truncate">Quản lý Stream Online</span>}
+                </>
+              )}
+            </NavLink>
+          </div>
+        </div>
       </nav>
 
       <div className={`relative z-10 mt-auto border-t border-[#1A2238]/60 bg-black/20 transition-all duration-300 ${

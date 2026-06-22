@@ -172,11 +172,12 @@ VITE_GOOGLE_CLIENT_ID=your_google_web_client_id
 
 ## 📚 Tài liệu liên quan
 
-- [00_PROJECT_OVERVIEW.md](/F:/NasaFilm/docs/00_PROJECT_OVERVIEW.md)
-- [01_REQUIREMENTS.md](/F:/NasaFilm/docs/01_REQUIREMENTS.md)
-- [02_DATABASE_DESIGN.md](/F:/NasaFilm/docs/02_DATABASE_DESIGN.md)
-- [03_API_DESIGN.md](/F:/NasaFilm/docs/03_API_DESIGN.md)
-- [04_PROGRESS.md](/F:/NasaFilm/docs/04_PROGRESS.md)
+- [00_PROJECT_OVERVIEW.md](docs/00_PROJECT_OVERVIEW.md)
+- [01_REQUIREMENTS.md](docs/01_REQUIREMENTS.md)
+- [02_DATABASE_DESIGN.md](docs/02_DATABASE_DESIGN.md)
+- [03_API_DESIGN.md](docs/03_API_DESIGN.md)
+- [04_PROGRESS.md](docs/04_PROGRESS.md)
+- [05_TESTING_GUIDE.md](docs/05_TESTING_GUIDE.md)
 ## 📝 Trung1 da sua Ghi chu nay
 ## 📝 Trungjavateam3 da sua Ghi chu
 

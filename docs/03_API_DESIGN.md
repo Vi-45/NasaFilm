@@ -368,14 +368,387 @@ Chi dung nhom API nay khi frontend CMS can luu tung tab rieng. Neu khong, uu tie
 - Khong cho xoa phim neu phim da co `showtime`.
 - Public API khong tra ve phim `DRAFT` hoac `HIDDEN`.
 
-### 2.2. Showtimes and Seats API
+### 2.2. Room, Seat and Showtimes APIs
 
-| Method | Endpoint | Quyen truy cap | Mo ta |
-|---|---|---|---|
-| `GET` | `/api/showtimes?date=2026-06-02` | Public | Lay lich chieu theo ngay cua toan rap |
-| `GET` | `/api/showtimes?movie_id={id}` | Public | Lay lich chieu cua mot bo phim cu the |
-| `GET` | `/api/showtimes/{id}/seats` | Public | Lay so do ghe va tinh trang ghe trong/da dat cua suat chieu |
-| `POST` | `/api/showtimes` | Admin | Khoi tao suat chieu moi |
+Các API quản lý phòng chiếu, ghế vật lý, lên lịch chiếu phim và khóa ghế thời gian thực.
+
+#### 2.2.1. Room & Seat Management (Quản lý Phòng chiếu & Ghế)
+
+##### 1. Thêm phòng chiếu mới
+* **Endpoint:** `POST /api/admin/cinemas/{cinemaUuid}/rooms`
+* **Quyền truy cập:** `ADMIN`, `STAFF`
+* **Request Body (`CinemaRoomRequest`):**
+  ```json
+  {
+    "roomCode": "ROOM-IMAX",
+    "name": "Phòng chiếu IMAX",
+    "capacity": 0,
+    "roomType": "IMAX",
+    "status": "ACTIVE"
+  }
+  ```
+* **Response Success:**
+  ```json
+  {
+    "success": true,
+    "code": 201,
+    "message": "Created",
+    "data": {
+      "uuid": "88888888-8888-8888-8888-888888888888",
+      "roomCode": "ROOM-IMAX",
+      "name": "Phòng chiếu IMAX",
+      "capacity": 0,
+      "roomType": "IMAX",
+      "status": "ACTIVE"
+    },
+    "timestamp": "2026-06-22T10:50:00Z"
+  }
+  ```
+
+##### 2. Cập nhật phòng chiếu
+* **Endpoint:** `PUT /api/admin/rooms/{roomUuid}`
+* **Quyền truy cập:** `ADMIN`, `STAFF`
+* **Request Body (`CinemaRoomRequest`):**
+  ```json
+  {
+    "roomCode": "ROOM-IMAX-NEW",
+    "name": "Phòng IMAX Thượng Hạng",
+    "capacity": 84,
+    "roomType": "IMAX",
+    "status": "ACTIVE"
+  }
+  ```
+* **Response Success:**
+  ```json
+  {
+    "success": true,
+    "code": 200,
+    "message": "Thành công",
+    "data": {
+      "uuid": "88888888-8888-8888-8888-888888888888",
+      "roomCode": "ROOM-IMAX-NEW",
+      "name": "Phòng IMAX Thượng Hạng",
+      "capacity": 84,
+      "roomType": "IMAX",
+      "status": "ACTIVE"
+    },
+    "timestamp": "2026-06-22T10:50:00Z"
+  }
+  ```
+
+##### 3. Lấy danh sách phòng chiếu của rạp
+* **Endpoint:** `GET /api/cinemas/{cinemaUuid}/rooms`
+* **Quyền truy cập:** `Public`
+* **Response Success:**
+  ```json
+  {
+    "success": true,
+    "code": 200,
+    "message": "Thành công",
+    "data": [
+      {
+        "uuid": "88888888-8888-8888-8888-888888888888",
+        "roomCode": "ROOM-IMAX",
+        "name": "Phòng chiếu IMAX",
+        "capacity": 84,
+        "roomType": "IMAX",
+        "status": "ACTIVE"
+      }
+    ],
+    "timestamp": "2026-06-22T10:50:00Z"
+  }
+  ```
+
+##### 4. Sinh sơ đồ ghế tự động cho phòng chiếu
+* **Endpoint:** `POST /api/admin/rooms/{roomUuid}/seats/generate`
+* **Quyền truy cập:** `ADMIN`, `STAFF`
+* **Request Body (`GenerateSeatMapRequest` - Gửi null hoặc trống để dùng cấu hình NASA mặc định):**
+  ```json
+  {
+    "rowCount": 8,
+    "seatsPerRow": 12
+  }
+  ```
+* **Response Success:**
+  ```json
+  {
+    "success": true,
+    "code": 200,
+    "message": "Sinh sơ đồ ghế thành công",
+    "data": null,
+    "timestamp": "2026-06-22T10:50:00Z"
+  }
+  ```
+
+##### 5. Cập nhật thuộc tính/trạng thái ghế vật lý
+* **Endpoint:** `PUT /api/admin/seats/{seatUuid}`
+* **Quyền truy cập:** `ADMIN`, `STAFF`
+* **Request Body (`UpdateSeatRequest`):**
+  ```json
+  {
+    "seatTypeUuid": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+    "status": "MAINTENANCE"
+  }
+  ```
+* **Response Success:**
+  ```json
+  {
+    "success": true,
+    "code": 200,
+    "message": "Thành công",
+    "data": {
+      "uuid": "77777777-1234-5678-90ab-cdef12345678",
+      "rowName": "A",
+      "seatNumber": 5,
+      "status": "MAINTENANCE",
+      "seatTypeName": "VIP",
+      "isActive": true
+    },
+    "timestamp": "2026-06-22T10:50:00Z"
+  }
+  ```
+
+##### 6. Lấy danh sách ghế vật lý của phòng chiếu
+* **Endpoint:** `GET /api/rooms/{roomUuid}/seats`
+* **Quyền truy cập:** `Public`
+* **Response Success:**
+  ```json
+  {
+    "success": true,
+    "code": 200,
+    "message": "Thành công",
+    "data": [
+      {
+        "uuid": "77777777-1234-5678-90ab-cdef12345678",
+        "rowName": "A",
+        "seatNumber": 1,
+        "status": "ACTIVE",
+        "seatTypeName": "STANDARD",
+        "isActive": true
+      }
+    ],
+    "timestamp": "2026-06-22T10:50:00Z"
+  }
+  ```
+
+---
+
+#### 2.2.2. Showtime Management (Quản lý Suất chiếu)
+
+##### 1. Khởi tạo suất chiếu đơn lẻ
+* **Endpoint:** `POST /api/admin/showtimes`
+* **Quyền truy cập:** `ADMIN`, `STAFF`
+* **Request Body (`ShowtimeRequest`):**
+  ```json
+  {
+    "movieUuid": "55555555-4444-3333-2222-111111111111",
+    "cinemaRoomUuid": "88888888-8888-8888-8888-888888888888",
+    "startTime": "2026-06-22T19:30:00+07:00",
+    "basePrice": 85000,
+    "vipPrice": 120000,
+    "couplePrice": 160000
+  }
+  ```
+* **Response Success:**
+  ```json
+  {
+    "success": true,
+    "code": 201,
+    "message": "Created",
+    "data": {
+      "uuid": "11111111-1111-1111-1111-111111111111",
+      "movieUuid": "55555555-4444-3333-2222-111111111111",
+      "movieTitle": "Kẻ Ẩn Danh",
+      "cinemaRoomUuid": "88888888-8888-8888-8888-888888888888",
+      "cinemaRoomName": "Phòng chiếu IMAX",
+      "startTime": "2026-06-22T19:30:00+07:00",
+      "endTime": "2026-06-22T21:20:00+07:00",
+      "basePrice": 85000,
+      "vipPrice": 120000,
+      "couplePrice": 160000,
+      "status": "DRAFT"
+    },
+    "timestamp": "2026-06-22T10:50:00Z"
+  }
+  ```
+
+##### 2. Cập nhật trạng thái suất chiếu
+* **Endpoint:** `PUT /api/admin/showtimes/{id}/status?status=OPEN_FOR_BOOKING`
+* **Quyền truy cập:** `ADMIN`, `STAFF`
+* **Response Success:**
+  ```json
+  {
+    "success": true,
+    "code": 200,
+    "message": "Thành công",
+    "data": {
+      "uuid": "11111111-1111-1111-1111-111111111111",
+      "status": "OPEN_FOR_BOOKING"
+    },
+    "timestamp": "2026-06-22T10:50:00Z"
+  }
+  ```
+
+##### 3. Lấy toàn bộ suất chiếu (Dành cho quản lý)
+* **Endpoint:** `GET /api/admin/showtimes`
+* **Quyền truy cập:** `ADMIN`, `STAFF`
+* **Response Success:**
+  ```json
+  {
+    "success": true,
+    "code": 200,
+    "message": "Thành công",
+    "data": [
+      {
+        "uuid": "11111111-1111-1111-1111-111111111111",
+        "movieTitle": "Kẻ Ẩn Danh",
+        "cinemaRoomName": "Phòng chiếu IMAX",
+        "startTime": "2026-06-22T19:30:00+07:00",
+        "endTime": "2026-06-22T21:20:00+07:00",
+        "basePrice": 85000,
+        "status": "OPEN_FOR_BOOKING"
+      }
+    ],
+    "timestamp": "2026-06-22T10:50:00Z"
+  }
+  ```
+
+##### 4. Lấy danh sách suất chiếu công khai (Cho khách hàng)
+* **Endpoint:** `GET /api/showtimes`
+* **Quyền truy cập:** `Public`
+* **Response Success:**
+  *(Giống API admin nhưng chỉ trả ra các suất có trạng thái công khai: `OPEN_FOR_BOOKING`, `SOLD_OUT`, `SCHEDULED` và đã được lọc bỏ các bản ghi nháp/hủy)*
+
+##### 5. Xem trước lịch chiếu tự sinh hàng loạt
+* **Endpoint:** `POST /api/admin/showtimes/auto-generate/preview`
+* **Quyền truy cập:** `ADMIN`, `STAFF`
+* **Request Body (`AutoShowtimeRequest`):**
+  ```json
+  {
+    "startDate": "2026-06-23",
+    "endDate": "2026-06-23",
+    "cinemaUuid": "77777777-7777-7777-7777-777777777777",
+    "roomUuids": ["88888888-8888-8888-8888-888888888888"],
+    "movieUuids": ["55555555-4444-3333-2222-111111111111"],
+    "startTime": "08:00:00",
+    "endTime": "23:30:00",
+    "basePrice": 85000,
+    "vipPrice": 120000,
+    "couplePrice": 160000,
+    "intervalMinutes": 15,
+    "trailerBuffer": 10
+  }
+  ```
+* **Response Success:**
+  ```json
+  {
+    "success": true,
+    "code": 200,
+    "message": "Thành công",
+    "data": [
+      {
+        "movieUuid": "55555555-4444-3333-2222-111111111111",
+        "movieTitle": "Kẻ Ẩn Danh",
+        "cinemaRoomUuid": "88888888-8888-8888-8888-888888888888",
+        "startTime": "2026-06-23T08:00:00+07:00",
+        "endTime": "2026-06-23T09:50:00+07:00",
+        "basePrice": 85000,
+        "vipPrice": 120000,
+        "couplePrice": 160000
+      }
+    ],
+    "timestamp": "2026-06-22T10:50:00Z"
+  }
+  ```
+
+##### 6. Lưu lịch chiếu tự sinh hàng loạt
+* **Endpoint:** `POST /api/admin/showtimes/auto-generate/save`
+* **Quyền truy cập:** `ADMIN`, `STAFF`
+* **Request Body:** `List<ShowtimeRequest>` (Mảng kết quả đã chọn từ bước preview)
+* **Response Success:** Danh sách các `ShowtimeResponse` đã lưu thành công vào Database.
+
+---
+
+#### 2.2.3. Showtime Seat Map & Locks (Sơ đồ ghế & Khóa giữ ghế)
+
+##### 1. Lấy sơ đồ ghế chi tiết của suất chiếu
+* **Endpoint:** `GET /api/showtimes/{showtimeUuid}/seat-map`
+* **Quyền truy cập:** `Public / Authenticated` (Nếu đã đăng nhập, gửi kèm JWT token)
+* **Query Parameters:**
+  * `selectedSeatUuids` (Không bắt buộc): Danh sách UUID các ghế đang chọn hiện tại của user để giữ trạng thái.
+* **Response Success (`ShowtimeSeatMapResponse`):**
+  ```json
+  {
+    "success": true,
+    "code": 200,
+    "message": "Thành công",
+    "data": {
+      "showtimeUuid": "11111111-1111-1111-1111-111111111111",
+      "cinemaRoomName": "Phòng chiếu IMAX",
+      "rows": [
+        {
+          "rowName": "A",
+          "seats": [
+            {
+              "seatUuid": "77777777-1234-5678-90ab-cdef12345678",
+              "seatNumber": 1,
+              "price": 85000.0,
+              "seatTypeName": "STANDARD",
+              "availabilityStatus": "AVAILABLE",
+              "lockedUntil": null,
+              "selected": false,
+              "blocked": false
+            },
+            {
+              "seatUuid": "77777777-1234-5678-90ab-cdef87654321",
+              "seatNumber": 2,
+              "price": 85000.0,
+              "seatTypeName": "STANDARD",
+              "availabilityStatus": "LOCKED_BY_OTHER",
+              "lockedUntil": "2026-06-22T10:55:00+07:00",
+              "selected": false,
+              "blocked": true
+            }
+          ]
+        }
+      ],
+      "serverTime": "2026-06-22T10:50:00+07:00",
+      "_serverTimeOffset": 0
+    },
+    "timestamp": "2026-06-22T10:50:00Z"
+  }
+  ```
+
+##### 2. Đồng bộ hóa khóa giữ ghế tạm thời
+* **Endpoint:** `PUT /api/showtimes/locks`
+* **Quyền truy cập:** `Customer / Authenticated` (Bắt buộc đăng nhập)
+* **Request Body (`SyncSeatLockRequest`):**
+  ```json
+  {
+    "showtimeUuid": "11111111-1111-1111-1111-111111111111",
+    "seatUuids": [
+      "77777777-1234-5678-90ab-cdef12345678"
+    ]
+  }
+  ```
+* **Response Success (`SeatLockSyncResponse`):**
+  ```json
+  {
+    "success": true,
+    "code": 200,
+    "message": "Thành công",
+    "data": {
+      "showtimeUuid": "11111111-1111-1111-1111-111111111111",
+      "lockedSeatUuids": [
+        "77777777-1234-5678-90ab-cdef12345678"
+      ],
+      "expiredAt": "2026-06-22T10:55:00+07:00"
+    },
+    "timestamp": "2026-06-22T10:50:00Z"
+  }
+  ```
+
+---
 
 ### 2.3. Bookings API
 

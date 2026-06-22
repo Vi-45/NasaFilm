@@ -43,35 +43,33 @@ Ký hiệu:
 ---
 
 ### **Giai đoạn 2: Kết nối & Hoàn thiện Xác thực (Integration Phase)**
-* [/] Khắc phục lỗi CORS trên Spring Boot để cho phép React App (Port 5173) gọi API an toàn.
-* [/] Cấu hình tệp tin `.env.local` ở Client trỏ URL API chính xác tới Server (`http://localhost:8080/api`).
-* [ ] Phát triển API đăng ký tài khoản `POST /api/register` ở Backend.
-* [ ] Phát triển API gia hạn token `POST /api/refresh` ở Backend.
-* [ ] Tích hợp cơ chế tự động refresh JWT phía Client thông qua Axios Response Interceptor.
-* [ ] Phát triển API quên mật khẩu `POST /api/forgot-password` và đặt lại mật khẩu `POST /api/reset-password` ở Backend.
-* [ ] Cập nhật `authService.ts` ở Client để kết nối trực tiếp các hàm `register()`, `forgotPassword()`, `resetPassword()` thực tế với Server (thay vì giả lập lỗi như hiện tại).
-* [ ] Phát triển API IPN/Callback `GET/POST /api/payments/callback` — cần cấu hình sớm để đối tác thanh toán có thể kiểm thử tích hợp song song với Giai đoạn 3. (Bổ sung)
-* [ ] Viết test tự động / kiểm thử thủ công toàn bộ luồng đăng ký → đăng nhập → nhận token → truy cập trang Dashboard bảo mật.
+* [x] Khắc phục lỗi CORS trên Spring Boot để cho phép React App (Port 5173) gọi API an toàn.
+* [x] Cấu hình tệp tin `.env.local` ở Client trỏ URL API chính xác tới Server (`http://localhost:8080/api`).
+* [x] Phát triển API đăng ký tài khoản `POST /api/register` ở Backend.
+* [x] Phát triển API gia hạn token `POST /api/refresh` ở Backend.
+* [x] Tích hợp cơ chế tự động refresh JWT phía Client thông qua Axios Response Interceptor.
+* [x] Phát triển API quên mật khẩu `POST /api/forgot-password` và đặt lại mật khẩu `POST /api/reset-password` ở Backend.
+* [x] Cập nhật `authService.ts` ở Client để kết nối trực tiếp các hàm `register()`, `forgotPassword()`, `resetPassword()` thực tế với Server.
+* [x] Phát triển API IPN/Callback `GET/POST /api/payments/callback` để đối tác thanh toán tích hợp song song.
+* [x] Viết test tự động / kiểm thử thủ công toàn bộ luồng đăng ký → đăng nhập → nhận token → truy cập trang Dashboard bảo mật.
 
 ---
 
-### **Giai đoạn 3: Phân hệ Nghiệp vụ Rạp phim (Core Cinema System - Kế hoạch)**
+### **Giai đoạn 3: Phân hệ Nghiệp vụ Rạp phim (Core Cinema System - Sprint 3)**
 
 #### **Phía Backend (Server)**
-* [ ] Thiết kế cơ sở dữ liệu mở rộng cho: `movies`, `seats`, `showtimes`, `bookings`, `tickets`, `payments`.
-* [ ] Phát triển API hồ sơ cá nhân `GET /api/users/me` và `PUT /api/users/me`.
-* [ ] Phát triển các API quản trị người dùng cho Admin: `GET /api/admin/users`, `PUT /api/admin/users/{id}/status`, `PUT /api/admin/users/{id}/roles`.
-* [ ] Viết các API quản trị (CRUD) cho Phim, Phòng chiếu, Suất chiếu (dành cho ADMIN/STAFF).
-* [ ] Phát triển API lấy sơ đồ ghế thời gian thực kèm tình trạng đã đặt/đang giữ của một Suất chiếu cụ thể.
-* [ ] Viết API xử lý giao dịch đặt vé (`POST /api/bookings`) tích hợp cơ chế giữ ghế (Hold seats) chống trùng lặp.
-* [ ] Phát triển API tạo liên kết thanh toán (`POST /api/payments/create-url`) cho MOMO/VNPAY.
-* [ ] Hoàn thiện và kiểm thử end-to-end API IPN/Callback (`GET/POST /api/payments/callback`) để xác thực và cập nhật trạng thái giao dịch tự động.
+* [x] Thiết kế cơ sở dữ liệu mở rộng cho: `cinema`, `cinema_room`, `seat_type`, `seat`, `showtime`, và `seat_locked`.
+* [x] Viết các API quản trị (CRUD) cho Phim, Phòng chiếu (bao gồm sinh sơ đồ ghế tự động) và Suất chiếu (bao gồm sinh lịch chiếu tự động hàng loạt).
+* [x] Phát triển API lấy sơ đồ ghế thời gian thực (`GET /api/showtimes/{showtimeUuid}/seat-map`) kèm tình trạng ghế trống/đã đặt/đang giữ.
+* [x] Phát triển API đồng bộ hóa khóa giữ ghế tạm thời (`PUT /api/showtimes/locks`) có cơ chế khóa 5 phút.
+* [/] Hoàn thiện API xử lý đặt vé chính thức (`POST /api/bookings`) kết hợp kiểm tra voucher khuyến mãi và trừ điểm thành viên.
+* [/] Hoàn thiện tích hợp SDK tạo liên kết thanh toán Momo/VNPay và xử lý callback tự động.
 
 #### **Phía Frontend (Client)**
-* [ ] Xây dựng trang chủ hiển thị danh sách phim Đang chiếu / Sắp chiếu (Carousel + Grid View).
-* [ ] Xây dựng trang chi tiết phim kèm mô tả, trailer và danh sách lịch chiếu linh hoạt theo ngày.
-* [ ] Xây dựng giao diện phòng chiếu tương tác trực quan (chọn ghế Standard, VIP, Couple với hiệu ứng rạp chiếu phim).
-* [ ] Xây dựng màn hình tóm tắt thông tin thanh toán, nhập mã giảm giá và đếm ngược thời gian giữ ghế.
-* [ ] Tích hợp giao diện thanh toán Momo/VNPay bằng QR code hoặc chuyển hướng trang.
-* [ ] Tạo trang lịch sử vé cá nhân của khách hàng kèm vé điện tử chứa mã QR để soát vé khi vào phòng chiếu.
-* [ ] Xây dựng màn hình quản trị nội bộ cho Admin/Staff để cập nhật phim, lịch chiếu và quét QR soát vé.
+* [x] Xây dựng trang chủ hiển thị danh sách phim Đang chiếu / Sắp chiếu (Carousel + Grid View).
+* [x] Xây dựng trang chi tiết phim kèm mô tả, trailer và danh sách lịch chiếu linh hoạt theo ngày.
+* [x] Xây dựng giao diện phòng chiếu tương tác trực quan (chọn ghế Standard, VIP, Couple với sơ đồ ghế IMAX/VIP thực tế).
+* [x] Xây dựng màn hình tóm tắt thông tin thanh toán, nhập mã giảm giá và đếm ngược thời gian giữ ghế 5 phút.
+* [x] Tích hợp giao diện thanh toán Momo/VNPay bằng QR code hoặc chuyển hướng trang.
+* [x] Xây dựng màn hình quản trị nội bộ cho Admin/Staff (giao diện quản lý Suất chiếu, tạo suất chiếu thủ công, lên lịch chiếu tự động hàng loạt).
+* [/] Hoàn thiện trang lịch sử vé cá nhân của khách hàng kèm vé điện tử chứa mã QR để soát vé.

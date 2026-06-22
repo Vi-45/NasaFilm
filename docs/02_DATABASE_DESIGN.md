@@ -455,76 +455,79 @@ Thong tin phim trung tam cua he thong.
 
 ### 4.3. Cinema & Seat
 
-#### `cinemas`
+#### `cinema`
 
-| Column | Type | Mo ta |
-|---|---|---|
-| `id` | UUID | PK |
-| `name` | VARCHAR | Ten chi nhanh rap |
-| `address` | VARCHAR | Dia chi |
-| `phone_number` | VARCHAR | So lien he |
+| Column | Type | Rang buoc | Mo ta |
+|---|---|---|---|
+| `uuid` | UUID | PK | Dinh danh rap chieu |
+| `name` | VARCHAR | not null | Ten chi nhanh rap |
+| `address` | VARCHAR | nullable | Dia chi rap |
+| `phone_number` | VARCHAR | nullable | So lien he |
 
-#### `cinema_rooms`
+#### `cinema_room`
 
-| Column | Type | Mo ta |
-|---|---|---|
-| `id` | UUID | PK |
-| `cinema_id` | UUID | FK -> `cinemas.id` |
-| `name` | VARCHAR | Ten phong chieu |
-| `capacity` | INTEGER | Suc chua |
-| `status` | VARCHAR | `ACTIVE`, `MAINTENANCE` |
+| Column | Type | Rang buoc | Mo ta |
+|---|---|---|---|
+| `uuid` | UUID | PK | Dinh danh phong chieu |
+| `room_code` | VARCHAR | not null, uk: (cinema_uuid, room_code) | Ma viet tat cua phong chieu |
+| `name` | VARCHAR | not null | Ten phong chieu |
+| `capacity` | INTEGER | nullable | Suc chua (tinh bang tong so ghe hoat dong) |
+| `room_type` | VARCHAR | enum: `STANDARD`, `VIP`, `IMAX` | Loai phong chieu |
+| `status` | VARCHAR | enum: `ACTIVE`, `MAINTENANCE` | Trang thai phong chieu |
+| `cinema_uuid` | UUID | FK -> `cinema.uuid` | Rap chieu chua phong nay |
 
-#### `seat_types`
+#### `seat_type`
 
-| Column | Type | Mo ta |
-|---|---|---|
-| `id` | UUID | PK |
-| `name` | VARCHAR | `STANDARD`, `VIP`, `COUPLE` |
-| `description` | VARCHAR | Mo ta loai ghe |
-| `price_modifier` | DECIMAL | Phu thu them vao gia co ban |
+| Column | Type | Rang buoc | Mo ta |
+|---|---|---|---|
+| `uuid` | UUID | PK | Dinh danh loai ghe |
+| `name` | VARCHAR | not null, unique | `STANDARD`, `VIP`, `COUPLE` |
+| `description` | VARCHAR | nullable | Mo ta loai ghe |
+| `base_price` | NUMERIC(10, 2) | not null | Gia co ban cua loai ghe nay |
+| `price_modifier` | NUMERIC(10, 2) | default 1.00 | He so phu thu (phu tro them) |
 
-#### `seats`
+#### `seat`
 
-| Column | Type | Mo ta |
-|---|---|---|
-| `id` | UUID | PK |
-| `cinema_room_id` | UUID | FK -> `cinema_rooms.id` |
-| `row_name` | VARCHAR | Hang ghe |
-| `seat_number` | INTEGER | So ghe |
-| `status` | VARCHAR | Trang thai ghe vat ly |
-| `seat_type_id` | UUID | FK -> `seat_types.id` |
+| Column | Type | Rang buoc | Mo ta |
+|---|---|---|---|
+| `uuid` | UUID | PK | Dinh danh ghe |
+| `cinema_room_uuid` | UUID | FK -> `cinema_room.uuid` | Thuoc phong chieu nao |
+| `seat_type_uuid` | UUID | FK -> `seat_type.uuid` | Loai ghe (Thuyen, VIP, Doi) |
+| `row_name` | VARCHAR(5) | not null, uk: (cinema_room_uuid, row_name, seat_number) | Ten hang (A, B, C...) |
+| `seat_number` | INTEGER | not null, uk: (cinema_room_uuid, row_name, seat_number) | So thu tu ghe |
+| `status` | VARCHAR(50) | enum: `ACTIVE`, `DISABLED`, `MAINTENANCE` | Trang thai vat ly cua ghe |
+| `is_active` | BOOLEAN | default TRUE | Danh dau ghe co dang phuc vu hay khong |
 
 ### 4.4. Showtime
 
-#### `showtimes`
+#### `showtime`
 
-| Column | Type | Mo ta |
-|---|---|---|
-| `id` | UUID | PK |
-| `movie_id` | UUID | FK -> `movies.id` |
-| `cinema_room_id` | UUID | FK -> `cinema_rooms.id` |
-| `start_time` | TIMESTAMP | Bat dau chieu |
-| `end_time` | TIMESTAMP | Ket thuc chieu |
-| `status` | VARCHAR | `SCHEDULED`, `LIVE`, `CANCELLED` |
-| `base_price` | DECIMAL | Gia co ban |
-| `created_at` | TIMESTAMP | Thoi gian tao |
-| `updated_at` | TIMESTAMP | Thoi gian cap nhat |
-| `created_by` | UUID | FK -> `users.id` |
-| `updated_by` | UUID | FK -> `users.id` |
+| Column | Type | Rang buoc | Mo ta |
+|---|---|---|---|
+| `uuid` | UUID | PK | Dinh danh suat chieu |
+| `movie_uuid` | UUID | FK -> `movie.uuid` | Phim duoc chieu |
+| `cinema_room_uuid` | UUID | FK -> `cinema_room.uuid` | Phong chieu phuc vu |
+| `start_time` | TIMESTAMPTZ | not null | Bat dau chieu |
+| `end_time` | TIMESTAMPTZ | nullable | Tu dong tinh dua tren thoi luong phim |
+| `base_price` | NUMERIC(21, 2) | not null | Gia ve cho ghe STANDARD |
+| `vip_price` | NUMERIC(21, 2) | nullable | Gia ve cho ghe VIP |
+| `couple_price` | NUMERIC(21, 2) | nullable | Gia ve cho ghe COUPLE |
+| `status` | VARCHAR(50) | enum: `DRAFT`, `SCHEDULED`, `OPEN_FOR_BOOKING`, `SOLD_OUT`, `FINISHED`, `CANCELLED` | Trang thai suat chieu |
+| `created_at` | TIMESTAMPTZ | auto | Thoi gian khoi tao |
+| `updated_at` | TIMESTAMPTZ | auto | Thoi gian cap nhat |
 
-#### `seat_locks`
+#### `seat_locked`
 
 Giu ghe tam thoi trong luc nguoi dung dang dat ve.
 
-| Column | Type | Mo ta |
-|---|---|---|
-| `id` | UUID | PK |
-| `showtime_id` | UUID | FK -> `showtimes.id` |
-| `seat_id` | UUID | FK -> `seats.id` |
-| `status` | VARCHAR | `LOCKED`, `EXPIRED` |
-| `locked_at` | TIMESTAMP | Thoi diem khoa |
-| `user_id` | UUID | FK -> `users.id` |
-| `expired_at` | TIMESTAMP | Het han giu ghe |
+| Column | Type | Rang buoc | Mo ta |
+|---|---|---|---|
+| `uuid` | UUID | PK, nullable | Dinh danh ban ghi giu ghe |
+| `showtime_uuid` | UUID | FK -> `showtime.uuid`, uk: (showtime_uuid, seat_uuid) | Suat chieu giu ghe |
+| `seat_uuid` | UUID | FK -> `seat.uuid`, uk: (showtime_uuid, seat_uuid) | Ghe bi giu |
+| `user_uuid` | UUID | FK -> `users.id` | Nguoi dung thuc hien giu |
+| `locked_at` | TIMESTAMPTZ | not null | Thoi diem bat dau khoa |
+| `expired_at` | TIMESTAMPTZ | not null | Thoi diem het han giu ghe (5 phut) |
 
 ### 4.5. Booking & Payment
 
@@ -688,8 +691,85 @@ Dung cho mo hinh xem phim online hoac quyen truy cap noi dung so.
 
 Tinh den thoi diem cap nhat tai lieu nay:
 
-- Da co trong backend: `users`, `roles`, `user_roles`, `user_sessions`
-- Chua co entity/repository/service day du cho nhom phim, rap, suat chieu, booking, payment
-- Vi vay, phan `Target schema` hien dang la thiet ke de mo rong, chua phai schema da code xong
+- **Da co va mapping day du trong backend:**
+  - Nhom nguoi dung va xac thuc: `users`, `roles`, `user_roles`, `user_sessions`
+  - Nhom rap va phong chieu: `cinema`, `cinema_room`
+  - Nhom ghe: `seat`, `seat_type`
+  - Nhom suat chieu & dat ve: `showtime`, `seat_locked`, `booking`, `booking_seat`, `booking_combo`, `combo`, `promotions`, `ticket`
+- Cac bang tren da duoc cau hinh Entity JPA, Repository, Service va seeding du lieu day du thong qua `DataSeeder.java`.
 
-Tai lieu nay nen duoc cap nhat tiep khi team bat dau tao entity va migration cho cac module nghiep vu con lai.
+---
+
+## 8. Du lieu mau va Seeding Data (Seed & Sample Data)
+
+He thong da cau hinh seed san du lieu mau trong `DataSeeder.java` khi khoi dong du an. Duoi day la thong tin chi tiet du lieu mau da duoc nap vao co so du lieu PostgreSQL:
+
+### 8.1. Rap va Phong chieu (Cinemas & Rooms)
+* **Cinema:** `NASA Landmark 81`
+  * `uuid`: `77777777-7777-7777-7777-777777777777`
+  * Dia chi: Toa nha Landmark 81, Vinhomes Central Park, Binh Thanh, TP.HCM
+  * So dien thoai: `19001080`
+* **Rooms:**
+  1. **Phong chieu IMAX** (`ROOM-IMAX`):
+     * `uuid`: `88888888-8888-8888-8888-888888888888`
+     * Loai phong: `IMAX`
+     * Suc chua: `84` ghe (tu dong tinh dua tren so luong ghe dang hoat dong)
+     * Trang thai: `ACTIVE`
+  2. **Phong chieu VIP** (`ROOM-VIP`):
+     * `uuid`: `99999999-9999-9999-9999-999999999999`
+     * Loai phong: `VIP`
+     * Suc chua: `84` ghe
+     * Trang thai: `ACTIVE`
+
+### 8.2. Loai ghe va Gia ve (Seat Types & Pricing)
+* **STANDARD (Ghe Thuong):**
+  * `uuid`: `aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa`
+  * Gia co ban: `85,000 VND`
+  * He so phu thu (`price_modifier`): `1.0`
+* **VIP (Ghe VIP):**
+  * `uuid`: `bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb`
+  * Gia co ban: `120,000 VND`
+  * He so phu thu (`price_modifier`): `1.0`
+* **COUPLE (Ghe Doi):**
+  * `uuid`: `cccccccc-cccc-cccc-cccc-cccccccccccc`
+  * Gia co ban: `160,000 VND`
+  * He so phu thu (`price_modifier`): `1.0`
+
+### 8.3. So do ghe mac dinh (Default Seating Layout)
+Voi moi phong chieu (IMAX va VIP), so do ghe gom 8 hang (tu A den H) voi tong cong 84 ghe duoc sinh tu dong nhu sau:
+* **Hang A - D (STANDARD):** Moi hang gom 12 ghe (A1 den A12, B1 den B12, C1 den C12, D1 den D12).
+* **Hang E - F (VIP):** Moi hang gom 12 ghe (E1 den E12, F1 den F12).
+* **Hang G - H (COUPLE):** Moi hang gom 6 ghe doi (G1 den G6, H1 den H6).
+
+### 8.4. Combos Bap Nuoc (Concession Combos)
+* **Combo Bap Nuoc** (`55555555-5555-5555-5555-555555555555`): Gia `90,000 VND`, trang thai `ACTIVE`.
+* **Combo Solo (1 Bap + 1 Nuoc)** (`55555555-5555-5555-5555-666666666666`): Gia `70,000 VND`, trang thai `ACTIVE`.
+* **Combo Gia Dinh (2 Bap + 4 Nuoc)** (`55555555-5555-5555-5555-777777777777`): Gia `160,000 VND`, trang thai `ACTIVE`.
+
+### 8.5. Suat chieu mau (Sample Showtimes)
+Cac suat chieu duoc tu dong tao cho ngay hien tai:
+* **Suat chieu 1 (IMAX - Ke An Danh):**
+  * `uuid`: `11111111-1111-1111-1111-111111111111`
+  * Thoi gian: `19:30` - `21:30`
+  * Gia co ban: `80,000 VND`
+  * Trang thai: `OPEN_FOR_BOOKING`
+* **Suat chieu 2 (IMAX - Mortal Kombat 2):**
+  * `uuid`: `22222222-2222-2222-2222-222222222222`
+  * Thoi gian: `21:00` - `23:00`
+  * Gia co ban: `80,000 VND`
+  * Trang thai: `OPEN_FOR_BOOKING`
+* **Suat chieu 3 (VIP - Mua Do):**
+  * `uuid`: `33333333-3333-3333-3333-333333333333`
+  * Thoi gian: `18:00` - `20:00`
+  * Gia co ban: `80,000 VND`
+  * Trang thai: `OPEN_FOR_BOOKING`
+* **Suat chieu 4 (VIP - Thanh Guom Diet Quy):**
+  * `uuid`: `44444444-4444-4444-4444-444444444444`
+  * Thoi gian: `20:45` - `22:45`
+  * Gia co ban: `80,000 VND`
+  * Trang thai: `OPEN_FOR_BOOKING`
+
+### 8.6. Ma khuyen mai (Voucher Codes)
+* **THDPV50:** Giam gia 50% (`PERCENTAGE` / `0.50`), so luong 100 luot, trang thai `ACTIVE`.
+* **CINELUXE:** Giam gia `30,000 VND` (`FIXED_AMOUNT`), so luong 200 luot, trang thai `ACTIVE`.
+* **NASAFIRST:** Giam gia `50,000 VND` (`FIXED_AMOUNT`), gioi han 1 lan su dung/user, so luong 500 luot, trang thai `ACTIVE`.

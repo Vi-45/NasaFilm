@@ -38,21 +38,32 @@ Hệ thống hỗ trợ 3 nhóm đối tượng người dùng chính với phâ
   * Xem thông tin cá nhân và cập nhật thông tin (Họ tên, SĐT).
   * Xem điểm tích lũy thành viên.
 
-### **B. Phân hệ Quản lý Phim & Lịch chiếu (Movies & Showtimes Management - Dự kiến)**
+### **B. Phân hệ Quản lý Phim, Phòng chiếu & Suất chiếu (Movies, Rooms & Showtimes Management)**
 * **Quản lý danh sách phim:**
-  * Hiển thị phim đang chiếu và phim sắp chiếu.
-  * Xem thông tin chi tiết phim: Trailer, Poster, Thể loại, Đạo diễn, Diễn viên, Thời lượng, Giới hạn độ tuổi và Mô tả phim.
-* **Quản lý Lịch chiếu:**
-  * Lọc suất chiếu theo ngày chiếu, theo định dạng phòng chiếu (2D, 3D, IMAX).
-  * Lọc suất chiếu theo phim được chọn.
+  * Hiển thị danh sách phim Đang chiếu và Sắp chiếu ở trang chủ.
+  * Xem thông tin chi tiết phim: Trailer, Poster, Thể loại, Quốc gia, Thời lượng, Ngày khởi chiếu, Giới hạn độ tuổi (P, T13, T16, T18), Đánh giá (Rating), và Giá vé Online cơ bản.
+* **Quản lý Phòng chiếu & Ghế (Dành cho Admin/Staff):**
+  * Quản lý thông tin phòng (Thêm/Sửa phòng chiếu: Mã phòng, Tên phòng, Loại phòng gồm `STANDARD`, `VIP`, `IMAX`, Sức chứa). Sức chứa của phòng được tự động tính toán dựa trên số lượng ghế đang hoạt động (Active).
+  * Quản lý cấu hình sơ đồ ghế:
+    * Chức năng **Sinh sơ đồ ghế tự động (Generate Seat Map)**: Admin/Staff có thể sinh nhanh sơ đồ ghế chuẩn cho phòng chiếu. Cấu hình mặc định sinh 8 hàng (từ A đến H): hàng A-D là ghế Thường (STANDARD, 12 ghế/hàng), hàng E-F là ghế VIP (12 ghế/hàng), hàng G-H là ghế Đôi (COUPLE, 6 ghế/hàng).
+    * Cập nhật thông tin chi tiết từng ghế: Cho phép thay đổi loại ghế, số ghế, hoặc tắt/mở trạng thái hoạt động của ghế vật lý (Trạng thái gồm `ACTIVE`, `DISABLED`, `MAINTENANCE` để xử lý các ghế bị hỏng hóc thực tế).
+* **Quản lý Suất chiếu (Dành cho Admin/Staff):**
+  * Khởi tạo suất chiếu đơn lẻ: Chọn phim, chọn rạp, chọn phòng chiếu, thời gian bắt đầu chiếu, và nhập giá vé cơ bản (Base Price), giá VIP (Vip Price), giá ghế đôi (Couple Price). Thời gian kết thúc suất chiếu được hệ thống tự động gợi ý dựa trên thời lượng phim.
+  * Chức năng **Lên lịch chiếu tự động hàng loạt (Auto-generate Showtimes)**: Cho phép Admin nhập khoảng thời gian hoạt động của rạp (ví dụ: từ 08:00 đến 23:30), thời gian dọn phòng (Clean-up time), danh sách phim và phòng chiếu để hệ thống tự động tính toán và chia ca chiếu tối ưu. Admin có thể xem trước (Preview) lịch biểu dự kiến trước khi lưu chính thức vào cơ sở dữ liệu.
+  * Cập nhật trạng thái suất chiếu: Hỗ trợ chuyển đổi trạng thái suất chiếu theo quy trình vận hành của rạp (Các trạng thái gồm: `DRAFT`, `SCHEDULED`, `OPEN_FOR_BOOKING`, `SOLD_OUT`, `FINISHED`, `CANCELLED`).
+  * Danh sách suất chiếu phía Admin hỗ trợ lọc theo phim, rạp, phòng chiếu, ngày chiếu, và nhóm theo trạng thái hoặc theo phòng để dễ quản trị.
 
-### **C. Phân hệ Đặt vé & Chọn ghế (Booking & Seat Selection - Dự kiến)**
-* **Sơ đồ phòng chiếu tương tác:**
-  * Hiển thị danh sách ghế trống, ghế đã có người đặt, ghế đang chọn, ghế VIP và ghế Thường dưới dạng sơ đồ trực quan.
-  * Hỗ trợ khóa ghế tạm thời (Hold Seat) trong khoảng 5-10 phút để tránh tình trạng trùng lặp khi nhiều người đặt cùng lúc.
+### **C. Phân hệ Đặt vé & Chọn ghế (Booking & Seat Selection)**
+* **Sơ đồ phòng chiếu tương tác trực quan:**
+  * Hiển thị giao diện sơ đồ ghế động của suất chiếu tương ứng với thực tế phòng chiếu (IMAX, VIP, STANDARD).
+  * Phân biệt rõ các loại ghế bằng màu sắc và biểu tượng đặc trưng: Ghế Thường (STANDARD), Ghế VIP, Ghế Đôi (COUPLE).
+  * Hiển thị rõ trạng thái thời gian thực của từng ghế: Ghế trống (`AVAILABLE`), Ghế đang được chọn bởi bản thân (`SELECTED` / `LOCKED_BY_ME`), Ghế đang bị khóa bởi người khác (`LOCKED_BY_OTHER`), Ghế đã có người mua thành công (`SOLD` / `BOOKED`), và Ghế hỏng (`DISABLED`).
+* **Cơ chế Khóa ghế tạm thời thời gian thực (Real-time Seat Locking):**
+  * Hỗ trợ đồng bộ hóa trạng thái ghế ngay lập tức khi người dùng click chọn ghế. Ghế sẽ chuyển sang trạng thái `LOCKED_BY_ME` trên trình duyệt của người dùng hiện tại và trạng thái `LOCKED_BY_OTHER` trên màn hình của tất cả những người dùng khác đang xem cùng suất chiếu đó.
+  * Thời gian giữ ghế tối đa là **5 phút (300 giây)**. Màn hình hiển thị đồng hồ đếm ngược trực quan. Nếu quá 5 phút mà khách hàng chưa hoàn tất thanh toán, hệ thống sẽ tự động giải phóng ghế về trạng thái trống (`AVAILABLE`).
 * **Tích điểm & Khuyến mãi:**
-  * Tích điểm thành viên tự động sau khi thanh toán thành công (Sử dụng trường `score` của User).
-  * Áp dụng mã giảm giá (Voucher) khi thanh toán.
+  * Áp dụng mã giảm giá (Voucher) khi thanh toán (Hỗ trợ giảm theo tỷ lệ phần trăm hoặc số tiền cố định).
+  * Tích lũy điểm thưởng thành viên tự động sau khi đặt vé thành công và cho phép sử dụng điểm để thanh toán.
 
 ### **D. Phân hệ Thanh toán (Payment System - Dự kiến)**
 * **Tích hợp cổng thanh toán:**
@@ -90,13 +101,18 @@ Hệ thống hỗ trợ 3 nhóm đối tượng người dùng chính với phâ
 Để đảm bảo tính chính xác về mặt logic phần mềm và ngăn chặn các lỗi tranh chấp dữ liệu, hệ thống bắt buộc phải thực thi các quy tắc ràng buộc sau:
 
 ### **A. Cơ chế Giữ ghế Tạm thời (Seat Locking Rules)**
-* **Kích hoạt khóa:** Ngay khi khách hàng nhấn chọn ghế trên màn hình Frontend và bấm "Tiến hành thanh toán", hệ thống sẽ gửi yêu cầu khóa ghế. Trạng thái của các ghế tương ứng trong bảng dữ liệu suất chiếu sẽ chuyển từ `AVAILABLE` sang `LOCKED`.
-* **Thời gian giới hạn (TTL):** Thời gian giữ ghế tối đa là **5 phút** (hiển thị đếm ngược trên giao diện Client). Trong thời gian này, không một người dùng nào khác có thể chọn hoặc thao tác trên các ghế đã bị khóa.
+* **Kích hoạt khóa:** Ngay khi khách hàng nhấn chọn ghế trên màn hình sơ đồ ghế Frontend, hệ thống sẽ gửi yêu cầu khóa ghế thông qua API `PUT /api/showtimes/locks`. Bản ghi giữ ghế sẽ được ghi nhận vào bảng `seat_locked` với các thông tin: `showtime_uuid`, `seat_uuid`, `user_uuid`, thời gian khóa (`locked_at`) và thời gian hết hạn (`expired_at`).
+* **Thời gian giới hạn (TTL):** Thời gian giữ ghế tối đa là **5 phút (300 giây)** (hiển thị đếm ngược thời gian thực trên màn hình đặt vé). Trong thời gian này, các khách hàng khác truy cập cùng suất chiếu sẽ thấy các ghế này hiển thị màu đỏ ở trạng thái Đang bị khóa bởi người khác (`LOCKED_BY_OTHER`) và không thể chọn hay thao tác trên các ghế đó.
 * **Giải phóng ghế (Unlock):**
-  * *Trường hợp thất bại:* Nếu quá 5 phút đếm ngược mà hệ thống chưa nhận được tín hiệu xác nhận thanh toán thành công từ cổng thanh toán bên thứ ba, một Background Job (Spring Task Scheduler) sẽ tự động giải phóng các ghế đó (`STATUS = AVAILABLE`) và hủy đơn hàng tạm thời.
-  * *Trường hợp chủ động hủy:* Nếu người dùng nhấn nút "Quay lại" hoặc chủ động hủy giao dịch, hệ thống sẽ thực hiện giải phóng ghế ngay lập tức.
+  * *Trường hợp hết hạn đếm ngược:* Phía Frontend sẽ tự động gọi API giải phóng khóa ghế khi đồng hồ đếm ngược về 0. Đồng thời ở phía Backend, một Background Job quét định kỳ các bản ghi hết hạn (`expired_at < NOW()`) để tự động xóa các bản ghi giữ ghế trong bảng `seat_locked`, đưa trạng thái ghế về lại trống (`AVAILABLE`).
+  * *Trường hợp chủ động hủy:* Nếu khách hàng bỏ chọn ghế, nhấn nút quay lại hoặc thoát luồng đặt vé, Frontend sẽ lập tức gửi yêu cầu đồng bộ để giải phóng các ghế đó.
 
-### **B. Quy tắc Đổi điểm thưởng & Tích lũy (Loyalty & Promotion Rules)**
+### **B. Quy tắc Tránh Trùng Lịch Suất Chiếu (Showtime Conflict Rules)**
+* **Ràng buộc phòng chiếu độc quyền:** Tại một phòng chiếu (`cinema_room`), không được phép có hai suất chiếu nào bị trùng lặp hoặc giao cắt về mặt thời gian.
+* **Thời gian tối thiểu giữa các suất chiếu (Clean-up Time):** Khi tính toán thời lượng suất chiếu (giờ kết thúc = giờ bắt đầu + thời lượng phim), hệ thống phải cộng thêm một khoảng thời gian đệm tối thiểu là **15 phút** dành cho việc dọn dẹp vệ sinh phòng chiếu và chuẩn bị thiết bị cho suất chiếu tiếp theo.
+* **Kiểm tra xung đột lịch (Conflict Detection):** Khi Admin tạo suất chiếu thủ công hoặc khi chạy tính năng tự động sinh suất chiếu (Auto-generate Showtimes), hệ thống bắt buộc phải kiểm tra xung đột: Suất chiếu mới dự kiến `[Start_New, End_New]` không được chồng chéo với bất kỳ khoảng thời gian hoạt động của suất chiếu nào đã tồn tại `[Start_Exist, End_Exist + 15 phút]` trong cùng một phòng chiếu. Nếu phát hiện xung đột, hệ thống sẽ trả về lỗi và chặn thao tác lưu.
+
+### **C. Quy tắc Đổi điểm thưởng & Tích lũy (Loyalty & Promotion Rules)**
 * **Tỷ lệ tích điểm:** Mỗi giao dịch đặt vé thành công sẽ được trích một tỷ lệ phần trăm cố định dựa trên tổng tiền hóa đơn thực tế để chuyển thành điểm thưởng (Score) lưu vào hồ sơ user.
 * **Tỷ lệ quy đổi điểm:** Điểm thưởng có thể dùng để khấu trừ trực tiếp vào giá trị hóa đơn tiếp theo (Ví dụ cấu hình mặc định: 1 điểm = 1.000 VNĐ).
 * **Ràng buộc hệ thống (Constraints):**
@@ -104,6 +120,6 @@ Hệ thống hỗ trợ 3 nhóm đối tượng người dùng chính với phâ
   * Điểm thưởng chỉ được khấu trừ tối đa bằng giá trị tiền mặt của vé xem phim (không áp dụng khấu trừ âm hoặc trả lại tiền mặt thừa cho khách hàng).
   * Trong trường hợp đơn hàng bị hủy/hoàn, số điểm đã tiêu thụ phải được hoàn lại và số điểm dự kiến tích lũy của đơn đó phải bị khấu trừ.
 
-### **C. Quy định Hủy vé và Hoàn tiền (Cancellation & Refund Rules)**
+### **D. Quy định Hủy vé và Hoàn tiền (Cancellation & Refund Rules)**
 * **Điều kiện hủy vé:** Khách hàng chỉ có quyền tự hủy vé trực tuyến hoặc yêu cầu nhân viên quầy hỗ trợ hủy vé trước giờ phim chiếu tối thiểu **60 phút**. Các vé thuộc suất chiếu đã diễn ra hoặc sắp diễn ra trong vòng 60 phút sẽ không thể hoàn hủy dưới mọi hình thức.
 * **Quy trình hoàn tiền:** Khi lệnh hủy được chấp nhận, hệ thống phải thực hiện đồng bộ một chuỗi hành động: Chuyển trạng thái hóa đơn thành `REFUNDED`, giải phóng các ghế đã đặt về trạng thái trống, thu hồi điểm thưởng đã cộng của đơn đó và tạo bản ghi lịch sử hoàn tiền trong dịch vụ thanh toán để đối soát.

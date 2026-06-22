@@ -22,22 +22,32 @@ import {
   ChevronRight,
   Sliders,
   Shield,
+  Mail,
   Home,
   Database,
   TrendingUp,
   UserCheck,
   DollarSign,
+  Megaphone,
 } from "lucide-react";
 import { useAuthContext } from "../../auth/hooks/useAuthContext";
 import huyAdmin from "../../../shared/assets/huyadmin.jpg";
 import nasaLogo from "../../../shared/assets/NASAFILM.jpg";
 import { normalizeAvatarUrl } from "../../../shared/utils/avatarUrl";
+import PageTransition from "../../../shared/components/PageTransition";
 import "./AdminLayout.css";
+
+const getRoleDisplayLabel = (roles = []) => {
+  if (roles.includes("admin")) return "Quản trị viên";
+  if (roles.includes("staff")) return "Nhân viên";
+  return "Thành viên";
+};
 
 const Sidebar = ({ isOpen, onToggle, onClose }) => {
   const { user, logout } = useAuthContext();
   const navigate = useNavigate();
-  const displayName = user?.fullName || user?.email || "ADMIN";
+  const displayName = user?.fullName || user?.email || "Admin";
+  const roleLabel = getRoleDisplayLabel(user?.roles);
   const [avatarLoadFailed, setAvatarLoadFailed] = useState(false);
   const avatar = avatarLoadFailed
     ? huyAdmin
@@ -190,9 +200,9 @@ const Sidebar = ({ isOpen, onToggle, onClose }) => {
                 "text-rose-400",
               )}
               {renderLink(
-                "/admin/actors",
-                User,
-                "Diễn viên",
+                "/admin/media",
+                Megaphone,
+                "Truyền thông",
                 "text-violet-400",
               )}
               {renderLink(
@@ -284,15 +294,9 @@ const Sidebar = ({ isOpen, onToggle, onClose }) => {
         <div className="space-y-1 text-left">
           {renderGroupHeader("Cấu hình & Bảo mật", "security", Shield)}
           {(!isOpen || openGroups.security) && (
-            <div
-              className={`${isOpen ? "pl-2 border-l border-[#1E293B]/10 ml-4.5 space-y-1" : "space-y-1"}`}
-            >
-              {renderLink(
-                "/admin/config",
-                Sliders,
-                "Cấu hình hệ thống",
-                "text-amber-400",
-              )}
+            <div className={`${isOpen ? 'pl-2 border-l border-[#1E293B]/10 ml-4.5 space-y-1' : 'space-y-1'}`}>
+              {renderLink('/admin/config', Sliders, 'Cấu hình hệ thống', 'text-amber-400')}
+              {renderLink('/admin/email-templates', Mail, 'Mẫu email HTML', 'text-sky-400')}
             </div>
           )}
         </div>
@@ -310,7 +314,7 @@ const Sidebar = ({ isOpen, onToggle, onClose }) => {
             title={displayName}
           >
             <img
-              alt="Admin Profile"
+              alt={displayName}
               className="w-full h-full object-cover"
               src={avatar}
               referrerPolicy="no-referrer"
@@ -320,10 +324,10 @@ const Sidebar = ({ isOpen, onToggle, onClose }) => {
           {isOpen && (
             <div className="min-w-0 flex-1 text-left">
               <p className="text-xs font-black text-white truncate leading-tight">
-                Quản trị viên Lora
+                {displayName}
               </p>
               <p className="text-[9px] text-gray-400 font-bold tracking-wider uppercase mt-0.5">
-                QUẢN TRỊ VIÊN
+                {roleLabel}
               </p>
             </div>
           )}
@@ -364,30 +368,9 @@ const AdminLayout = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    const scrollToTop = () => {
-      if (mainRef.current) {
-        mainRef.current.scrollTop = 0;
-      }
-      window.scrollTo(0, 0);
-      document.documentElement.scrollTop = 0;
-      document.body.scrollTop = 0;
-    };
-
-    scrollToTop();
-
-    const t1 = setTimeout(scrollToTop, 0);
-    const t2 = setTimeout(scrollToTop, 50);
-    const t3 = setTimeout(scrollToTop, 150);
-    const t4 = setTimeout(scrollToTop, 300);
-    const t5 = setTimeout(scrollToTop, 600);
-
-    return () => {
-      clearTimeout(t1);
-      clearTimeout(t2);
-      clearTimeout(t3);
-      clearTimeout(t4);
-      clearTimeout(t5);
-    };
+    if (mainRef.current) {
+      mainRef.current.scrollTop = 0;
+    }
   }, [location.pathname]);
 
   return (
@@ -412,6 +395,7 @@ const AdminLayout = ({ children }) => {
 
       <main
         ref={mainRef}
+        data-scroll-container="admin-main"
         className={`min-h-screen flex flex-col overflow-y-auto custom-scrollbar relative z-10 bg-[#080B14] font-sans transition-all duration-300 ${
           isSidebarOpen ? "lg:ml-64" : "lg:ml-16"
         }`}
@@ -447,7 +431,9 @@ const AdminLayout = ({ children }) => {
         </div>
 
         <div className="mx-auto flex w-full max-w-7xl flex-col px-8 py-8">
-          {children ?? <Outlet />}
+          <PageTransition scrollTarget='[data-scroll-container="admin-main"]'>
+            {children ?? <Outlet />}
+          </PageTransition>
         </div>
       </main>
     </div>

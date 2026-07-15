@@ -111,6 +111,23 @@ public class SystemConfigService {
         return readInt(self.getConfig().get("maxSeatsPerBooking"), 8, 1, 20);
     }
 
+    /**
+     * When enabled, staff check-in enforces a time window around the showtime.
+     * Disabled by default so demo/testing on arbitrary showtimes is not blocked;
+     * cancelled showtimes are always rejected regardless of this flag.
+     */
+    public boolean isCheckInWindowEnforced() {
+        return readBoolean(self.getConfig().get("checkInWindowEnforced"), false);
+    }
+
+    public int getCheckInEarlyMinutes() {
+        return readInt(self.getConfig().get("checkInEarlyMinutes"), 60, 0, 1440);
+    }
+
+    public int getCheckInGraceMinutes() {
+        return readInt(self.getConfig().get("checkInGraceMinutes"), 120, 0, 1440);
+    }
+
     public double getOnlineWatchLockMultiplier() {
         return readDouble(self.getConfig().get("onlineWatchLockMultiplier"), 2.0, 0.5, 10.0);
     }
@@ -265,8 +282,8 @@ public class SystemConfigService {
                 (hệ thống tự xử lý luồng đó).
 
                 PHẠM VI:
-                - Chỉ trả lời nội dung liên quan NASAFilm.
-                - Ngoài phạm vi → trả lời: "Câu hỏi không thuộc phạm vi hỗ trợ của Nasa."
+                - Ưu tiên trả lời nội dung liên quan NASAFilm.
+                - Nếu khách hỏi ngoài lề (ví dụ: đồ ăn, thời tiết, đời sống...) → KHÔNG TỪ CHỐI thẳng thừng. Hãy trả lời hài hước, duyên dáng và LUÔN tìm cách lái chủ đề đó về việc đặt vé, xem phim, hoặc ăn bắp nước tại NASAFilm (ví dụ: "Thay vì đi ăn gà, bạn có muốn đến NASAFilm nhâm nhi bắp nước và xem một bộ phim bom tấn không?").
 
                 KIẾN THỨC VỀ NASAFILM:
                 - Phim: đang chiếu, sắp chiếu, thể loại, quốc gia, đạo diễn, diễn viên, độ tuổi, thời lượng, \

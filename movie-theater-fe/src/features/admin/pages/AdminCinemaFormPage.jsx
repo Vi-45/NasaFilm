@@ -1,13 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Upload, Image as ImageIcon } from 'lucide-react';
 import { cinemaService } from '../../../shared/services/cinemaService';
 import { notificationService } from '../../../shared/services/notificationService';
 import { AdminPage, PageHeader, Section, PrimaryButton, GhostButton } from '../components';
-
-const inputClass =
-  'w-full rounded-md bg-white/[0.03] px-3 py-2 text-sm text-white placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-white/20 transition border border-white/[0.06]';
-const labelClass = 'block text-xs font-medium text-gray-500 mb-1';
+import { adminInputClass, adminLabelClass, adminTextareaClass } from '../components/adminFormStyles';
 
 const AdminCinemaFormPage = () => {
   const navigate = useNavigate();
@@ -16,11 +13,15 @@ const AdminCinemaFormPage = () => {
 
   const [isLoading, setIsLoading] = useState(isEditing);
   const [isSaving, setIsSaving] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState('');
   const [form, setForm] = useState({
     name: '',
     address: '',
     phoneNumber: '',
     entranceNote: '',
+    imageUrl: '',
     latitude: '',
     longitude: '',
   });
@@ -38,10 +39,12 @@ const AdminCinemaFormPage = () => {
           address: detail.address || '',
           phoneNumber: detail.phoneNumber || '',
           entranceNote: detail.entranceNote || '',
+          imageUrl: detail.imageUrl || '',
           latitude: detail.latitude ?? '',
           longitude: detail.longitude ?? '',
         });
-      } catch (err) {
+        setPreviewUrl(detail.imageUrl || '');
+      } catch {
         notificationService.error('Không thể tải chi nhánh');
         navigate('/admin/cinemas');
       } finally {
@@ -52,15 +55,31 @@ const AdminCinemaFormPage = () => {
     return () => { isMounted = false; };
   }, [cinemaUuid, isEditing, navigate]);
 
+  const handleFileSelection = (file) => {
+    if (!file.type.startsWith('image/')) {
+      notificationService.error('Vui lòng chọn tệp hình ảnh');
+      return;
+    }
+    setSelectedFile(file);
+    setPreviewUrl(URL.createObjectURL(file));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSaving(true);
     try {
+      let finalImageUrl = form.imageUrl || '';
+      if (selectedFile) {
+        setIsUploading(true);
+        finalImageUrl = await cinemaService.uploadCinemaImage(selectedFile);
+        setIsUploading(false);
+      }
       const payload = {
         name: form.name.trim(),
         address: form.address.trim(),
         phoneNumber: form.phoneNumber.trim(),
         entranceNote: form.entranceNote.trim() || null,
+        imageUrl: finalImageUrl || null,
         latitude: form.latitude === '' ? null : Number(form.latitude),
         longitude: form.longitude === '' ? null : Number(form.longitude),
       };
@@ -77,6 +96,7 @@ const AdminCinemaFormPage = () => {
       notificationService.error(err.message || 'Lưu thất bại');
     } finally {
       setIsSaving(false);
+      setIsUploading(false);
     }
   };
 
@@ -99,40 +119,59 @@ const AdminCinemaFormPage = () => {
         <Section title="Thong tin chi nhanh">
           <div className="grid grid-cols-1 gap-4 max-w-xl">
             <div>
-              <label className={labelClass}>Ten chi nhanh *</label>
-              <input className={inputClass} value={form.name} onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))} required />
+              <label className={adminLabelClass}>Ten chi nhanh *</label>
+              <input className={adminInputClass} value={form.name} onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))} required />
             </div>
             <div>
-              <label className={labelClass}>Dia chi *</label>
-              <input className={inputClass} value={form.address} onChange={(e) => setForm((p) => ({ ...p, address: e.target.value }))} required />
+              <label className={adminLabelClass}>Dia chi *</label>
+              <input className={adminInputClass} value={form.address} onChange={(e) => setForm((p) => ({ ...p, address: e.target.value }))} required />
             </div>
             <div>
-              <label className={labelClass}>So dien thoai *</label>
-              <input className={inputClass} value={form.phoneNumber} onChange={(e) => setForm((p) => ({ ...p, phoneNumber: e.target.value }))} required />
+              <label className={adminLabelClass}>So dien thoai *</label>
+              <input className={adminInputClass} value={form.phoneNumber} onChange={(e) => setForm((p) => ({ ...p, phoneNumber: e.target.value }))} required />
             </div>
             <div>
-              <label className={labelClass}>Huong dan vao cong</label>
+              <label className={adminLabelClass}>Anh dai dien rap</label>
+              <div className="border-2 border-dashed rounded-xl p-6 flex flex-col items-center justify-center border-white/[0.1] bg-white/[0.02]">
+                {previewUrl ? (
+                  <div className="relative w-full max-w-xs h-36 rounded-lg overflow-hidden">
+                    <img src={previewUrl} alt="" className="w-full h-full object-cover" />
+                  </div>
+                ) : (
+                  <ImageIcon className="w-10 h-10 text-gray-600 mb-2" />
+                )}
+                <label htmlFor="cinema-file" className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/[0.05] text-xs text-gray-300 cursor-pointer hover:bg-white/[0.08]">
+                  <Upload className="w-3.5 h-3.5" />
+                  Chon anh
+                </label>
+                <input id="cinema-file" type="file" accept="image/*" className="hidden" onChange={(e) => e.target.files?.[0] && handleFileSelection(e.target.files[0])} />
+              </div>
+            </div>
+            <div>
+              <label className={adminLabelClass}>Huong dan vao cong</label>
               <textarea
-                className={`${inputClass} min-h-[88px] resize-y`}
+                className={`${adminTextareaClass} min-h-[88px] resize-y`}
                 value={form.entranceNote}
                 onChange={(e) => setForm((p) => ({ ...p, entranceNote: e.target.value }))}
               />
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className={labelClass}>Vi do</label>
-                <input className={inputClass} type="number" step="any" value={form.latitude} onChange={(e) => setForm((p) => ({ ...p, latitude: e.target.value }))} />
+                <label className={adminLabelClass}>Vi do</label>
+                <input className={adminInputClass} type="number" step="any" value={form.latitude} onChange={(e) => setForm((p) => ({ ...p, latitude: e.target.value }))} />
               </div>
               <div>
-                <label className={labelClass}>Kinh do</label>
-                <input className={inputClass} type="number" step="any" value={form.longitude} onChange={(e) => setForm((p) => ({ ...p, longitude: e.target.value }))} />
+                <label className={adminLabelClass}>Kinh do</label>
+                <input className={adminInputClass} type="number" step="any" value={form.longitude} onChange={(e) => setForm((p) => ({ ...p, longitude: e.target.value }))} />
               </div>
             </div>
           </div>
         </Section>
         <div className="flex justify-end gap-2 pt-4 border-t border-white/[0.06]">
           <GhostButton type="button" onClick={() => navigate(isEditing ? `/admin/cinemas/${cinemaUuid}` : '/admin/cinemas')}>Huy</GhostButton>
-          <PrimaryButton type="submit" loading={isSaving} disabled={isSaving}>{isEditing ? 'Cap nhat' : 'Them chi nhanh'}</PrimaryButton>
+          <PrimaryButton type="submit" loading={isSaving || isUploading} disabled={isSaving || isUploading}>
+            {isUploading ? 'Dang tai anh...' : isEditing ? 'Cap nhat' : 'Them chi nhanh'}
+          </PrimaryButton>
         </div>
       </form>
     </AdminPage>

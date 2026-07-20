@@ -47,6 +47,8 @@ public interface MovieRepository extends JpaRepository<Movie, UUID>, JpaSpecific
 
     boolean existsByTitleIgnoreCase(String title);
 
+    Optional<Movie> findBySlugIgnoreCase(String slug);
+
     @Query("SELECT m FROM Movie m LEFT JOIN FETCH m.movieMedias WHERE LOWER(m.title) = LOWER(:title)")
     Optional<Movie> findByTitleIgnoreCase(@Param("title") String title);
 
@@ -78,11 +80,17 @@ public interface MovieRepository extends JpaRepository<Movie, UUID>, JpaSpecific
                 WHERE s.status = 'SCHEDULED'
                   AND s.start_time > :now
             ) upcoming ON upcoming.movie_uuid = m.uuid
-            WHERE m.status = 'COMING_SOON'
+            WHERE m.status IN ('COMING_SOON', 'NOW_SHOWING')
+              AND (
+                    m.status = 'COMING_SOON'
+                    OR m.screening_mode IS NULL
+                    OR m.screening_mode IN ('THEATER_ONLY', 'BOTH')
+                  )
               AND NOT EXISTS (
                   SELECT 1 FROM showtime s
                   WHERE s.movie_uuid = m.uuid
                     AND s.status IN ('OPEN_FOR_BOOKING', 'SOLD_OUT')
+                    AND s.start_time > :now
               )
             """, nativeQuery = true)
     long countUpcomingMovies(@Param("now") java.time.OffsetDateTime now);
@@ -97,11 +105,17 @@ public interface MovieRepository extends JpaRepository<Movie, UUID>, JpaSpecific
                   AND s.start_time > :now
                 GROUP BY s.movie_uuid
             ) upcoming ON upcoming.movie_uuid = m.uuid
-            WHERE m.status = 'COMING_SOON'
+            WHERE m.status IN ('COMING_SOON', 'NOW_SHOWING')
+              AND (
+                    m.status = 'COMING_SOON'
+                    OR m.screening_mode IS NULL
+                    OR m.screening_mode IN ('THEATER_ONLY', 'BOTH')
+                  )
               AND NOT EXISTS (
                   SELECT 1 FROM showtime s
                   WHERE s.movie_uuid = m.uuid
                     AND s.status IN ('OPEN_FOR_BOOKING', 'SOLD_OUT')
+                    AND s.start_time > :now
               )
             ORDER BY
               CASE WHEN upcoming.next_start IS NULL THEN 1 ELSE 0 END,

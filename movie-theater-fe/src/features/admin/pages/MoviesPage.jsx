@@ -1,6 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useLayoutEffect, useRef, useId } from 'react';
+import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
-import { Search, X, Plus, Film, Clock, ChevronDown, Clapperboard, PlayCircle, CalendarClock, Archive } from 'lucide-react';
+import {
+  Search, X, Plus, Film, Clock, ChevronDown, Play, Calendar, Trash2,
+} from 'lucide-react';
 import { movieService } from '../../../shared/services/movieService';
 import { notificationService } from '../../../shared/services/notificationService';
 import Pagination from '../../../shared/components/Pagination';
@@ -8,8 +11,8 @@ import VirtualGrid from '../../../shared/components/VirtualGrid';
 import {
   AdminPage,
   PageHeader,
-  Section,
-  GhostButton,
+  AdminKpiGrid,
+  StatusBadge,
 } from '../components';
 import { getMovieStatusLabel } from '../utils/statusLabels';
 import { resolveMediaUrl, handlePosterError } from '../../../shared/utils/mediaUrlUtils';
@@ -19,8 +22,12 @@ import './MoviesPage.css';
 const FilterDropdown = ({ label, value, options, onChange, searchable = false, className = '' }) => {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
-  const ref = useRef(null);
+  const [coords, setCoords] = useState(null);
+  const rootRef = useRef(null);
+  const triggerRef = useRef(null);
+  const menuRef = useRef(null);
   const searchRef = useRef(null);
+  const listId = useId();
   const selected = options.find((o) => o.value === value);
 
   const filteredOptions = searchable && query.trim()
@@ -29,91 +36,156 @@ const FilterDropdown = ({ label, value, options, onChange, searchable = false, c
       )
     : options;
 
+  const updatePosition = () => {
+    const trigger = triggerRef.current;
+    if (!trigger) return;
+
+    const rect = trigger.getBoundingClientRect();
+    const menuWidth = Math.max(rect.width, 240);
+    const gap = 6;
+    const pad = 8;
+    let left = rect.left;
+    if (left + menuWidth > window.innerWidth - pad) {
+      left = Math.max(pad, rect.right - menuWidth);
+    }
+
+    setCoords({
+      top: rect.bottom + gap,
+      left,
+      width: menuWidth,
+      maxHeight: Math.min(280, Math.max(120, window.innerHeight - rect.bottom - gap - pad)),
+    });
+  };
+
+  useLayoutEffect(() => {
+    if (!open) {
+      setCoords(null);
+      return undefined;
+    }
+    updatePosition();
+    const onReposition = () => updatePosition();
+    window.addEventListener('resize', onReposition);
+    window.addEventListener('scroll', onReposition, true);
+    return () => {
+      window.removeEventListener('resize', onReposition);
+      window.removeEventListener('scroll', onReposition, true);
+    };
+  }, [open, filteredOptions.length]);
+
   useEffect(() => {
     if (!open) {
       setQuery('');
-      return;
+      return undefined;
     }
     if (searchable && searchRef.current) {
       searchRef.current.focus();
     }
     const handleClick = (e) => {
-      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+      const target = e.target;
+      if (rootRef.current?.contains(target)) return;
+      if (menuRef.current?.contains(target)) return;
+      setOpen(false);
+    };
+    const handleKey = (e) => {
+      if (e.key === 'Escape') setOpen(false);
     };
     document.addEventListener('mousedown', handleClick);
-    return () => document.removeEventListener('mousedown', handleClick);
+    document.addEventListener('keydown', handleKey);
+    return () => {
+      document.removeEventListener('mousedown', handleClick);
+      document.removeEventListener('keydown', handleKey);
+    };
   }, [open, searchable]);
 
+  const menu =
+    open &&
+    coords &&
+    createPortal(
+      <div
+        ref={menuRef}
+        id={listId}
+        className="movies-dd__menu movies-dd__menu--portal"
+        role="listbox"
+        style={{
+          top: coords.top,
+          left: coords.left,
+          width: coords.width,
+          maxHeight: coords.maxHeight,
+        }}
+      >
+        {searchable && (
+          <div className="movies-dd__search">
+            <div className="relative">
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-500 pointer-events-none" />
+              <input
+                ref={searchRef}
+                type="text"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Tìm kiếm..."
+                className="movies-dd__search-input"
+                onClick={(e) => e.stopPropagation()}
+              />
+              {query && (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setQuery('');
+                    searchRef.current?.focus();
+                  }}
+                  className="movies-dd__search-clear"
+                  aria-label="Xóa tìm kiếm"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+        <div className="movies-dd__list">
+          {filteredOptions.length > 0 ? (
+            filteredOptions.map((opt) => (
+              <button
+                key={opt.value || '__all__'}
+                type="button"
+                role="option"
+                aria-selected={value === opt.value}
+                onClick={() => {
+                  onChange(opt.value);
+                  setOpen(false);
+                }}
+                className={`movies-dd__option${value === opt.value ? ' is-selected' : ''}`}
+              >
+                {opt.label}
+              </button>
+            ))
+          ) : (
+            <p className="movies-dd__empty">Không tìm thấy kết quả</p>
+          )}
+        </div>
+      </div>,
+      document.body,
+    );
+
   return (
-    <div className={`relative ${className}`} ref={ref}>
+    <div className={`movies-dd ${className}`.trim()} ref={rootRef}>
       <button
+        ref={triggerRef}
         type="button"
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        aria-controls={listId}
         onClick={(e) => {
           e.stopPropagation();
           setOpen((v) => !v);
         }}
-        className="w-full inline-flex items-center justify-between gap-2 rounded-xl bg-[#0f172a] border border-[#242d42] px-3 py-2.5 text-xs text-white hover:border-red-500/30 focus:outline-none focus:border-red-500/50 focus:ring-1 focus:ring-red-500/30 transition-all duration-300 cursor-pointer sm:min-w-[180px]"
+        className={`movies-dd__trigger${open ? ' is-open' : ''}`}
       >
         <span className="truncate">{selected?.label || label}</span>
-        <ChevronDown className={`w-4 h-4 shrink-0 text-gray-500 transition-transform ${open ? 'rotate-180' : ''}`} />
+        <ChevronDown className={`w-4 h-4 shrink-0 text-gray-400 transition-transform ${open ? 'rotate-180' : ''}`} />
       </button>
-
-      {open && (
-        <div className="absolute left-0 top-full z-[100] mt-1 w-full min-w-[220px] rounded-xl bg-[#121826] py-1 shadow-2xl ring-1 ring-white/10">
-          {searchable && (
-            <div className="px-2 pt-2 pb-1 border-b border-white/5">
-              <div className="relative">
-                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-500 pointer-events-none" />
-                <input
-                  ref={searchRef}
-                  type="text"
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Tìm kiếm..."
-                  className="w-full rounded-lg bg-[#0f172a] border border-[#242d42] pl-8 pr-7 py-2 text-xs text-white placeholder-gray-600 focus:outline-none focus:border-red-500/40"
-                  onClick={(e) => e.stopPropagation()}
-                />
-                {query && (
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setQuery('');
-                      searchRef.current?.focus();
-                    }}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 bg-transparent border-none p-0 cursor-pointer"
-                  >
-                    <X className="w-3 h-3" />
-                  </button>
-                )}
-              </div>
-            </div>
-          )}
-          <div className="max-h-52 overflow-y-auto py-1">
-            {filteredOptions.length > 0 ? (
-              filteredOptions.map((opt) => (
-                <button
-                  key={opt.value || '__all__'}
-                  type="button"
-                  onClick={() => {
-                    onChange(opt.value);
-                    setOpen(false);
-                  }}
-                  className={`w-full text-left px-3 py-2 text-sm transition cursor-pointer border-none ${
-                    value === opt.value
-                      ? 'bg-red-500/10 text-red-300 font-medium'
-                      : 'bg-transparent text-gray-400 hover:bg-white/[0.05] hover:text-gray-200'
-                  }`}
-                >
-                  {opt.label}
-                </button>
-              ))
-            ) : (
-              <p className="px-3 py-3 text-xs text-gray-500 text-center">Không tìm thấy kết quả</p>
-            )}
-          </div>
-        </div>
-      )}
+      {menu}
     </div>
   );
 };
@@ -125,7 +197,9 @@ const MoviesPage = () => {
   const [totalMoviesCount, setTotalMoviesCount] = useState(0);
   const [overallStats, setOverallStats] = useState({ total: 0, nowShowing: 0, comingSoon: 0, inactive: 0 });
   const [isLoading, setIsLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [keyword, setKeyword] = useState('');
+  const [debouncedKeyword, setDebouncedKeyword] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(20);
   const [genresList, setGenresList] = useState([]);
@@ -133,6 +207,8 @@ const MoviesPage = () => {
   const [genreFilter, setGenreFilter] = useState('');
   const [countryFilter, setCountryFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
+  const requestIdRef = useRef(0);
+  const hasLoadedRef = useRef(false);
 
   const fetchOverallStats = async () => {
     try {
@@ -150,32 +226,54 @@ const MoviesPage = () => {
     }
   };
 
-  const fetchMovies = async () => {
-    setIsLoading(true);
-    try {
-      const data = await movieService.getMovies({
-        keyword: keyword.trim() || undefined,
-        status: statusFilter || undefined,
-        genreUuids: genreFilter ? [genreFilter] : undefined,
-        countryUuid: countryFilter || undefined,
-        page: currentPage - 1,
-        size: itemsPerPage,
-      });
-      if (data?.content) {
-        setMovies(data.content);
-        setTotalMoviesCount(data.totalElements || data.content.length);
-      } else {
+  useEffect(() => {
+    const delay = keyword.trim() ? 280 : 0;
+    const timer = setTimeout(() => setDebouncedKeyword(keyword.trim()), delay);
+    return () => clearTimeout(timer);
+  }, [keyword]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [debouncedKeyword]);
+
+  useEffect(() => {
+    const requestId = ++requestIdRef.current;
+    const soft = hasLoadedRef.current;
+    if (soft) setIsRefreshing(true);
+    else setIsLoading(true);
+
+    (async () => {
+      try {
+        const data = await movieService.getMovies({
+          keyword: debouncedKeyword || undefined,
+          status: statusFilter || undefined,
+          genreUuids: genreFilter ? [genreFilter] : undefined,
+          countryUuid: countryFilter || undefined,
+          page: currentPage - 1,
+          size: itemsPerPage,
+        });
+        if (requestId !== requestIdRef.current) return;
+        if (data?.content) {
+          setMovies(data.content);
+          setTotalMoviesCount(data.totalElements || data.content.length);
+        } else {
+          setMovies([]);
+          setTotalMoviesCount(0);
+        }
+        hasLoadedRef.current = true;
+      } catch (err) {
+        if (requestId !== requestIdRef.current) return;
+        console.error('Failed to load admin movies list:', err);
+        notificationService.error('Không thể tải danh sách phim');
         setMovies([]);
-        setTotalMoviesCount(0);
+      } finally {
+        if (requestId === requestIdRef.current) {
+          setIsLoading(false);
+          setIsRefreshing(false);
+        }
       }
-    } catch (err) {
-      console.error('Failed to load admin movies list:', err);
-      notificationService.error('Không thể tải danh sách phim');
-      setMovies([]);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    })();
+  }, [debouncedKeyword, currentPage, itemsPerPage, statusFilter, genreFilter, countryFilter]);
 
   useEffect(() => {
     const fetchMetadata = async () => {
@@ -194,14 +292,26 @@ const MoviesPage = () => {
     fetchOverallStats();
   }, []);
 
-  useEffect(() => {
+  const applyStatusFilter = (value) => {
+    setStatusFilter(value);
     setCurrentPage(1);
-  }, [keyword, statusFilter, genreFilter, countryFilter]);
+  };
 
-  useEffect(() => {
-    const timer = setTimeout(fetchMovies, 400);
-    return () => clearTimeout(timer);
-  }, [keyword, currentPage, itemsPerPage, statusFilter, genreFilter, countryFilter]);
+  const applyGenreFilter = (value) => {
+    setGenreFilter(value);
+    setCurrentPage(1);
+  };
+
+  const applyCountryFilter = (value) => {
+    setCountryFilter(value);
+    setCurrentPage(1);
+  };
+
+  const clearExtraFilters = () => {
+    setGenreFilter('');
+    setCountryFilter('');
+    setCurrentPage(1);
+  };
 
   const statusFilters = [
     { value: '', label: 'Tất cả' },
@@ -219,101 +329,70 @@ const MoviesPage = () => {
 
   const countryOptions = [
     { value: '', label: 'Tất cả quốc gia' },
-    ...countriesList.map((c) => ({ value: c.uuid, label: `${c.name} (${c.code})` })),
+    ...countriesList.map((c) => ({ value: c.uuid, label: c.name })),
   ];
-
-  const inputClass =
-    'w-full rounded-xl bg-[#0f172a] border border-[#242d42] pl-10 pr-4 py-2.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-red-500/50 focus:ring-1 focus:ring-red-500/30 transition-all duration-300';
 
   const kpiStats = [
     {
-      label: 'Tổng số phim',
+      label: 'Tổng phim',
       value: overallStats.total,
-      badge: 'trong hệ thống',
-      icon: Clapperboard,
-      color: 'text-pink-400',
+      icon: Film,
       kpiClass: 'kpi-total',
     },
     {
       label: 'Đang chiếu',
       value: overallStats.nowShowing,
-      badge: 'phim đang phát',
-      icon: PlayCircle,
-      color: 'text-emerald-400',
+      icon: Play,
       kpiClass: 'kpi-showing',
     },
     {
       label: 'Sắp chiếu',
       value: overallStats.comingSoon,
-      badge: 'phim sắp ra mắt',
-      icon: CalendarClock,
-      color: 'text-blue-400',
+      icon: Calendar,
       kpiClass: 'kpi-upcoming',
     },
     {
       label: 'Nháp / tạm ngưng',
       value: overallStats.inactive,
-      badge: 'chưa công khai',
-      icon: Archive,
-      color: 'text-slate-400',
+      icon: Trash2,
       kpiClass: 'kpi-hidden',
     },
   ];
 
-  const getStatusBadgeClass = (status) => {
+  const getStatusVariant = (status) => {
     switch (status) {
       case 'NOW_SHOWING':
-        return 'text-emerald-400';
+        return 'success';
       case 'COMING_SOON':
-        return 'text-blue-400';
+        return 'info';
       case 'DRAFT':
-        return 'text-amber-400';
+        return 'warning';
       case 'ENDED':
-        return 'text-gray-500';
+        return 'muted';
       case 'INACTIVE':
-        return 'text-rose-400';
+        return 'danger';
       default:
-        return 'text-gray-500';
+        return 'muted';
     }
   };
 
   return (
-    <AdminPage>
+    <AdminPage className="movies-page">
       <PageHeader
         eyebrow="Trung tâm nội dung phim"
         variant="display"
         title="Quản lý phim"
         description="Đăng ký, cập nhật và phân loại phim trên hệ thống NASAFilm."
-        primaryAction={{
-          label: 'Thêm phim',
-          icon: <Plus className="w-3.5 h-3.5" />,
-          onClick: () => navigate('/admin/movies/new'),
-        }}
       />
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        {kpiStats.map((kpi) => (
-          <div key={kpi.label} className={`kpi-card ${kpi.kpiClass}`}>
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-[9px] font-bold uppercase tracking-wider text-gray-500 leading-tight">
-                {kpi.label}
-              </span>
-              <kpi.icon className={`w-4 h-4 ${kpi.color} opacity-60`} />
-            </div>
-            <p className={`text-xl font-black ${kpi.color} leading-none truncate font-heading`} title={String(kpi.value)}>
-              {kpi.value}
-            </p>
-            <p className="text-[9px] text-gray-500 mt-1.5 leading-none">{kpi.badge}</p>
-          </div>
-        ))}
-      </div>
+      <AdminKpiGrid items={kpiStats} />
 
-      <div className="relative z-30 overflow-visible bg-[#1c2333]/50 border border-[#242d42] rounded-2xl p-5 space-y-4 backdrop-blur-md shadow-2xl">
-        <div className="flex flex-col sm:flex-row gap-4">
-          <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500 w-4 h-4 pointer-events-none" />
+      <div className="movies-filter">
+        <div className="movies-filter__row">
+          <div className="movies-filter__search">
+            <Search className="movies-filter__search-icon" />
             <input
-              className={`${inputClass} pl-10 pr-8`}
+              className="movies-filter__input"
               placeholder="Tìm kiếm tên phim..."
               value={keyword}
               onChange={(e) => setKeyword(e.target.value)}
@@ -322,7 +401,8 @@ const MoviesPage = () => {
               <button
                 type="button"
                 onClick={() => setKeyword('')}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 cursor-pointer bg-transparent border-none p-0"
+                className="movies-filter__clear"
+                aria-label="Xóa tìm kiếm"
               >
                 <X className="w-3.5 h-3.5" />
               </button>
@@ -333,7 +413,7 @@ const MoviesPage = () => {
             label="Tất cả thể loại"
             value={genreFilter}
             options={genreOptions}
-            onChange={setGenreFilter}
+            onChange={applyGenreFilter}
             searchable
           />
 
@@ -341,42 +421,49 @@ const MoviesPage = () => {
             label="Tất cả quốc gia"
             value={countryFilter}
             options={countryOptions}
-            onChange={setCountryFilter}
+            onChange={applyCountryFilter}
             searchable
           />
 
           {(genreFilter || countryFilter) && (
-            <GhostButton type="button" onClick={() => { setGenreFilter(''); setCountryFilter(''); }}>
+            <button
+              type="button"
+              className="movies-pill"
+              onClick={clearExtraFilters}
+            >
               Xóa lọc
-            </GhostButton>
+            </button>
           )}
+
+          <button
+            type="button"
+            className="movies-filter__add adm-btn adm-btn--primary"
+            onClick={() => navigate('/admin/movies/new')}
+          >
+            <Plus className="w-3.5 h-3.5" />
+            Thêm phim
+          </button>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-[#242d42]/60">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-gray-500 mr-1">Trạng thái</span>
+        <div className="movies-filter__pills">
           {statusFilters.map((pill) => (
             <button
-              key={pill.value}
+              key={pill.value || 'all'}
               type="button"
-              onClick={() => setStatusFilter(pill.value)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wide transition cursor-pointer border ${
-                statusFilter === pill.value
-                  ? 'bg-red-500/15 text-red-400 border-red-500/30'
-                  : 'bg-transparent text-gray-500 border-[#242d42] hover:text-gray-300 hover:border-[#334155]'
-              }`}
+              className={`movies-pill${statusFilter === pill.value ? ' is-active' : ''}`}
+              onClick={() => applyStatusFilter(pill.value)}
             >
               {pill.label}
             </button>
           ))}
-          <span className="ml-auto text-xs font-medium text-gray-500">{totalMoviesCount} phim</span>
         </div>
       </div>
 
-      <Section title="Danh sách phim" divided titleVariant="admin" className="relative z-0">
+      <div className={`movies-results${isRefreshing ? ' is-refreshing' : ''}`}>
         {isLoading ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+          <div className="movies-grid">
             {Array.from({ length: 10 }).map((_, i) => (
-              <div key={i} className="animate-pulse aspect-[2/3] rounded-lg bg-white/[0.04]" />
+              <div key={i} className="movies-skeleton" />
             ))}
           </div>
         ) : movies.length > 0 ? (
@@ -384,15 +471,19 @@ const MoviesPage = () => {
             <VirtualGrid
               items={movies}
               threshold={100}
+              columns={5}
+              estimateRowHeight={380}
+              maxHeight="none"
               getItemKey={(movie) => movie.uuid}
+              gridClassName="movies-grid"
               renderItem={(movie) => (
                 <button
                   key={movie.uuid}
                   type="button"
                   onClick={() => navigate(`/admin/movies/${movie.uuid}`)}
-                  className="group text-left cursor-pointer bg-transparent border-none p-0"
+                  className="movies-card"
                 >
-                  <div className="relative aspect-[2/3] rounded-[20px] overflow-hidden bg-[#0f172a] mb-2 shadow-[0_15px_35px_rgba(0,0,0,0.35)] transition-transform duration-300 group-hover:scale-[1.02]">
+                  <div className="movies-card__poster">
                     {movie.primaryMediaUrl ? (
                       <img
                         src={resolveMediaUrl(movie.primaryMediaUrl, 400)}
@@ -400,54 +491,58 @@ const MoviesPage = () => {
                         alt={movie.title}
                         loading="lazy"
                         decoding="async"
-                        className="w-full h-full object-cover transition-opacity duration-200 group-hover:opacity-80"
+                        className="movies-card__img"
                         onError={handlePosterError}
                       />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center">
-                        <Film className="w-8 h-8 text-gray-700" />
+                      <div className="movies-card__placeholder">
+                        <Film className="w-8 h-8" />
                       </div>
                     )}
+                    <div className="movies-card__play" aria-hidden="true">
+                      <Play className="movies-card__play-icon" fill="currentColor" />
+                    </div>
+                    <div className="movies-card__fade" aria-hidden="true" />
+                    <p className="movies-card__title">{movie.title}</p>
                   </div>
-                  <p className="text-sm font-bold text-white uppercase tracking-wide truncate font-heading group-hover:text-red-400 transition-colors duration-200">
-                    {movie.title}
-                  </p>
-                  <p className="text-xs text-gray-400 mt-1 flex items-center gap-2 font-medium">
-                    <span className={`font-bold uppercase tracking-wide ${getStatusBadgeClass(movie.status)}`}>
+                  <p className="movies-card__meta">
+                    <StatusBadge variant={getStatusVariant(movie.status)}>
                       {getMovieStatusLabel(movie.status)}
-                    </span>
-                    {movie.durationMinutes && (
-                      <>
-                        <span>·</span>
-                        <span className="inline-flex items-center gap-0.5">
-                          <Clock className="w-3 h-3" />
-                          {movie.durationMinutes} phút
-                        </span>
-                      </>
-                    )}
+                    </StatusBadge>
+                    {movie.durationMinutes ? (
+                      <span className="inline-flex items-center gap-0.5">
+                        <Clock className="w-3 h-3" />
+                        {movie.durationMinutes} phút
+                      </span>
+                    ) : null}
                   </p>
                 </button>
               )}
             />
 
             {totalMoviesCount > 0 && (
-              <Pagination
-                currentPage={currentPage}
-                totalItems={totalMoviesCount}
-                itemsPerPage={itemsPerPage}
-                onPageChange={setCurrentPage}
-                onItemsPerPageChange={setItemsPerPage}
-              />
+              <div className="mt-8 pt-2">
+                <Pagination
+                  currentPage={currentPage}
+                  totalItems={totalMoviesCount}
+                  itemsPerPage={itemsPerPage}
+                  onPageChange={setCurrentPage}
+                  onItemsPerPageChange={(size) => {
+                    setItemsPerPage(size);
+                    setCurrentPage(1);
+                  }}
+                />
+              </div>
             )}
           </>
         ) : (
-          <div className="py-16 text-center">
-            <Film className="w-8 h-8 text-gray-600 mx-auto mb-3" />
-            <p className="text-sm font-bold text-gray-400 uppercase tracking-wider font-heading">Không tìm thấy phim nào</p>
-            <p className="text-xs text-gray-600 mt-1">Thử đổi từ khóa hoặc bộ lọc</p>
+          <div className="movies-empty">
+            <Film className="w-9 h-9 mx-auto opacity-50" />
+            <p className="movies-empty__title">Không tìm thấy phim nào</p>
+            <p className="text-xs mt-1 opacity-70">Thử đổi từ khóa hoặc bộ lọc</p>
           </div>
         )}
-      </Section>
+      </div>
     </AdminPage>
   );
 };

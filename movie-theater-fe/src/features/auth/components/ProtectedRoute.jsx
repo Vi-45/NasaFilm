@@ -1,14 +1,12 @@
-import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuthContext } from '../hooks/useAuthContext';
 import { hasAnyPermission } from '../../../shared/utils/permissions';
-
-
-
+import { getDefaultAdminPath, isAdminOrStaffUser } from '../../../shared/utils/adminNavigation';
 
 export const ProtectedRoute = ({
   children,
   allowedRoles,
+  blockedRoles,
   requiredPermissions,
 }) => {
   const { isAuthenticated, loading, user } = useAuthContext();
@@ -33,6 +31,18 @@ export const ProtectedRoute = ({
     const userRoles = user?.roles ?? [];
     const hasRequiredRole = allowedRoles.some((role) => userRoles.includes(role));
     if (!hasRequiredRole) {
+      return <Navigate to="/unauthorized" replace />;
+    }
+  }
+
+  // Admin/staff bị chặn khỏi luồng khách → về cổng quản trị (không kẹt /unauthorized rồi bấm về home)
+  if (blockedRoles && blockedRoles.length > 0) {
+    const userRoles = user?.roles ?? [];
+    const isBlocked = blockedRoles.some((role) => userRoles.includes(role));
+    if (isBlocked) {
+      if (isAdminOrStaffUser(user)) {
+        return <Navigate to={getDefaultAdminPath(user)} replace />;
+      }
       return <Navigate to="/unauthorized" replace />;
     }
   }

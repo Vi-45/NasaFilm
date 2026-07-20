@@ -4,6 +4,7 @@ import {
   BarChart3,
   CalendarRange,
   Copy,
+  LayoutGrid,
   Pencil,
   Plus,
   Power,
@@ -18,25 +19,33 @@ import {
 import { adminMissionService } from '../api/adminMissionService';
 import { notificationService } from '../../../shared/services/notificationService';
 import Pagination from '../../../shared/components/Pagination';
+import TabTransition from '../../../shared/components/TabTransition';
 import AdminModal from '../components/AdminModal';
 import MissionFormPanel from '../components/panels/MissionFormPanel';
 import MissionCampaignFormPanel from '../components/panels/MissionCampaignFormPanel';
-import { AdminPage, PageHeader, PrimaryButton, AdminKpiGrid } from '../components';
+import { AdminPage, PageHeader, PrimaryButton, AdminKpiGrid, FilterPills, StatusBadge } from '../components';
+import { useConfirm } from '../../../shared/context/ConfirmDialogContext';
+import useDragScroll from '../../../shared/hooks/useDragScroll';
 import {
   formatAdminDateRange,
   formatAdminDateTime,
   getCampaignStatusLabel,
+  getCampaignPosterSrc,
   getConditionLabel,
   getMissionDisplayTitle,
+  getMissionPosterSrc,
   getRecurrenceLabel,
   resolveCampaignTitle,
 } from '../utils/missionAdminUtils';
 import './MissionsPage.css';
 
-const CAMPAIGN_STATUS_CLASS = {
-  DRAFT: 'is-draft',
-  ACTIVE: 'is-live',
-  ARCHIVED: 'is-archived',
+const MissionStrip = ({ children }) => {
+  const { ref, dragScrollProps } = useDragScroll();
+  return (
+    <div ref={ref} className="mc-strip" {...dragScrollProps}>
+      {children}
+    </div>
+  );
 };
 
 const MissionSkeleton = () => (
@@ -70,165 +79,176 @@ const TemplateRow = ({
   const campaignTitle = resolveCampaignTitle(item.campaignUuid, campaigns);
   const enrolledCount = item.enrolledCount ?? 0;
   const completedCount = item.completedCount ?? 0;
+  const completionPct = enrolledCount > 0
+    ? Math.min(100, Math.round((completedCount / enrolledCount) * 1000) / 10)
+    : 0;
   const deletedLabel = isDeletedView && item.deletedAt ? formatAdminDateTime(item.deletedAt) : null;
+  const posterSrc = getMissionPosterSrc(item);
 
   return (
     <article
-      className={`mc-row mc-row--template ${isDeletedView ? 'is-deleted' : item.active ? 'is-on' : 'is-off'}`}
+      className={`mc-card ${isDeletedView ? 'is-deleted' : item.active ? 'is-on' : 'is-off'}`}
     >
-      <div className="mc-row__signal" aria-hidden="true" />
-
-      <div className="mc-row__identity">
-        <div className="mc-row__copy">
-          <h3 className="mc-row__title">{displayTitle}</h3>
-          <p className="mc-row__desc">{item.description}</p>
-          <div className="mc-row__tags">
-            <span className="mc-tag mc-tag--muted">{getConditionLabel(item.conditionType)}</span>
-            <span className="mc-tag">{getRecurrenceLabel(item.recurrence)}</span>
-            {campaignTitle && (
-              <span className="mc-row__campaign">
-                <Rocket size={11} />
-                {campaignTitle}
-              </span>
-            )}
-            {deletedLabel && (
-              <span className="mc-tag mc-tag--calendar">Xóa lúc {deletedLabel}</span>
-            )}
-          </div>
-        </div>
-      </div>
-
-      <div className="mc-row__metrics">
-        <div className="mc-row__points">
+      <div className="mc-card__media">
+        <img src={posterSrc} alt="" className="mc-card__media-img" loading="lazy" />
+        <div className="mc-card__points">
           <strong>+{item.rewardPoints ?? 0}</strong>
           <span>điểm</span>
         </div>
-        <div className="mc-row__stats">
-          <span>{enrolledCount} tham gia</span>
-          <span>{completedCount} hoàn thành</span>
-        </div>
       </div>
 
-      <div className="mc-row__actions">
-        {isDeletedView ? (
-          <button
-            type="button"
-            className="mc-row__edit mc-row__edit--ghost"
-            onClick={() => onRestore(item)}
-            disabled={isRestoring}
-            title="Khôi phục nhiệm vụ"
-          >
-            <RotateCcw size={14} />
-            {isRestoring ? 'Đang khôi phục...' : 'Khôi phục'}
-          </button>
-        ) : (
-          <>
-            <button
-              type="button"
-              className={`mc-toggle ${item.active ? 'is-on' : 'is-off'}`}
-              onClick={() => onToggle(item)}
-              disabled={isToggling}
-              aria-pressed={item.active}
-              title={item.active ? 'Bấm để tắt hiển thị với khán giả' : 'Bấm để bật hiển thị với khán giả'}
-            >
-              <Power size={12} />
-              {isToggling ? 'Đang lưu...' : item.active ? 'Đang bật' : 'Đã tắt'}
-            </button>
-            <button type="button" className="mc-row__edit" onClick={() => onEdit(item)}>
-              <Pencil size={14} />
-              Sửa
-            </button>
-            <button
-              type="button"
-              className="mc-row__edit mc-row__edit--ghost"
-              onClick={() => onDuplicate(item)}
-              disabled={isDuplicating}
-              title="Tạo bản sao (tắt mặc định)"
-            >
-              <Copy size={14} />
-              {isDuplicating ? 'Đang sao...' : 'Sao chép'}
-            </button>
-            <button
-              type="button"
-              className="mc-row__edit mc-row__edit--danger"
-              onClick={() => onDelete(item)}
-              disabled={isDeleting}
-              title="Xóa mềm — có thể khôi phục sau"
-            >
-              <Trash2 size={14} />
-              {isDeleting ? 'Đang xóa...' : 'Xóa'}
-            </button>
-          </>
+      <div className="mc-card__body">
+        <div className="mc-card__copy">
+          <h3 className="mc-card__title">{displayTitle}</h3>
+          <p className="mc-card__desc">{item.description}</p>
+        </div>
+
+        <div className="mc-card__meta">
+          <span className="mc-chip">{getConditionLabel(item.conditionType)}</span>
+          <span className="mc-chip mc-chip--muted">{getRecurrenceLabel(item.recurrence)}</span>
+          {campaignTitle && (
+            <span className="mc-chip mc-chip--amber">
+              <Rocket size={11} />
+              {campaignTitle}
+            </span>
+          )}
+          {deletedLabel && (
+            <span className="mc-chip mc-chip--amber">Xóa lúc {deletedLabel}</span>
+          )}
+        </div>
+
+        {!isDeletedView && (
+          <div className="mc-card__progress">
+            <span className="mc-card__progress-pct">{completionPct}%</span>
+            <div className="mc-card__progress-track">
+              <div
+                className="mc-card__progress-fill"
+                style={{ width: `${completionPct}%` }}
+              />
+            </div>
+            <span className="mc-card__progress-hint">
+              {completedCount}/{enrolledCount} hoàn thành
+            </span>
+          </div>
         )}
+
+        <div className="mc-card__actions">
+          {isDeletedView ? (
+            <button
+              type="button"
+              className="mc-btn mc-btn--ghost"
+              onClick={() => onRestore(item)}
+              disabled={isRestoring}
+            >
+              <RotateCcw size={14} />
+              {isRestoring ? 'Đang khôi phục...' : 'Khôi phục'}
+            </button>
+          ) : (
+            <>
+              <button
+                type="button"
+                className={`mc-btn ${item.active ? 'mc-btn--live' : 'mc-btn--ghost'}`}
+                onClick={() => onToggle(item)}
+                disabled={isToggling}
+                aria-pressed={item.active}
+              >
+                <Power size={12} />
+                {isToggling ? 'Đang lưu...' : item.active ? 'Tắt' : 'Bật'}
+              </button>
+              <button type="button" className="mc-btn" onClick={() => onEdit(item)}>
+                <Pencil size={14} />
+                Sửa
+              </button>
+              <button
+                type="button"
+                className="mc-btn mc-btn--ghost"
+                onClick={() => onDuplicate(item)}
+                disabled={isDuplicating}
+              >
+                <Copy size={14} />
+                {isDuplicating ? '...' : 'Sao chép'}
+              </button>
+              <button
+                type="button"
+                className="mc-btn mc-btn--danger"
+                onClick={() => onDelete(item)}
+                disabled={isDeleting}
+              >
+                <Trash2 size={14} />
+                {isDeleting ? '...' : 'Xóa'}
+              </button>
+            </>
+          )}
+        </div>
       </div>
     </article>
   );
 };
 
 const CampaignRow = ({ item, onEdit, onArchive, onDelete, isArchiving, isDeleting }) => {
-  const statusClass = CAMPAIGN_STATUS_CLASS[item.status] || 'is-draft';
   const canDelete = (item.templateCount ?? 0) === 0;
   const canArchive = item.status !== 'ARCHIVED';
+  const statusVariant =
+    item.status === 'ACTIVE' ? 'success' : item.status === 'ARCHIVED' ? 'muted' : 'info';
 
   return (
-    <article className={`mc-row mc-row--campaign ${statusClass}`}>
-      <div className="mc-row__signal" aria-hidden="true" />
-
-      <div className="mc-row__identity">
-        <div className="mc-row__copy">
-          <h3 className="mc-row__title">{item.title}</h3>
-          <p className="mc-row__desc">{item.description}</p>
+    <article className={`mc-card mc-card--campaign is-${(item.status || 'DRAFT').toLowerCase()}`}>
+      <div className="mc-card__media mc-card__media--campaign">
+        <img src={getCampaignPosterSrc()} alt="" className="mc-card__media-img" loading="lazy" />
+        <div className="mc-card__points mc-card__points--status">
+          <StatusBadge variant={statusVariant}>{getCampaignStatusLabel(item.status)}</StatusBadge>
         </div>
       </div>
-
-      <div className="mc-row__tags">
-        <span className="mc-tag mc-tag--calendar">
-          <CalendarRange size={12} />
-          {formatAdminDateRange(item.startsAt, item.endsAt)}
-        </span>
-        <span className="mc-tag mc-tag--muted">{item.templateCount ?? 0} nhiệm vụ</span>
-      </div>
-
-      <div className="mc-row__actions mc-row__actions--campaign">
-        <span className={`mc-pill ${statusClass}`}>
-          {getCampaignStatusLabel(item.status)}
-        </span>
-        <button type="button" className="mc-row__edit" onClick={() => onEdit(item)}>
-          <Pencil size={14} />
-          Sửa
-        </button>
-        {canArchive && (
+      <div className="mc-card__body">
+        <div className="mc-card__copy">
+          <h3 className="mc-card__title">{item.title}</h3>
+          <p className="mc-card__desc">{item.description}</p>
+        </div>
+        <div className="mc-card__meta">
+          <span className="mc-chip mc-chip--amber">
+            <CalendarRange size={12} />
+            {formatAdminDateRange(item.startsAt, item.endsAt)}
+          </span>
+          <span className="mc-chip mc-chip--muted">{item.templateCount ?? 0} nhiệm vụ</span>
+        </div>
+        <div className="mc-card__actions">
+          <button type="button" className="mc-btn" onClick={() => onEdit(item)}>
+            <Pencil size={14} />
+            Sửa
+          </button>
+          {canArchive && (
+            <button
+              type="button"
+              className="mc-btn mc-btn--ghost"
+              onClick={() => onArchive(item)}
+              disabled={isArchiving}
+            >
+              <Archive size={14} />
+              {isArchiving ? '...' : 'Lưu trữ'}
+            </button>
+          )}
           <button
             type="button"
-            className="mc-row__edit mc-row__edit--ghost"
-            onClick={() => onArchive(item)}
-            disabled={isArchiving}
-            title="Ẩn chiến dịch với khán giả"
+            className="mc-btn mc-btn--danger"
+            onClick={() => onDelete(item)}
+            disabled={!canDelete || isDeleting}
+            title={
+              canDelete
+                ? 'Xóa vĩnh viễn chiến dịch'
+                : 'Gỡ nhiệm vụ khỏi chiến dịch trước khi xóa'
+            }
           >
-            <Archive size={14} />
-            {isArchiving ? 'Đang lưu...' : 'Lưu trữ'}
+            <Trash2 size={14} />
+            {isDeleting ? '...' : 'Xóa'}
           </button>
-        )}
-        <button
-          type="button"
-          className="mc-row__edit mc-row__edit--danger"
-          onClick={() => onDelete(item)}
-          disabled={!canDelete || isDeleting}
-          title={
-            canDelete
-              ? 'Xóa vĩnh viễn chiến dịch'
-              : 'Gỡ nhiệm vụ khỏi chiến dịch trước khi xóa'
-          }
-        >
-          <Trash2 size={14} />
-          {isDeleting ? 'Đang xóa...' : 'Xóa'}
-        </button>
+        </div>
       </div>
     </article>
   );
 };
 
 const MissionsPage = () => {
+  const confirm = useConfirm();
   const [activeTab, setActiveTab] = useState('templates');
   const [templates, setTemplates] = useState([]);
   const [campaigns, setCampaigns] = useState([]);
@@ -240,7 +260,7 @@ const MissionsPage = () => {
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [templatePage, setTemplatePage] = useState(1);
   const [campaignPage, setCampaignPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, _setPageSize] = useState(10);
   const [templateTotal, setTemplateTotal] = useState(0);
   const [campaignTotal, setCampaignTotal] = useState(0);
   const [templateModal, setTemplateModal] = useState({ open: false, template: null });
@@ -274,6 +294,7 @@ const MissionsPage = () => {
         analyticsData,
         campaignOptionsData,
         formTemplateData,
+        deletedFormTemplateData,
       ] = await Promise.all([
         adminMissionService.getTemplates({
           deleted: templateView === 'deleted',
@@ -289,6 +310,7 @@ const MissionsPage = () => {
         adminMissionService.getAnalytics(),
         adminMissionService.getCampaigns({ page: 0, size: 100 }),
         adminMissionService.getTemplates({ deleted: false, page: 0, size: 500 }),
+        adminMissionService.getTemplates({ deleted: true, page: 0, size: 500 }),
       ]);
       setTemplates(templateData.items);
       setTemplateTotal(templateData.total);
@@ -296,7 +318,13 @@ const MissionsPage = () => {
       setCampaignTotal(campaignData.total);
       setAnalytics(analyticsData);
       setCampaignOptions(campaignOptionsData.items);
-      setFormTemplates(formTemplateData.items);
+      const activeCodes = formTemplateData.items || [];
+      const deletedCodes = deletedFormTemplateData.items || [];
+      const byCode = new Map();
+      [...activeCodes, ...deletedCodes].forEach((item) => {
+        if (item?.code) byCode.set(String(item.code).toUpperCase(), item);
+      });
+      setFormTemplates([...byCode.values()]);
     } catch (error) {
       const message = error.message || 'Không thể tải dữ liệu nhiệm vụ.';
       setLoadError(message);
@@ -323,7 +351,7 @@ const MissionsPage = () => {
       value: totalTemplates,
       badge: 'trong hệ thống',
       icon: Target,
-      color: 'text-pink-400',
+      color: 'text-red-400',
       kpiClass: 'kpi-total',
     },
     {
@@ -339,7 +367,7 @@ const MissionsPage = () => {
       value: liveCampaigns,
       badge: 'chiến dịch active',
       icon: Rocket,
-      color: 'text-blue-400',
+      color: 'text-amber-400',
       kpiClass: 'kpi-upcoming',
     },
     {
@@ -347,7 +375,7 @@ const MissionsPage = () => {
       value: analytics != null ? `${Math.round(analytics.overallCompletionRate ?? 0)}%` : '—',
       badge: 'trên toàn hệ thống',
       icon: BarChart3,
-      color: 'text-amber-400',
+      color: 'text-sky-400',
       kpiClass: 'kpi-hidden',
     },
   ];
@@ -361,6 +389,17 @@ const MissionsPage = () => {
   };
 
   const handleToggleActive = async (template) => {
+    const ok = await confirm({
+      title: template.active ? 'Tắt nhiệm vụ' : 'Bật nhiệm vụ',
+      message: template.active
+        ? 'Khán giả sẽ không còn thấy nhiệm vụ này trên tab Nhiệm vụ.'
+        : 'Khán giả sẽ thấy nhiệm vụ này trên tab Nhiệm vụ.',
+      highlight: getMissionDisplayTitle(template),
+      confirmLabel: template.active ? 'Tắt nhiệm vụ' : 'Bật nhiệm vụ',
+      variant: 'warning',
+    });
+    if (!ok) return;
+
     setTogglingCode(template.code);
     try {
       await adminMissionService.toggleTemplateActive(template);
@@ -393,10 +432,14 @@ const MissionsPage = () => {
   };
 
   const handleDeleteTemplate = async (template) => {
-    const confirmed = window.confirm(
-      `Xóa nhiệm vụ "${getMissionDisplayTitle(template)}"?\n\nNhiệm vụ sẽ ẩn khỏi khán giả và có thể khôi phục trong tab "Đã xóa".`,
-    );
-    if (!confirmed) return;
+    const ok = await confirm({
+      title: 'Xóa nhiệm vụ',
+      message: 'Nhiệm vụ sẽ ẩn khỏi khán giả và có thể khôi phục trong tab "Đã xóa".',
+      highlight: getMissionDisplayTitle(template),
+      confirmLabel: 'Xóa nhiệm vụ',
+      variant: 'danger',
+    });
+    if (!ok) return;
 
     setDeletingCode(template.code);
     try {
@@ -411,6 +454,15 @@ const MissionsPage = () => {
   };
 
   const handleRestoreTemplate = async (template) => {
+    const ok = await confirm({
+      title: 'Khôi phục nhiệm vụ',
+      message: 'Khôi phục nhiệm vụ này? Bạn cần bật lại nếu muốn hiển thị với khán giả.',
+      highlight: getMissionDisplayTitle(template),
+      confirmLabel: 'Khôi phục',
+      variant: 'warning',
+    });
+    if (!ok) return;
+
     setRestoringCode(template.code);
     try {
       const restored = await adminMissionService.restoreTemplate(template.code);
@@ -427,6 +479,15 @@ const MissionsPage = () => {
 
   const handleArchiveCampaign = async (campaign) => {
     if (!campaign?.uuid) return;
+    const ok = await confirm({
+      title: 'Lưu trữ chiến dịch',
+      message: 'Chiến dịch sẽ ngừng hiển thị với khán giả. Bạn có thể xem lại trong danh sách đã lưu trữ.',
+      highlight: campaign.title,
+      confirmLabel: 'Lưu trữ',
+      variant: 'warning',
+    });
+    if (!ok) return;
+
     setArchivingUuid(campaign.uuid);
     try {
       const updated = await adminMissionService.archiveCampaign(campaign.uuid);
@@ -448,8 +509,14 @@ const MissionsPage = () => {
       notificationService.error('Gỡ nhiệm vụ khỏi chiến dịch trước khi xóa.');
       return;
     }
-    const confirmed = window.confirm(`Xóa vĩnh viễn chiến dịch "${campaign.title}"?`);
-    if (!confirmed) return;
+    const ok = await confirm({
+      title: 'Xóa vĩnh viễn chiến dịch',
+      message: 'Chiến dịch sẽ bị xóa hoàn toàn và không thể khôi phục.',
+      highlight: campaign.title,
+      confirmLabel: 'Xóa vĩnh viễn',
+      variant: 'danger',
+    });
+    if (!ok) return;
 
     setDeletingUuid(campaign.uuid);
     try {
@@ -478,93 +545,75 @@ const MissionsPage = () => {
                 onClick: openCreate,
               }
         }
-        secondaryActions={[
-          {
-            label: 'Làm mới',
-            icon: <RefreshCw size={15} className={isLoading ? 'mc-spin' : ''} />,
-            onClick: loadData,
-            disabled: isLoading,
-          },
-        ]}
       />
 
       <AdminKpiGrid items={missionKpis} />
 
-      <div className="mc-toolbar">
-        <div className="mc-tabs" role="tablist">
-          <button
-            type="button"
-            role="tab"
-            aria-selected={activeTab === 'templates'}
-            className={activeTab === 'templates' ? 'is-active' : ''}
-            onClick={() => {
-              setActiveTab('templates');
-              setSearch('');
-            }}
-          >
-            <Target size={15} />
-            Nhiệm vụ
-            <span className="mc-tabs__count">
-              {templateView === 'deleted'
-                ? (analytics?.deletedTemplates ?? templateTotal)
-                : (analytics?.totalTemplates ?? templateTotal)}
-            </span>
-          </button>
-          <button
-            type="button"
-            role="tab"
-            aria-selected={activeTab === 'campaigns'}
-            className={activeTab === 'campaigns' ? 'is-active' : ''}
-            onClick={() => {
-              setActiveTab('campaigns');
-              setSearch('');
-            }}
-          >
-            <Rocket size={15} />
-            Chiến dịch
-            <span className="mc-tabs__count">{analytics?.totalCampaigns ?? campaignTotal}</span>
-          </button>
+      <section className="mc-section">
+        <div className="mc-section__head">
+          <h2 className="mc-section__title">
+            <LayoutGrid className="w-3.5 h-3.5" />
+            {activeTab === 'templates'
+              ? templateView === 'deleted'
+                ? 'Nhiệm vụ đã xóa'
+                : 'Nhiệm vụ đang quản lý'
+              : 'Chiến dịch'}
+          </h2>
         </div>
 
-        <label className="mc-search">
-          <Search size={15} />
-          <input
-            type="search"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder={activeTab === 'templates' ? 'Tìm tên nhiệm vụ...' : 'Tìm tên chiến dịch...'}
-          />
-        </label>
-      </div>
+        <div className="mc-toolbar">
+          <div className="mc-toolbar__row">
+            <FilterPills
+              value={activeTab}
+              onChange={(id) => {
+                setActiveTab(id);
+                setSearch('');
+              }}
+              items={[
+                {
+                  id: 'templates',
+                  label: 'Nhiệm vụ',
+                  count:
+                    templateView === 'deleted'
+                      ? (analytics?.deletedTemplates ?? templateTotal)
+                      : (analytics?.totalTemplates ?? templateTotal),
+                },
+                {
+                  id: 'campaigns',
+                  label: 'Chiến dịch',
+                  count: analytics?.totalCampaigns ?? campaignTotal,
+                },
+              ]}
+              ariaLabel="Loại nội dung nhiệm vụ"
+            />
 
-      {activeTab === 'templates' && (
-        <div className="mc-subtabs" role="tablist" aria-label="Lọc nhiệm vụ">
-          <button
-            type="button"
-            role="tab"
-            aria-selected={templateView === 'active'}
-            className={templateView === 'active' ? 'is-active' : ''}
-            onClick={() => {
-              setTemplateView('active');
-              setSearch('');
-            }}
-          >
-            Đang quản lý
-          </button>
-          <button
-            type="button"
-            role="tab"
-            aria-selected={templateView === 'deleted'}
-            className={templateView === 'deleted' ? 'is-active' : ''}
-            onClick={() => {
-              setTemplateView('deleted');
-              setSearch('');
-            }}
-          >
-            Đã xóa
-          </button>
+            {activeTab === 'templates' && (
+              <FilterPills
+                value={templateView}
+                onChange={(id) => {
+                  setTemplateView(id);
+                  setSearch('');
+                }}
+                items={[
+                  { id: 'active', label: 'Đang quản lý' },
+                  { id: 'deleted', label: 'Đã xóa' },
+                ]}
+                ariaLabel="Lọc nhiệm vụ"
+              />
+            )}
+
+            <label className="mc-search">
+              <Search size={15} className="mc-search__icon" />
+              <input
+                type="search"
+                className="adm-input"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder={activeTab === 'templates' ? 'Nhập tên nhiệm vụ...' : 'Nhập tên chiến dịch...'}
+              />
+            </label>
+          </div>
         </div>
-      )}
 
       {isLoading ? (
         <MissionSkeleton />
@@ -578,7 +627,9 @@ const MissionsPage = () => {
             Thử lại
           </PrimaryButton>
         </div>
-      ) : activeTab === 'templates' ? (
+      ) : (
+      <TabTransition activeKey={`${activeTab}-${templateView}`}>
+      {activeTab === 'templates' ? (
         templates.length === 0 ? (
           <div className="mc-empty">
             <Target size={28} strokeWidth={1.5} />
@@ -604,25 +655,27 @@ const MissionsPage = () => {
             )}
           </div>
         ) : (
-          <div className="mc-list">
-            {templates.map((item) => (
-              <TemplateRow
-                key={item.uuid || item.code}
-                item={item}
-                campaigns={campaignOptions}
-                onEdit={(template) => setTemplateModal({ open: true, template })}
-                onToggle={handleToggleActive}
-                onDuplicate={handleDuplicateTemplate}
-                onDelete={handleDeleteTemplate}
-                onRestore={handleRestoreTemplate}
-                isToggling={togglingCode === item.code}
-                isDuplicating={duplicatingCode === item.code}
-                isDeleting={deletingCode === item.code}
-                isRestoring={restoringCode === item.code}
-                isDeletedView={templateView === 'deleted'}
-              />
-            ))}
-          </div>
+          <>
+            <MissionStrip>
+              {templates.map((item) => (
+                <TemplateRow
+                  key={item.uuid || item.code}
+                  item={item}
+                  campaigns={campaignOptions}
+                  onEdit={(template) => setTemplateModal({ open: true, template })}
+                  onToggle={handleToggleActive}
+                  onDuplicate={handleDuplicateTemplate}
+                  onDelete={handleDeleteTemplate}
+                  onRestore={handleRestoreTemplate}
+                  isToggling={togglingCode === item.code}
+                  isDuplicating={duplicatingCode === item.code}
+                  isDeleting={deletingCode === item.code}
+                  isRestoring={restoringCode === item.code}
+                  isDeletedView={templateView === 'deleted'}
+                />
+              ))}
+            </MissionStrip>
+          </>
         )
       ) : campaigns.length === 0 ? (
         <div className="mc-empty">
@@ -641,20 +694,25 @@ const MissionsPage = () => {
           )}
         </div>
       ) : (
-        <div className="mc-list">
-          {campaigns.map((item) => (
-            <CampaignRow
-              key={item.uuid || item.code}
-              item={item}
-              onEdit={(campaign) => setCampaignModal({ open: true, campaign })}
-              onArchive={handleArchiveCampaign}
-              onDelete={handleDeleteCampaign}
-              isArchiving={archivingUuid === item.uuid}
-              isDeleting={deletingUuid === item.uuid}
-            />
-          ))}
-        </div>
+        <>
+          <MissionStrip>
+            {campaigns.map((item) => (
+              <CampaignRow
+                key={item.uuid || item.code}
+                item={item}
+                onEdit={(campaign) => setCampaignModal({ open: true, campaign })}
+                onArchive={handleArchiveCampaign}
+                onDelete={handleDeleteCampaign}
+                isArchiving={archivingUuid === item.uuid}
+                isDeleting={deletingUuid === item.uuid}
+              />
+            ))}
+          </MissionStrip>
+        </>
       )}
+      </TabTransition>
+      )}
+      </section>
 
       {!isLoading && !loadError && activeTab === 'templates' && templateTotal > pageSize && (
         <Pagination
@@ -677,6 +735,7 @@ const MissionsPage = () => {
       <AdminModal
         open={templateModal.open}
         title={templateModal.template ? 'Sửa nhiệm vụ' : 'Thêm nhiệm vụ'}
+        size="xl"
         onClose={() => setTemplateModal({ open: false, template: null })}
       >
         <MissionFormPanel
@@ -694,6 +753,7 @@ const MissionsPage = () => {
       <AdminModal
         open={campaignModal.open}
         title={campaignModal.campaign ? 'Sửa chiến dịch' : 'Thêm chiến dịch'}
+        size="lg"
         onClose={() => setCampaignModal({ open: false, campaign: null })}
       >
         <MissionCampaignFormPanel

@@ -330,13 +330,8 @@ public class AuthService {
         }
 
         if (!roleIds.isEmpty()) {
-            List<UUID> adminRoleIds = userRoles.stream()
-                .filter(ur -> ur.getRole().getName() == RoleName.ADMIN)
-                .map(ur -> ur.getRole().getId())
-                .toList();
-            if (!adminRoleIds.isEmpty()) {
-                authorities.addAll(rolePermissionRepository.findPermissionNamesByRoleIds(adminRoleIds));
-            }
+            // Load permissions for ALL roles the user has (ADMIN, STAFF, etc.)
+            authorities.addAll(rolePermissionRepository.findPermissionNamesByRoleIds(roleIds));
         }
         authorities.addAll(userPermissionRepository.findPermissionNamesByUserId(user.getId()));
 
@@ -490,8 +485,10 @@ public class AuthService {
         String otpCode = String.format("%06d", new SecureRandom().nextInt(1000000));
         user.setVerificationCode(passwordEncoder.encode(otpCode));
         user.setVerificationCodeExpiry(LocalDateTime.now().plusMinutes(5));
-        user.setVerificationAttempts(0);
-        user.setVerificationLockTime(null);
+        if (existingUserOpt.isEmpty()) {
+            user.setVerificationAttempts(0);
+            user.setVerificationLockTime(null);
+        }
 
         userRepository.save(user);
 
@@ -548,7 +545,7 @@ public class AuthService {
 
         if (!otpValid) {
             int attempts = (user.getVerificationAttempts() != null ? user.getVerificationAttempts() : 0) + 1;
-            final int maxAttempts = 10;
+            final int maxAttempts = 5;
             if (attempts >= maxAttempts) {
                 user.setVerificationLockTime(LocalDateTime.now().plusMinutes(15));
                 user.setVerificationAttempts(0);

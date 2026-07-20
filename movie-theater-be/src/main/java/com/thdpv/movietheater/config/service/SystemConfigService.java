@@ -164,7 +164,6 @@ public class SystemConfigService {
         return readBoolean(self.getConfig().get("refundManualApprovalRequired"), true);
     }
 
-    @SuppressWarnings("unchecked")
     public List<Map<String, Object>> getRoomTypes() {
         Object value = self.getConfig().get("roomTypes");
         if (value instanceof List<?> list && !list.isEmpty()) {
@@ -181,7 +180,6 @@ public class SystemConfigService {
         return defaultRoomTypes();
     }
 
-    @SuppressWarnings("unchecked")
     public List<Map<String, Object>> getScreeningFormats() {
         Object value = self.getConfig().get("screeningFormats");
         if (value instanceof List<?> list && !list.isEmpty()) {
@@ -218,6 +216,7 @@ public class SystemConfigService {
         defaults.put("endTime", "23:30");
         defaults.put("intervalMinutes", 15);
         defaults.put("trailerBuffer", 10);
+        defaults.put("minLeadMinutes", 30);
         defaults.put("slotStepMinutes", 30);
         defaults.put("gridAlignMinutes", 15);
         defaults.put("fairnessPenalty", 25);
@@ -347,7 +346,6 @@ public class SystemConfigService {
         return bot;
     }
 
-    @SuppressWarnings("unchecked")
     public List<String> getReviewBannedWords() {
         Object value = self.getConfig().get("reviewBannedWords");
         if (!(value instanceof List<?> rawList)) {

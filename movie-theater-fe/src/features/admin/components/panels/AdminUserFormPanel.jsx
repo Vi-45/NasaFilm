@@ -1,13 +1,13 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { adminUserService } from '../../api/adminUserService';
 import { notificationService } from '../../../../shared/services/notificationService';
+import { useConfirm } from '../../../../shared/context/ConfirmDialogContext';
 import { PrimaryButton, GhostButton } from '..';
 import { adminInputClass, adminLabelClass } from '../adminFormStyles';
 
 const emptyStaffForm = {
   email: '',
   fullName: '',
-  password: '',
   staffPreset: '',
   permissions: [],
 };
@@ -29,6 +29,7 @@ const STAFF_PRESETS = [
 ];
 
 const AdminUserFormPanel = ({ mode = 'STAFF', initialPermissions, onSuccess, onCancel }) => {
+  const confirm = useConfirm();
   const isStaff = mode === 'STAFF';
   const [isSaving, setIsSaving] = useState(false);
   const [availablePermissions, setAvailablePermissions] = useState(initialPermissions || []);
@@ -79,14 +80,17 @@ const AdminUserFormPanel = ({ mode = 'STAFF', initialPermissions, onSuccess, onC
       notificationService.error('Vui lòng điền email và tên tài khoản');
       return;
     }
-    if (isStaff && !form.password.trim()) {
-      notificationService.error('Vui lòng nhập mật khẩu cho nhân viên');
-      return;
-    }
-    if (isStaff && form.password.length < 8) {
-      notificationService.error('Mật khẩu nhân viên phải có ít nhất 8 ký tự');
-      return;
-    }
+
+    const ok = await confirm({
+      title: 'Tạo tài khoản',
+      message: isStaff
+        ? 'Tạo tài khoản nhân viên mới với quyền đã chọn?'
+        : 'Tạo tài khoản khách hàng? Hệ thống sẽ gửi thông tin kích hoạt qua email.',
+      highlight: `${form.fullName.trim()} · ${form.email.trim()}`,
+      confirmLabel: 'Tạo tài khoản',
+      variant: 'warning',
+    });
+    if (!ok) return;
 
     setIsSaving(true);
     try {
@@ -96,7 +100,6 @@ const AdminUserFormPanel = ({ mode = 'STAFF', initialPermissions, onSuccess, onC
         roleName: mode,
       };
       if (isStaff) {
-        payload.password = form.password;
         payload.staffPreset = form.staffPreset || null;
         payload.permissions = form.permissions || [];
       }
@@ -143,15 +146,12 @@ const AdminUserFormPanel = ({ mode = 'STAFF', initialPermissions, onSuccess, onC
         </div>
         {isStaff && (
           <div className="sm:col-span-2">
-            <label className={adminLabelClass}>Mật khẩu *</label>
-            <input
-              type="password"
-              className={adminInputClass}
-              value={form.password}
-              onChange={(e) => updateField('password', e.target.value)}
-              placeholder="Tối thiểu 8 ký tự"
-              required
-            />
+            <div className="flex items-start gap-2 rounded-lg border border-blue-500/20 bg-blue-500/5 px-3 py-2">
+              <span className="text-blue-400 mt-0.5">🔐</span>
+              <p className="text-xs text-blue-300/80">
+                Mật khẩu sẽ được <strong className="text-blue-300">tạo tự động</strong> và gửi kèm trong email kích hoạt. Nhân viên cần nhấn link để đặt mật khẩu mới.
+              </p>
+            </div>
           </div>
         )}
       </div>

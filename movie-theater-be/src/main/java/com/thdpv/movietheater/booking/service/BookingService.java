@@ -53,7 +53,6 @@ import com.thdpv.movietheater.movie.entity.Movie;
 import com.thdpv.movietheater.movie.entity.MovieMedia;
 import com.thdpv.movietheater.movie.enums.ScreeningMode;
 import com.thdpv.movietheater.movie.repository.MovieRepository;
-import com.thdpv.movietheater.movie.util.MovieStreamingUtils;
 import com.thdpv.movietheater.movie.util.S3MediaBorderUtils;
 import com.thdpv.movietheater.config.service.SystemConfigService;
 import com.thdpv.movietheater.booking.dto.request.ConfirmOnlineBookingRequest;
@@ -63,12 +62,15 @@ import com.thdpv.movietheater.notification.dto.TheaterTicketQrItem;
 import com.thdpv.movietheater.notification.service.TheaterNotificationService;
 import com.thdpv.movietheater.notification.service.VodNotificationService;
 import com.thdpv.movietheater.payment.entity.PaymentTransaction;
+import com.thdpv.movietheater.payment.entity.VietQRWebhookTransaction;
 import com.thdpv.movietheater.payment.repository.PaymentTransactionRepository;
+import com.thdpv.movietheater.payment.repository.VietQRWebhookTransactionRepository;
 import com.thdpv.movietheater.payment.service.PaymentService;
 import com.thdpv.movietheater.mission.dto.MissionEventPayload;
 import com.thdpv.movietheater.mission.dto.response.MissionCompletionResponse;
 import com.thdpv.movietheater.mission.service.MissionService;
 import com.thdpv.movietheater.orbit.service.OrbitRoomService;
+
 
 import jakarta.persistence.PersistenceException;
 import lombok.RequiredArgsConstructor;
@@ -102,6 +104,7 @@ public class BookingService {
     private final CancellationRefundService cancellationRefundService;
     private final PaymentService paymentService;
     private final PaymentTransactionRepository paymentTransactionRepository;
+    private final VietQRWebhookTransactionRepository vietQRWebhookTransactionRepository;
     private final ShowtimeCapacityService showtimeCapacityService;
     private final MissionService missionService;
     private final OrbitRoomService orbitRoomService;
@@ -224,6 +227,9 @@ public class BookingService {
             promotionRepository.save(resolvedPromotion);
             voucherRedemptionService.consumeActiveVoucher(userUuid, resolvedPromotion, bookingUuid, now);
         }
+
+        reconcileExternalVietQRPayment(userUuid, bookingUuid, totalPrice, request.getPaymentMethod(),
+                request.getPaymentIntentId());
 
         // Charge after booking rows exist so a seat/DB failure cannot leave a paid orphan charge
         paymentService.chargeBooking(bookingUuid, totalPrice, request.getPaymentMethod(), "pay-" + bookingUuid, userUuid);
@@ -407,9 +413,11 @@ public class BookingService {
         List<BookingResponse.SeatLine> seatLines = new ArrayList<>();
         List<BookingResponse.TicketLine> ticketLines = new ArrayList<>();
         try {
+            List<BookingSeat> bookingSeats = new ArrayList<>();
+            List<Ticket> tickets = new ArrayList<>();
             for (LockedSeat seat : lockedSeats) {
                 UUID bookingSeatUuid = UUID.randomUUID();
-                bookingSeatRepository.save(new BookingSeat(
+                bookingSeats.add(new BookingSeat(
                         bookingSeatUuid, bookingUuid, request.getShowtimeUuid(), seat.seatUuid(), seat.price()));
                 seatLines.add(new BookingResponse.SeatLine(
                         seat.seatUuid(), seat.rowName(), seat.seatNumber(), seat.price()));
@@ -417,24 +425,32 @@ public class BookingService {
                 UUID ticketUuid = UUID.randomUUID();
                 String ticketCode = generateTicketCode();
                 String qrCode = ticketCode;
-                ticketRepository.save(new Ticket(
+                tickets.add(new Ticket(
                         ticketUuid, bookingUuid, bookingSeatUuid, ticketCode, qrCode, TICKET_STATUS_ISSUED, now));
                 ticketLines.add(new BookingResponse.TicketLine(ticketUuid, bookingSeatUuid, ticketCode, qrCode));
             }
+            bookingSeatRepository.saveAll(bookingSeats);
+            ticketRepository.saveAll(tickets);
         } catch (DataIntegrityViolationException | PersistenceException ex) {
             throw new AppException(ErrorCode.CONFLICT, "Co ghe da duoc dat boi giao dich khac");
         }
 
         List<BookingResponse.ComboLine> comboLines = new ArrayList<>();
+        List<BookingCombo> bookingCombos = new ArrayList<>();
         for (ResolvedCombo combo : discountedResolvedCombos) {
-            bookingComboRepository.save(new BookingCombo(
+            bookingCombos.add(new BookingCombo(
                     UUID.randomUUID(), bookingUuid, combo.comboUuid(), combo.quantity(), combo.lineTotal()));
             comboLines.add(new BookingResponse.ComboLine(
                     combo.comboUuid(), combo.name(), combo.quantity(), combo.lineTotal()));
         }
+        if (!bookingCombos.isEmpty()) {
+            bookingComboRepository.saveAll(bookingCombos);
+        }
 
         // Charge after seats/tickets persist; same @Transactional rolls back booking if charge fails
         reconcileExternalCardPayment(userUuid, bookingUuid, totalPrice, request.getPaymentMethod(),
+                request.getPaymentIntentId());
+        reconcileExternalVietQRPayment(userUuid, bookingUuid, totalPrice, request.getPaymentMethod(),
                 request.getPaymentIntentId());
         paymentService.chargeBooking(bookingUuid, totalPrice, request.getPaymentMethod(), "pay-" + bookingUuid, userUuid);
 
@@ -658,9 +674,11 @@ public class BookingService {
         List<BookingResponse.SeatLine> seatLines = new ArrayList<>();
         List<BookingResponse.TicketLine> ticketLines = new ArrayList<>();
         try {
+            List<BookingSeat> bookingSeats = new ArrayList<>();
+            List<Ticket> tickets = new ArrayList<>();
             for (LockedSeat seat : lockedSeats) {
                 UUID bookingSeatUuid = UUID.randomUUID();
-                bookingSeatRepository.save(new BookingSeat(
+                bookingSeats.add(new BookingSeat(
                         bookingSeatUuid, bookingUuid, request.getShowtimeUuid(), seat.seatUuid(), seat.price()));
                 seatLines.add(new BookingResponse.SeatLine(
                         seat.seatUuid(), seat.rowName(), seat.seatNumber(), seat.price()));
@@ -668,20 +686,26 @@ public class BookingService {
                 UUID ticketUuid = UUID.randomUUID();
                 String ticketCode = generateTicketCode();
                 String qrCode = ticketCode;
-                ticketRepository.save(new Ticket(
+                tickets.add(new Ticket(
                         ticketUuid, bookingUuid, bookingSeatUuid, ticketCode, qrCode, TICKET_STATUS_ISSUED, now));
                 ticketLines.add(new BookingResponse.TicketLine(ticketUuid, bookingSeatUuid, ticketCode, qrCode));
             }
+            bookingSeatRepository.saveAll(bookingSeats);
+            ticketRepository.saveAll(tickets);
         } catch (DataIntegrityViolationException | PersistenceException ex) {
             throw new AppException(ErrorCode.CONFLICT, "Có ghế đã được đặt bởi giao dịch khác");
         }
 
         List<BookingResponse.ComboLine> comboLines = new ArrayList<>();
+        List<BookingCombo> bookingCombos = new ArrayList<>();
         for (ResolvedCombo combo : discountedResolvedCombos) {
-            bookingComboRepository.save(new BookingCombo(
+            bookingCombos.add(new BookingCombo(
                     UUID.randomUUID(), bookingUuid, combo.comboUuid(), combo.quantity(), combo.lineTotal()));
             comboLines.add(new BookingResponse.ComboLine(
                     combo.comboUuid(), combo.name(), combo.quantity(), combo.lineTotal()));
+        }
+        if (!bookingCombos.isEmpty()) {
+            bookingComboRepository.saveAll(bookingCombos);
         }
 
         paymentService.chargeBooking(
@@ -888,6 +912,39 @@ public class BookingService {
         }
     }
 
+    private void reconcileExternalVietQRPayment(UUID userUuid, UUID bookingUuid, BigDecimal totalPrice,
+            String paymentMethod, String paymentIntentId) {
+        if (!"vietqr".equalsIgnoreCase(paymentMethod)) {
+            return;
+        }
+        if (paymentIntentId == null || paymentIntentId.isBlank()) {
+            throw new AppException(ErrorCode.BAD_REQUEST, "Thiếu mã chuyển khoản VietQR.");
+        }
+        String transferCode = paymentIntentId.trim();
+
+        // Query database for unused VietQR transaction matching code and amount
+        List<VietQRWebhookTransaction> txs = vietQRWebhookTransactionRepository.findMatchingUnusedTransaction(transferCode, totalPrice);
+        if (txs.isEmpty()) {
+            throw new AppException(ErrorCode.BAD_REQUEST,
+                    "Hệ thống chưa ghi nhận được chuyển khoản hoặc số tiền chuyển khoản không khớp. Vui lòng chờ 1-2 phút hoặc bấm kiểm tra lại.");
+        }
+
+        // Atomically claim one unused transfer for this booking so two concurrent bookings can't share a single
+        // transfer (each candidate is claimed via a conditional UPDATE that only succeeds while it is still UNUSED).
+        boolean claimed = false;
+        for (VietQRWebhookTransaction candidate : txs) {
+            if (vietQRWebhookTransactionRepository.claimForBooking(candidate.getId(), bookingUuid) == 1) {
+                claimed = true;
+                break;
+            }
+        }
+        if (!claimed) {
+            throw new AppException(ErrorCode.CONFLICT,
+                    "Chuyển khoản VietQR này đã được sử dụng cho đơn khác. Vui lòng kiểm tra lại.");
+        }
+    }
+
+
     private Map<UUID, Integer> normalizeCombos(List<ConfirmBookingRequest.ComboItem> comboItems) {
         if (comboItems == null || comboItems.isEmpty()) {
             return Map.of();
@@ -906,9 +963,33 @@ public class BookingService {
         return totalPrice.divide(BigDecimal.valueOf(10000), 0, RoundingMode.DOWN).intValue();
     }
 
+    private static final String TICKET_CODE_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+    private static final int TICKET_CODE_RANDOM_LENGTH = 10;
+    private static final int TICKET_CODE_MAX_ATTEMPTS = 5;
+
+    /**
+     * Short, human-friendly ticket code: "TK" + 10 random uppercase alphanumeric chars (ambiguous
+     * characters like 0/O/1/I/L excluded). Retries a few times on the rare collision with the
+     * DB-level unique constraint before giving up, so callers still fail loudly instead of silently
+     * saving a duplicate.
+     */
     private String generateTicketCode() {
-        return "TK" + OffsetDateTime.now(ZoneOffset.UTC).toInstant().toEpochMilli()
-                + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+        for (int attempt = 0; attempt < TICKET_CODE_MAX_ATTEMPTS; attempt++) {
+            String candidate = "TK" + randomTicketSuffix();
+            if (!ticketRepository.existsByTicketCode(candidate)) {
+                return candidate;
+            }
+        }
+        throw new AppException(ErrorCode.CONFLICT, "Không thể tạo mã vé, vui lòng thử lại");
+    }
+
+    private String randomTicketSuffix() {
+        java.security.SecureRandom random = new java.security.SecureRandom();
+        StringBuilder sb = new StringBuilder(TICKET_CODE_RANDOM_LENGTH);
+        for (int i = 0; i < TICKET_CODE_RANDOM_LENGTH; i++) {
+            sb.append(TICKET_CODE_ALPHABET.charAt(random.nextInt(TICKET_CODE_ALPHABET.length())));
+        }
+        return sb.toString();
     }
 
     private void sendOrbitMemberTicketEmails(
@@ -1299,6 +1380,7 @@ public class BookingService {
             case "COUNTER_CASH" -> "Tiền mặt tại quầy";
             case "COUNTER_CARD" -> "Thẻ tại quầy";
             case "COUNTER_VIETQR" -> "VietQR tại quầy";
+            case "VIETQR" -> "VietQR chuyển khoản";
             default -> method;
         };
     }
@@ -1495,7 +1577,6 @@ public class BookingService {
                 checkedInAt);
     }
 
-    @Transactional
     public void cancelBooking(UUID bookingUuid, String email) {
         UUID actorUuid = email != null && !email.isBlank() ? resolveRequiredUserUuid(email) : null;
         cancellationRefundService.cancelBooking(bookingUuid, actorUuid, "CUSTOMER", false, null, false);
@@ -1560,11 +1641,13 @@ public class BookingService {
         String streamingUrl = null;
 
         if (booking.getFirstPlayedAt() != null) {
-            if (now.isAfter(booking.getExpiresAt())) {
+            if (booking.getExpiresAt() != null && now.isAfter(booking.getExpiresAt())) {
                 playbackState = "EXPIRED";
             } else {
                 playbackState = "STREAMING";
-                streamingUrl = S3MediaBorderUtils.toBorderUrl(MovieStreamingUtils.resolveStreamingUrl(movie));
+                String resolved = S3MediaBorderUtils.resolveStreamingUrl(movie);
+                // Kèm token hiện tại (nếu còn) — WatchPage vẫn chỉ play sau activate/Play
+                streamingUrl = S3MediaBorderUtils.toStreamUrlWithToken(resolved, booking.getStreamToken());
             }
         }
 
@@ -1572,7 +1655,7 @@ public class BookingService {
                 true,
                 playbackState,
                 booking.getFirstPlayedAt(),
-                booking.getExpiresAt(),
+                booking.getFirstPlayedAt() != null ? booking.getExpiresAt() : null,
                 streamingUrl);
         response.setPositionSeconds(booking.getVodPositionSeconds());
         response.setDurationSeconds(booking.getVodDurationSeconds());
@@ -1596,7 +1679,14 @@ public class BookingService {
     public List<com.thdpv.movietheater.booking.dto.response.VodHistoryItemResponse> getVodWatchHistory(
             String currentUserEmail) {
         UUID userUuid = resolveRequiredUserUuid(currentUserEmail);
-        List<Booking> bookings = bookingJpaRepository.findVodWatchHistory(userUuid, OffsetDateTime.now());
+        List<Booking> history = bookingJpaRepository.findVodWatchHistory(userUuid);
+        Map<UUID, Booking> latestBookingByMovie = new LinkedHashMap<>();
+        for (Booking booking : history) {
+            if (booking.getMovieUuid() != null) {
+                latestBookingByMovie.putIfAbsent(booking.getMovieUuid(), booking);
+            }
+        }
+        List<Booking> bookings = List.copyOf(latestBookingByMovie.values());
         if (bookings.isEmpty()) {
             return List.of();
         }
@@ -1665,23 +1755,25 @@ public class BookingService {
         Movie movie = movieRepository.findById(movieUuid)
                 .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND, "Không tìm thấy phim"));
 
-        String streamingUrl = MovieStreamingUtils.resolveStreamingUrl(movie);
-        if (streamingUrl == null || streamingUrl.isBlank()) {
+        String streamingUrl = S3MediaBorderUtils.resolveStreamingUrl(movie);
+        if (streamingUrl == null || streamingUrl.isBlank()
+                || !S3MediaBorderUtils.isAwsMovieStreamingUrl(streamingUrl)) {
             throw new AppException(ErrorCode.BAD_REQUEST,
-                    "Phim chưa được cấu hình link phát trực tuyến. Vui lòng liên hệ quản trị viên.");
+                    "Phim chưa được cấu hình link phát trực tuyến S3 (movie/...). Vui lòng liên hệ quản trị viên.");
         }
 
         OffsetDateTime now = OffsetDateTime.now();
         String streamToken = UUID.randomUUID().toString();
-        boolean isFirstPlay = booking.getFirstPlayedAt() == null;
 
-        if (!isFirstPlay) {
-            if (now.isAfter(booking.getExpiresAt())) {
+        if (booking.getFirstPlayedAt() != null) {
+            if (booking.getExpiresAt() != null && now.isAfter(booking.getExpiresAt())) {
                 throw new AppException(ErrorCode.BAD_REQUEST, "Vé xem phim trực tuyến của bạn đã hết hạn");
             }
             booking.setStreamToken(streamToken);
             bookingJpaRepository.save(booking);
-            return new VodPlayResponse(streamToken, S3MediaBorderUtils.toBorderUrl(streamingUrl), booking.getExpiresAt());
+            return new VodPlayResponse(streamToken,
+                    S3MediaBorderUtils.toStreamUrlWithToken(streamingUrl, streamToken),
+                    booking.getExpiresAt());
         }
 
         int durationMinutes = movie.getDurationMinutes() != null ? movie.getDurationMinutes() : 120;
@@ -1689,18 +1781,28 @@ public class BookingService {
         OffsetDateTime firstPlayedAt = now;
         OffsetDateTime expiresAt = firstPlayedAt.plusMinutes(Math.round(durationMinutes * lockMultiplier));
 
-        booking.setFirstPlayedAt(firstPlayedAt);
-        booking.setExpiresAt(expiresAt);
-        booking.setStreamToken(streamToken);
-        bookingJpaRepository.save(booking);
-
-        List<MissionCompletionResponse> missionCompletions = List.of();
-        if (isFirstPlay) {
-            missionCompletions = missionService.handleEvent(MissionEventPayload.vodFirstPlay(
-                    userUuid, booking.getUuid(), movieUuid, now));
+        int claimed = bookingJpaRepository.claimFirstPlay(
+                booking.getUuid(), firstPlayedAt, expiresAt, streamToken, now);
+        if (claimed == 0) {
+            // Another concurrent activate won first play — resume that watch window without firing missions again.
+            Booking latest = bookingJpaRepository.findById(booking.getUuid())
+                    .orElseThrow(() -> new AppException(ErrorCode.BOOKING_NOT_FOUND));
+            if (latest.getExpiresAt() != null && now.isAfter(latest.getExpiresAt())) {
+                throw new AppException(ErrorCode.BAD_REQUEST, "Vé xem phim trực tuyến của bạn đã hết hạn");
+            }
+            latest.setStreamToken(streamToken);
+            bookingJpaRepository.save(latest);
+            return new VodPlayResponse(streamToken,
+                    S3MediaBorderUtils.toStreamUrlWithToken(streamingUrl, streamToken),
+                    latest.getExpiresAt());
         }
 
-        VodPlayResponse response = new VodPlayResponse(streamToken, S3MediaBorderUtils.toBorderUrl(streamingUrl), expiresAt);
+        List<MissionCompletionResponse> missionCompletions = missionService.handleEvent(
+                MissionEventPayload.vodFirstPlay(userUuid, booking.getUuid(), movieUuid, now));
+
+        VodPlayResponse response = new VodPlayResponse(streamToken,
+                S3MediaBorderUtils.toStreamUrlWithToken(streamingUrl, streamToken),
+                expiresAt);
         response.setMissionCompletions(missionCompletions);
         return response;
     }

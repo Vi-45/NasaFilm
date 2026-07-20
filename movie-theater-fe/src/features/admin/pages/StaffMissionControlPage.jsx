@@ -1,14 +1,12 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   AlertTriangle,
   Film,
   Loader2,
   Radio,
   Users,
-  Volume2,
-  VolumeX,
 } from 'lucide-react';
-import { AdminPage, PageHeader } from '../components';
+import { AdminPage, PageHeader, StatusBadge } from '../components';
 import { staffMissionService } from '../api/staffMissionService';
 import { bookingService } from '../../../shared/services/bookingService';
 import { useRealtimeTopic } from '../../../shared/hooks/useRealtimeTopic';
@@ -24,7 +22,8 @@ import {
   StaffTicketScanResult,
 } from './staff/StaffTicketCheckInPanel';
 import StaffCheckInSessionHistory from './staff/StaffCheckInSessionHistory';
-import StaffShowtimePicker, { toDateKey } from './staff/StaffShowtimePicker';
+import StaffShowtimePicker from './staff/StaffShowtimePicker';
+import { applyShowtimeFilters } from '../../../shared/utils/showtimeFilterUtils';
 import './StaffMissionControlPage.css';
 
 const formatShowtime = (iso) => {
@@ -73,7 +72,7 @@ const StaffMissionControlPage = () => {
   const [showtimes, setShowtimes] = useState([]);
   const [selectedUuid, setSelectedUuid] = useState('');
   const [filters, setFilters] = useState({
-    cinema: '', room: '', date: '', timeSlot: '', movie: '',
+    cinema: '', room: '', date: '', timeSlot: '', movieUuid: '',
   });
   const [stats, setStats] = useState(null);
   const [seatMap, setSeatMap] = useState(null);
@@ -82,7 +81,7 @@ const StaffMissionControlPage = () => {
   const [loadingShowtimes, setLoadingShowtimes] = useState(true);
   const [loadingDetail, setLoadingDetail] = useState(false);
   const [recentCheckIns, setRecentCheckIns] = useState([]);
-  const [audioEnabled, setAudioEnabled] = useState(true);
+  const audioEnabled = true;
   const checkinFooterRef = useRef(null);
 
   const loadShowtimes = useCallback(async () => {
@@ -164,7 +163,7 @@ const StaffMissionControlPage = () => {
     // Only auto-scroll on successful check-in / history growth — avoid loop on wrong QR rescans.
     if (checkIn.previewError) return;
     checkinFooterRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-  }, [checkIn.displayResult, checkIn.scanHistory.length, checkIn.isResultPanelActive, checkIn.isHistoryActive, checkIn.previewError]);
+  }, [checkIn.displayResult?.code, checkIn.displayResult?.status, checkIn.scanHistory.length, checkIn.isResultPanelActive, checkIn.isHistoryActive, checkIn.previewError]);
 
   useEffect(() => {
     loadShowtimes();
@@ -215,24 +214,19 @@ const StaffMissionControlPage = () => {
 
   const selectedShowtime = showtimes.find((s) => s.showtimeUuid === selectedUuid);
 
-  const filteredShowtimes = useMemo(() => showtimes.filter((s) => {
-    if (filters.cinema && s.cinemaName !== filters.cinema) return false;
-    if (filters.room && s.roomName !== filters.room) return false;
-    if (filters.date && toDateKey(s.startTime) !== filters.date) return false;
-    if (filters.timeSlot) {
-      const time = new Date(s.startTime).toLocaleTimeString('vi-VN', {
-        hour: '2-digit',
-        minute: '2-digit',
-      });
-      if (time !== filters.timeSlot) return false;
-    }
-    const movieTerm = filters.movie.trim().toLowerCase();
-    if (movieTerm && !`${s.movieTitle || ''}`.toLowerCase().includes(movieTerm)) return false;
-    return true;
-  }), [showtimes, filters]);
-
-  const hasActiveFilters = Boolean(
-    filters.cinema || filters.room || filters.date || filters.timeSlot || filters.movie.trim(),
+  const filteredShowtimes = useMemo(
+    () => applyShowtimeFilters(
+      showtimes,
+      {
+        cinemaName: filters.cinema,
+        roomName: filters.room,
+        date: filters.date,
+        timeSlot: filters.timeSlot,
+        movieUuid: filters.movieUuid,
+      },
+      ['cinema', 'roomName', 'date', 'timeSlot', 'movieUuid'],
+    ),
+    [showtimes, filters],
   );
 
   const showtimesWithSales = showtimes.filter((s) => (s.soldSeats ?? 0) > 0).length;
@@ -244,23 +238,19 @@ const StaffMissionControlPage = () => {
         next.room = '';
         next.date = '';
         next.timeSlot = '';
-        next.movie = '';
+        next.movieUuid = '';
       } else if (key === 'room') {
         next.date = '';
         next.timeSlot = '';
-        next.movie = '';
+        next.movieUuid = '';
       } else if (key === 'date') {
         next.timeSlot = '';
-        next.movie = '';
+        next.movieUuid = '';
       } else if (key === 'timeSlot') {
-        next.movie = '';
+        next.movieUuid = '';
       }
       return next;
     });
-  }, []);
-
-  const handleClearFilters = useCallback(() => {
-    setFilters({ cinema: '', room: '', date: '', timeSlot: '', movie: '' });
   }, []);
 
   return (
@@ -271,13 +261,6 @@ const StaffMissionControlPage = () => {
           title="Soát vé & giám sát suất chiếu"
           description="Soát vé QR, giám sát ghế trực tiếp và vận hành suất chiếu trên một màn hình."
           variant="display"
-          secondaryActions={[
-            {
-              label: `Âm thanh: ${audioEnabled ? 'BẬT (TTS)' : 'TẮT'}`,
-              icon: audioEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />,
-              onClick: () => setAudioEnabled((prev) => !prev),
-            },
-          ]}
         />
 
         {loadingShowtimes ? (
@@ -296,8 +279,6 @@ const StaffMissionControlPage = () => {
               showtimesWithSales={showtimesWithSales}
               filters={filters}
               onFilterChange={handleFilterChange}
-              onClearFilters={handleClearFilters}
-              hasActiveFilters={hasActiveFilters}
               ShowtimePoster={ShowtimePoster}
             />
 
@@ -407,7 +388,12 @@ const StaffMissionControlPage = () => {
                           <Users className="w-3 h-3 inline mr-1 opacity-60" />
                           {item.customerName ? `${item.customerName} · ` : ''}
                           {item.ticketCode} · {at}
-                          {isDuplicate ? ' · đã soát' : ''}
+                          {isDuplicate ? (
+                            <>
+                              {' · '}
+                              <StatusBadge variant="warning">đã soát</StatusBadge>
+                            </>
+                          ) : null}
                         </div>
                       );
                     })}

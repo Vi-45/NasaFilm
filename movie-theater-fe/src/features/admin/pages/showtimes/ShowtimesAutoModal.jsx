@@ -1,11 +1,11 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 import {
-  X, CalendarDays, Clock, Film, Settings2, Sparkles, ChevronRight, ChevronLeft,
-  CheckCircle2, Building2, Ticket,
+  X, CalendarDays, Clock, Settings2, Sparkles, ChevronRight, ChevronLeft,
+  CheckCircle2, Building2, Ticket, AlertTriangle,
 } from 'lucide-react';
 import { resolveMediaUrl, handlePosterError, FALLBACK_POSTER } from '../../../../shared/utils/mediaUrlUtils';
-import { formatDateShort, formatWeekday } from './showtimesConstants';
+import { formatWeekday, formatPrice } from './showtimesConstants';
 import {
   PUBLISH_MODES,
   getPreviewScoreClass,
@@ -14,6 +14,7 @@ import {
   formatPreviewSlot,
 } from './showtimesAutoUtils';
 import ShowtimesAutoMoviePicker from './ShowtimesAutoMoviePicker';
+import { AdminDatePicker } from '../../components';
 
 const STEPS = [
   { id: 'scope', label: 'Phạm vi', icon: Building2 },
@@ -23,6 +24,13 @@ const STEPS = [
 
 const getPosterSrc = (rawUrl, width = 120) =>
   rawUrl?.trim() ? resolveMediaUrl(rawUrl.trim(), width) : FALLBACK_POSTER;
+
+const toMinutes = (hhmm) => {
+  if (!hhmm) return null;
+  const [h, m] = hhmm.split(':').map(Number);
+  if (Number.isNaN(h) || Number.isNaN(m)) return null;
+  return h * 60 + m;
+};
 
 const ShowtimesAutoModal = ({
   onClose,
@@ -68,7 +76,73 @@ const ShowtimesAutoModal = ({
 
   const canGoParams = autoFormData.roomUuids.length > 0 && autoFormData.movieUuids.length > 0
     && autoFormData.startDate && autoFormData.endDate;
-  const canAnalyze = canGoParams && autoFormData.startTime && autoFormData.endTime;
+
+  /** Danh sách mục còn thiếu ở bước Phạm vi — hiển thị cạnh nút "Tiếp theo". */
+  const scopeMissing = useMemo(() => {
+    const missing = [];
+    if (!autoFormData.startDate || !autoFormData.endDate) missing.push('khoảng ngày');
+    if (!autoFormData.cinemaUuid) missing.push('rạp');
+    if (autoFormData.roomUuids.length === 0) missing.push('phòng chiếu');
+    if (autoFormData.movieUuids.length === 0) missing.push('phim');
+    return missing;
+  }, [autoFormData.startDate, autoFormData.endDate, autoFormData.cinemaUuid, autoFormData.roomUuids, autoFormData.movieUuids]);
+
+  const dayCount = useMemo(() => {
+    if (!autoFormData.startDate || !autoFormData.endDate) return 0;
+    const start = new Date(`${autoFormData.startDate}T12:00:00`);
+    const end = new Date(`${autoFormData.endDate}T12:00:00`);
+    const diff = Math.round((end - start) / 86400000) + 1;
+    return diff > 0 ? diff : 0;
+  }, [autoFormData.startDate, autoFormData.endDate]);
+
+  /** Ước lượng thô số suất tối đa: khung giờ / (thời lượng TB + trailer + dọn dẹp). */
+  const slotEstimate = useMemo(() => {
+    const startMin = toMinutes(autoFormData.startTime);
+    const endMin = toMinutes(autoFormData.endTime);
+    if (startMin === null || endMin === null || endMin <= startMin) return null;
+    const selectedMovies = movies.filter((m) => autoFormData.movieUuids.includes(m.uuid));
+    if (selectedMovies.length === 0) return null;
+    const avgDuration = selectedMovies.reduce((acc, m) => acc + (m.durationMinutes || 0), 0) / selectedMovies.length;
+    const perSlot = avgDuration + (Number(autoFormData.trailerBuffer) || 0) + (Number(autoFormData.intervalMinutes) || 0);
+    if (perSlot <= 0) return null;
+    const perRoomPerDay = Math.floor((endMin - startMin) / perSlot);
+    if (perRoomPerDay <= 0) return null;
+    return {
+      perRoomPerDay,
+      total: perRoomPerDay * autoFormData.roomUuids.length * dayCount,
+    };
+  }, [autoFormData.startTime, autoFormData.endTime, autoFormData.trailerBuffer, autoFormData.intervalMinutes, autoFormData.movieUuids, autoFormData.roomUuids, movies, dayCount]);
+
+  /** Validates the open window (step "Giờ & giá") and returns a clear Vietnamese
+   *  error message, or null when everything is valid. */
+  const analyzeValidationError = useMemo(() => {
+    if (!canGoParams) return null;
+    if (!autoFormData.startTime || !autoFormData.endTime) {
+      return 'Vui lòng nhập giờ mở cửa và giờ đóng cửa';
+    }
+    const startMin = toMinutes(autoFormData.startTime);
+    const endMin = toMinutes(autoFormData.endTime);
+    if (startMin === null || endMin === null) {
+      return 'Giờ mở cửa / đóng cửa không hợp lệ';
+    }
+    if (endMin <= startMin) {
+      return 'Giờ đóng cửa phải sau giờ mở cửa';
+    }
+
+    const windowMinutes = endMin - startMin;
+    const trailerBuffer = Number(autoFormData.trailerBuffer) || 0;
+    const selectedMovies = movies.filter((m) => autoFormData.movieUuids.includes(m.uuid));
+    const fitsWindow = selectedMovies.some((m) => {
+      const duration = m.durationMinutes || 0;
+      return duration > 0 && (duration + trailerBuffer) <= windowMinutes;
+    });
+    if (selectedMovies.length > 0 && !fitsWindow) {
+      return `Khung giờ mở bán (${Math.floor(windowMinutes / 60)}h${windowMinutes % 60}) quá ngắn — không có phim nào (kể cả thời gian trailer) vừa với khung giờ này. Hãy mở rộng giờ hoạt động hoặc chọn phim ngắn hơn.`;
+    }
+    return null;
+  }, [canGoParams, autoFormData.startTime, autoFormData.endTime, autoFormData.trailerBuffer, autoFormData.movieUuids, movies]);
+
+  const canAnalyze = canGoParams && !analyzeValidationError;
 
   const handleMovieSelectionChange = (movieUuids) => {
     setAutoFormData((prev) => ({ ...prev, movieUuids }));
@@ -132,26 +206,25 @@ const ShowtimesAutoModal = ({
         <div className="flex-1 overflow-y-auto px-6 py-4 custom-scrollbar">
           {autoStep === 0 && (
             <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="st-auto-label">Ngày bắt đầu *</label>
-                  <input
-                    type="date"
-                    className="st-auto-input"
-                    value={autoFormData.startDate}
-                    onChange={(e) => setAutoFormData((prev) => ({ ...prev, startDate: e.target.value }))}
-                    required
-                  />
+              <div>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="st-auto-label mb-0">Khoảng ngày áp dụng *</label>
+                  {dayCount > 0 && (
+                    <span className="text-[10px] font-bold text-amber-400">{dayCount} ngày</span>
+                  )}
                 </div>
-                <div>
-                  <label className="st-auto-label">Ngày kết thúc *</label>
-                  <input
-                    type="date"
-                    className="st-auto-input"
+                <div className="grid grid-cols-2 gap-4">
+                  <AdminDatePicker
+                    label="Ngày bắt đầu"
+                    value={autoFormData.startDate}
+                    onChange={(v) => setAutoFormData((prev) => ({ ...prev, startDate: v }))}
+                    max={autoFormData.endDate || undefined}
+                  />
+                  <AdminDatePicker
+                    label="Ngày kết thúc"
                     value={autoFormData.endDate}
-                    min={autoFormData.startDate}
-                    onChange={(e) => setAutoFormData((prev) => ({ ...prev, endDate: e.target.value }))}
-                    required
+                    onChange={(v) => setAutoFormData((prev) => ({ ...prev, endDate: v }))}
+                    min={autoFormData.startDate || undefined}
                   />
                 </div>
               </div>
@@ -244,22 +317,43 @@ const ShowtimesAutoModal = ({
               </div>
 
               <div className="grid grid-cols-3 gap-3">
-                <div>
+                <div className="stcm-price">
                   <label className="st-auto-label">Vé thường (đ)</label>
                   <input type="number" step="5000" className="st-auto-input font-mono" value={autoFormData.basePrice}
                     onChange={(e) => setAutoFormData((prev) => ({ ...prev, basePrice: parseInt(e.target.value, 10) || prev.basePrice }))} />
+                  <span className="stcm-price__hint">{formatPrice(Number(autoFormData.basePrice) || 0)}</span>
                 </div>
-                <div>
+                <div className="stcm-price">
                   <label className="st-auto-label">Vé VIP (đ)</label>
                   <input type="number" step="5000" className="st-auto-input font-mono" value={autoFormData.vipPrice}
                     onChange={(e) => setAutoFormData((prev) => ({ ...prev, vipPrice: parseInt(e.target.value, 10) || prev.vipPrice }))} />
+                  <span className="stcm-price__hint">{formatPrice(Number(autoFormData.vipPrice) || 0)}</span>
                 </div>
-                <div>
+                <div className="stcm-price">
                   <label className="st-auto-label">Vé đôi (đ)</label>
                   <input type="number" step="5000" className="st-auto-input font-mono" value={autoFormData.couplePrice}
                     onChange={(e) => setAutoFormData((prev) => ({ ...prev, couplePrice: parseInt(e.target.value, 10) || prev.couplePrice }))} />
+                  <span className="stcm-price__hint">{formatPrice(Number(autoFormData.couplePrice) || 0)}</span>
                 </div>
               </div>
+
+              {!analyzeValidationError && slotEstimate && (
+                <div className="stcm-check stcm-check--ok">
+                  <CheckCircle2 className="w-4 h-4 shrink-0" />
+                  <span>
+                    Ước tính tối đa <strong>~{slotEstimate.perRoomPerDay} suất/phòng/ngày</strong>
+                    {' '}→ khoảng <strong>~{slotEstimate.total} suất</strong> cho{' '}
+                    {autoFormData.roomUuids.length} phòng × {dayCount} ngày. Thuật toán sẽ chọn khung giờ tối ưu trong giới hạn này.
+                  </span>
+                </div>
+              )}
+
+              {analyzeValidationError && (
+                <div className="stcm-check stcm-check--error">
+                  <AlertTriangle className="w-4 h-4 shrink-0" />
+                  <span>{analyzeValidationError}</span>
+                </div>
+              )}
 
               <div className="st-auto-config-panel">
                 <button
@@ -398,11 +492,18 @@ const ShowtimesAutoModal = ({
         </div>
 
         <footer className="px-6 py-4 border-t border-[#1a2238] flex items-center justify-between gap-3 shrink-0 bg-[#090D1A]">
-          <button type="button" onClick={onClose} className="st-auto-btn st-auto-btn--ghost">
-            Hủy
-          </button>
+          <div className="flex items-center gap-3 min-w-0">
+            <button type="button" onClick={onClose} className="st-auto-btn st-auto-btn--ghost">
+              Hủy
+            </button>
+            {autoStep === 0 && scopeMissing.length > 0 && (
+              <span className="text-[10px] text-gray-500 truncate">
+                Còn thiếu: <span className="text-amber-400 font-bold">{scopeMissing.join(', ')}</span>
+              </span>
+            )}
+          </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 shrink-0">
             {autoStep > 0 && (
               <button
                 type="button"

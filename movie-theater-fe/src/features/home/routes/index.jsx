@@ -1,10 +1,11 @@
-import React, { lazy, Suspense } from 'react';
+import { lazy, Suspense } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { ProtectedRoute } from '../../auth/components/ProtectedRoute.jsx';
+import { StaffAwayFromCustomerRoute } from '../../auth/components/StaffAwayFromCustomerRoute.jsx';
 import { useAuthContext } from '../../auth/hooks/useAuthContext';
 import HomeAnimatedLayout from '../layouts/HomeAnimatedLayout';
-const OnlineMoviesPage = lazy(() => import('../pages/OnlineMoviesPage'));
 
+const OnlineMoviesPage = lazy(() => import('../pages/OnlineMoviesPage'));
 const HomePage = lazy(() => import('../pages/HomePage'));
 const TicketActivationPage = lazy(() => import('../pages/TicketActivationPage'));
 const AboutPage = lazy(() => import('../pages/AboutPage'));
@@ -34,6 +35,7 @@ const SearchResultsPage = lazy(() => import('../pages/SearchResultsPage'));
 const MyMoviesPage = lazy(() => import('../pages/MyMoviesPage'));
 const PaymentFlow = lazy(() => import('../../payment/PaymentFlow'));
 const PaymentSuccess = lazy(() => import('../../payment/PaymentSuccess'));
+const VietQRPage = lazy(() => import('../../payment/VietQRPage'));
 
 const PageLoader = () => (
   <div className="min-h-screen bg-[#0b0f19] flex items-center justify-center">
@@ -48,134 +50,142 @@ export const HomeRoutes = () => {
     return <PageLoader />;
   }
 
-  // Admin/staff may browse the customer site (e.g. to test booking flows).
-  // Login still lands them on /admin via PublicRoute / LoginPage.
-
   return (
     <Suspense fallback={<PageLoader />}>
       <Routes>
-        <Route element={<HomeAnimatedLayout />}>
-          <Route index element={<HomePage />} />
-          <Route path="online" element={<OnlineMoviesPage />} />
-          <Route path="online/activate/:movieId" element={<TicketActivationPage />} />
-          <Route path="movies" element={<MoviesPage />} />
-          <Route path="genres" element={<GenresBrowsePage />} />
-          <Route path="countries" element={<CountriesBrowsePage />} />
-          <Route path="cinemas" element={<CinemasPage />} />
-          <Route path="offers" element={<OffersPage />} />
-          <Route path="about" element={<AboutPage />} />
-          <Route path="terms" element={<TermsPage />} />
-          <Route path="privacy" element={<PrivacyPage />} />
-          <Route path="payment-policy" element={<PaymentPolicyPage />} />
-          <Route path="refund-policy" element={<RefundPolicyPage />} />
-          <Route path="faq" element={<FaqPage />} />
-          <Route path="movie/:id" element={<MovieDetailPage />} />
-          <Route path="search" element={<SearchResultsPage />} />
-          <Route path="my-movies" element={<MyMoviesPage />} />
-          <Route
-            path="booking"
-            element={
-              <ProtectedRoute>
-                <BookingPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="booking/orbit/:roomUuid"
-            element={
-              <ProtectedRoute>
-                <OrbitBookingPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="booking/orbit/:roomUuid/waiting"
-            element={
-              <ProtectedRoute>
-                <OrbitWaitingPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="concessions"
-            element={
-              <ProtectedRoute>
-                <ConcessionsPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="checkout"
-            element={
-              <ProtectedRoute>
-                <CheckoutPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="booking-confirmed"
-            element={
-              <ProtectedRoute>
-                <BookingConfirmedPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="pre-show/boarding/:bookingUuid"
-            element={
-              <ProtectedRoute>
-                <PreShowBoardingPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="profile"
-            element={
-              <ProtectedRoute>
-                <ProfilePage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="reminders"
-            element={
-              <ProtectedRoute>
-                <RemindersPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="wallet"
-            element={
-              <ProtectedRoute>
-                <WalletPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="watch/:id"
-            element={
-              <ProtectedRoute>
-                <WatchPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="payment"
-            element={
-              <ProtectedRoute>
-                <PaymentFlow />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="payment-success"
-            element={
-              <ProtectedRoute>
-                <PaymentSuccess />
-              </ProtectedRoute>
-            }
-          />
+        {/* Admin/staff gõ bất kỳ URL khách nào → về cổng quản trị */}
+        <Route element={<StaffAwayFromCustomerRoute />}>
+          <Route element={<HomeAnimatedLayout />}>
+            <Route index element={<HomePage />} />
+            <Route path="online" element={<OnlineMoviesPage />} />
+            <Route path="online/activate/:movieId" element={<TicketActivationPage />} />
+            <Route path="movies" element={<MoviesPage />} />
+            <Route path="genres" element={<GenresBrowsePage />} />
+            <Route path="countries" element={<CountriesBrowsePage />} />
+            <Route path="cinemas" element={<CinemasPage />} />
+            <Route path="offers" element={<OffersPage />} />
+            <Route path="about" element={<AboutPage />} />
+            <Route path="terms" element={<TermsPage />} />
+            <Route path="privacy" element={<PrivacyPage />} />
+            <Route path="payment-policy" element={<PaymentPolicyPage />} />
+            <Route path="refund-policy" element={<RefundPolicyPage />} />
+            <Route path="faq" element={<FaqPage />} />
+            <Route path="movie/:id" element={<MovieDetailPage />} />
+            <Route path="search" element={<SearchResultsPage />} />
+            <Route path="my-movies" element={<MyMoviesPage />} />
+            <Route
+              path="booking"
+              element={(
+                <ProtectedRoute>
+                  <BookingPage />
+                </ProtectedRoute>
+              )}
+            />
+            <Route
+              path="booking/orbit/:roomUuid"
+              element={(
+                <ProtectedRoute>
+                  <OrbitBookingPage />
+                </ProtectedRoute>
+              )}
+            />
+            <Route
+              path="booking/orbit/:roomUuid/waiting"
+              element={(
+                <ProtectedRoute>
+                  <OrbitWaitingPage />
+                </ProtectedRoute>
+              )}
+            />
+            <Route
+              path="concessions"
+              element={(
+                <ProtectedRoute>
+                  <ConcessionsPage />
+                </ProtectedRoute>
+              )}
+            />
+            <Route
+              path="checkout"
+              element={(
+                <ProtectedRoute>
+                  <CheckoutPage />
+                </ProtectedRoute>
+              )}
+            />
+            <Route
+              path="booking-confirmed"
+              element={(
+                <ProtectedRoute>
+                  <BookingConfirmedPage />
+                </ProtectedRoute>
+              )}
+            />
+            <Route
+              path="pre-show/boarding/:bookingUuid"
+              element={(
+                <ProtectedRoute>
+                  <PreShowBoardingPage />
+                </ProtectedRoute>
+              )}
+            />
+            <Route
+              path="profile"
+              element={(
+                <ProtectedRoute>
+                  <ProfilePage />
+                </ProtectedRoute>
+              )}
+            />
+            <Route
+              path="reminders"
+              element={(
+                <ProtectedRoute>
+                  <RemindersPage />
+                </ProtectedRoute>
+              )}
+            />
+            <Route
+              path="wallet"
+              element={(
+                <ProtectedRoute>
+                  <WalletPage />
+                </ProtectedRoute>
+              )}
+            />
+            <Route
+              path="watch/:id"
+              element={(
+                <ProtectedRoute>
+                  <WatchPage />
+                </ProtectedRoute>
+              )}
+            />
+            <Route
+              path="payment"
+              element={(
+                <ProtectedRoute>
+                  <PaymentFlow />
+                </ProtectedRoute>
+              )}
+            />
+            <Route
+              path="payment/vietqr"
+              element={(
+                <ProtectedRoute>
+                  <VietQRPage />
+                </ProtectedRoute>
+              )}
+            />
+            <Route
+              path="payment-success"
+              element={(
+                <ProtectedRoute>
+                  <PaymentSuccess />
+                </ProtectedRoute>
+              )}
+            />
+          </Route>
         </Route>
       </Routes>
     </Suspense>

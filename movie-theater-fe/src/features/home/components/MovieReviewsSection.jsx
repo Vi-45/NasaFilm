@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   ChevronDown,
@@ -20,6 +20,7 @@ import { useAuthContext } from '../../auth/hooks/useAuthContext';
 import UserAvatar from '../../../shared/components/UserAvatar';
 import MovieReviewPagination from './MovieReviewPagination';
 import StarRating from './StarRating';
+import { useConfirm } from '../../../shared/context/ConfirmDialogContext';
 import {
   MAX_VIBE_TAGS_PER_REVIEW,
   VIBE_TAG_CLOUD_COLLAPSED_LIMIT,
@@ -70,6 +71,7 @@ const MovieReviewsSection = ({
 }) => {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuthContext();
+  const confirm = useConfirm();
 
   const [internalExpanded, setInternalExpanded] = useState(false);
   const isExpanded = controlledExpanded ?? internalExpanded;
@@ -270,6 +272,15 @@ const MovieReviewsSection = ({
       return;
     }
 
+    const confirmed = await confirm({
+      title: 'Xác nhận gửi đánh giá',
+      message:
+        'Mỗi tài khoản chỉ được gửi một đánh giá cho phim này. Sau khi gửi, bạn cần xóa đánh giá cũ nếu muốn gửi lại.',
+      confirmLabel: 'Gửi đánh giá',
+      variant: 'warning',
+    });
+    if (!confirmed) return;
+
     setIsSubmitting(true);
     try {
       const reviewResponse = await movieReviewService.createReview(movieUuid, {
@@ -277,7 +288,7 @@ const MovieReviewsSection = ({
         comment,
         vibeTags: selectedVibeTags,
       });
-      notificationService.success('Đã gửi đánh giá mới.');
+      notificationService.success('Đã gửi đánh giá.');
       showMissionCompletionToasts(reviewResponse?.missionCompletions);
       await refreshAll();
       setRating(0);
@@ -293,10 +304,21 @@ const MovieReviewsSection = ({
   };
 
   const handleDeleteReview = async (reviewUuid) => {
+    const ok = await confirm({
+      title: 'Xóa đánh giá',
+      message: 'Bạn có chắc muốn xóa đánh giá của mình? Hành động này không thể hoàn tác.',
+      confirmLabel: 'Xóa đánh giá',
+      variant: 'danger',
+    });
+    if (!ok) return;
+
     setIsSubmitting(true);
     try {
       await movieReviewService.deleteReview(movieUuid, reviewUuid);
       notificationService.success('Đã xóa đánh giá.');
+      setRating(0);
+      setComment('');
+      setSelectedVibeTags([]);
       await refreshAll();
     } catch (error) {
       notificationService.error(error.message || 'Không thể xóa đánh giá.');
@@ -637,11 +659,13 @@ const MovieReviewsSection = ({
                 <div className="movie-reviews-purchase-banner movie-reviews-glass-card">
                   <div>
                     <p className="movie-reviews-login-title">
-                      {summary?.reviewCooldownActive ? 'Chờ gửi đánh giá tiếp' : 'Mua vé để được đánh giá'}
+                      {summary?.myReview
+                        ? 'Bạn đã đánh giá phim này'
+                        : 'Mua vé hoặc bắt đầu xem để đánh giá'}
                     </p>
                     <p className="movie-reviews-login-desc">{eligibilityMessage}</p>
                   </div>
-                  {!summary?.reviewCooldownActive && (
+                  {!summary?.myReview && (
                   <div className="movie-reviews-purchase-actions">
                     {showTheaterCta && (
                       <a href="#select-showtimes" className="movie-reviews-purchase-btn movie-reviews-purchase-btn--theater">
@@ -663,7 +687,11 @@ const MovieReviewsSection = ({
                   )}
                 </div>
               ) : (
-                <form className="movie-reviews-form movie-reviews-glass-card" onSubmit={handleSubmit}>
+                <form
+                  id="movie-review-form"
+                  className="movie-reviews-form movie-reviews-glass-card"
+                  onSubmit={handleSubmit}
+                >
                   <div className="movie-reviews-form-top">
                     <div className="movie-reviews-form-head">
                       <span className="movie-reviews-form-icon" aria-hidden="true">
@@ -674,7 +702,7 @@ const MovieReviewsSection = ({
                           Viết đánh giá
                         </h3>
                         <p className="movie-reviews-form-hint">
-                          Mỗi lần gửi sẽ tạo một đánh giá mới. Chỉ dành cho khách đã mua vé rạp hoặc vé online.
+                          Mỗi tài khoản chỉ được gửi một đánh giá cho mỗi phim.
                         </p>
                       </div>
                     </div>

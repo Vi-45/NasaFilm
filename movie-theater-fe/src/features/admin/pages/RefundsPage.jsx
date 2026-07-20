@@ -1,11 +1,12 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { CheckCircle2, Loader2, RefreshCw } from 'lucide-react';
 import { bookingService } from '../../../shared/services/bookingService';
 import { notificationService } from '../../../shared/services/notificationService';
 import { useRealtimeTopic } from '../../../shared/hooks/useRealtimeTopic';
 import { REALTIME_TOPICS } from '../../../shared/constants/realtimeTopics';
 import Pagination from '../../../shared/components/Pagination';
-import { AdminPage, PageHeader, PrimaryButton } from '../components';
+import { useConfirm } from '../../../shared/context/ConfirmDialogContext';
+import { AdminPage, PageHeader, PrimaryButton, FilterPills, StatusBadge, AdminTableShell } from '../components';
 import './RefundsPage.css';
 
 function formatMoney(amount) {
@@ -34,11 +35,12 @@ function approverLabel(item) {
   return '—';
 }
 
-function statusBadgeClass(status) {
+function statusVariant(status) {
   const normalized = (status || '').toUpperCase();
-  if (normalized === 'COMPLETED') return 'refunds-status-badge refunds-status-badge--success';
-  if (normalized === 'FAILED') return 'refunds-status-badge refunds-status-badge--failed';
-  return 'refunds-status-badge';
+  if (normalized === 'COMPLETED') return 'success';
+  if (normalized === 'FAILED') return 'danger';
+  if (normalized === 'PENDING' || normalized === 'PROCESSING') return 'warning';
+  return 'muted';
 }
 
 function NoteCell({ item }) {
@@ -61,20 +63,23 @@ function NoteCell({ item }) {
 }
 
 const RefundsPage = () => {
+  const confirm = useConfirm();
   const [listTab, setListTab] = useState('pending');
   const [refunds, setRefunds] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [approvingId, setApprovingId] = useState(null);
-  const [historyPage, setHistoryPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [totalItems, setTotalItems] = useState(0);
 
   const loadRefunds = useCallback(async () => {
     setIsLoading(true);
     try {
       const data = listTab === 'history'
-        ? await bookingService.getAdminRefundHistory()
-        : await bookingService.getAdminPendingRefunds();
-      setRefunds(Array.isArray(data) ? data : []);
+        ? await bookingService.getAdminRefundHistory({ page: currentPage - 1, size: itemsPerPage })
+        : await bookingService.getAdminPendingRefunds({ page: currentPage - 1, size: itemsPerPage });
+      setRefunds(Array.isArray(data?.content) ? data.content : []);
+      setTotalItems(Number(data?.totalElements ?? 0));
     } catch (err) {
       console.error('Failed to load refunds:', err);
       notificationService.error(
@@ -83,33 +88,36 @@ const RefundsPage = () => {
           : 'Không thể tải danh sách hoàn tiền chờ duyệt.',
       );
       setRefunds([]);
+      setTotalItems(0);
     } finally {
       setIsLoading(false);
     }
-  }, [listTab]);
+  }, [listTab, currentPage, itemsPerPage]);
 
   useEffect(() => {
     loadRefunds();
   }, [loadRefunds]);
 
   useEffect(() => {
-    setHistoryPage(1);
+    setCurrentPage(1);
   }, [listTab]);
 
   useRealtimeTopic(REALTIME_TOPICS.ADMIN_BOOKINGS, loadRefunds);
 
-  const paginatedHistory = useMemo(() => {
-    if (listTab !== 'history') return refunds;
-    const start = (historyPage - 1) * itemsPerPage;
-    return refunds.slice(start, start + itemsPerPage);
-  }, [refunds, listTab, historyPage, itemsPerPage]);
+  const handleApprove = async (item) => {
+    const ok = await confirm({
+      title: 'Duyệt hoàn tiền',
+      message: 'Xác nhận duyệt hoàn tiền cho khách hàng? Số tiền sẽ được cộng vào Ví NASA hoặc hoàn qua cổng thanh toán.',
+      highlight: `${item.customerEmail || 'Khách hàng'} · ${formatMoney(item.amount)}`,
+      detail: item.movieTitle ? `Phim: ${item.movieTitle}` : '',
+      confirmLabel: 'Duyệt hoàn tiền',
+      variant: 'warning',
+    });
+    if (!ok) return;
 
-  const displayedRefunds = listTab === 'history' ? paginatedHistory : refunds;
-
-  const handleApprove = async (refundUuid) => {
-    setApprovingId(refundUuid);
+    setApprovingId(item.refundUuid);
     try {
-      await bookingService.approveRefund(refundUuid);
+      await bookingService.approveRefund(item.refundUuid);
       notificationService.success('Duyệt hoàn tiền thành công.');
       await loadRefunds();
     } catch (err) {
@@ -139,36 +147,43 @@ const RefundsPage = () => {
         ]}
       />
 
-      <div className="refunds-tabs">
-        <button
-          type="button"
-          className={`refunds-tab${listTab === 'pending' ? ' refunds-tab--active' : ''}`}
-          onClick={() => setListTab('pending')}
-        >
-          Chờ duyệt
-        </button>
-        <button
-          type="button"
-          className={`refunds-tab${listTab === 'history' ? ' refunds-tab--active' : ''}`}
-          onClick={() => setListTab('history')}
-        >
-          Lịch sử duyệt
-        </button>
-      </div>
-
+      <AdminTableShell
+        toolbar={(
+          <FilterPills
+            value={listTab}
+            onChange={setListTab}
+            items={[
+              { id: 'pending', label: 'Chờ duyệt', count: listTab === 'pending' ? totalItems : undefined },
+              { id: 'history', label: 'Lịch sử duyệt', count: listTab === 'history' ? totalItems : undefined },
+            ]}
+            ariaLabel="Nhóm hoàn tiền"
+          />
+        )}
+        footer={totalItems > 0 ? (
+          <Pagination
+            currentPage={currentPage}
+            totalItems={totalItems}
+            itemsPerPage={itemsPerPage}
+            onPageChange={setCurrentPage}
+            onItemsPerPageChange={(size) => {
+              setItemsPerPage(size);
+              setCurrentPage(1);
+            }}
+          />
+        ) : null}
+      >
       {isLoading ? (
-        <div className="refunds-state">
+        <div className="adm-loading">
           <Loader2 className="h-8 w-8 text-red-500 animate-spin" />
           <p>Đang tải danh sách hoàn tiền...</p>
         </div>
       ) : refunds.length === 0 ? (
-        <div className="refunds-state">
+        <div className="adm-empty">
           <CheckCircle2 className="h-10 w-10 text-emerald-500" />
           <p>{emptyMessage}</p>
         </div>
       ) : (
-        <div className="refunds-table-wrap">
-          <table className="refunds-table">
+          <table className="adm-table">
             <thead>
               <tr>
                 <th>Khách hàng</th>
@@ -187,28 +202,30 @@ const RefundsPage = () => {
               </tr>
             </thead>
             <tbody>
-              {displayedRefunds.map((item) => (
+              {refunds.map((item) => (
                 <tr key={item.refundUuid}>
                   <td>{item.customerEmail || '—'}</td>
                   <td>{item.movieTitle || '—'}</td>
-                  <td className="refunds-amount">{formatMoney(item.amount)}</td>
+                  <td className="refunds-amount adm-tabular">{formatMoney(item.amount)}</td>
                   <NoteCell item={item} />
                   <td>
-                    <span className={statusBadgeClass(item.status)}>{item.status || 'PENDING'}</span>
+                    <StatusBadge variant={statusVariant(item.status)}>
+                      {item.status || 'PENDING'}
+                    </StatusBadge>
                   </td>
-                  <td>{formatDate(item.createdAt)}</td>
+                  <td className="adm-tabular">{formatDate(item.createdAt)}</td>
                   {listTab === 'history' && (
                     <>
                       <td className="refunds-approver-cell">
-                        <span className="refunds-approver-name">
+                        <span className="refunds-approver-name adm-table__primary">
                           {item.approvedByName || item.approvedByEmail || '—'}
                         </span>
                         {item.approvedByEmail && item.approvedByName && (
-                          <span className="refunds-approver-email">{item.approvedByEmail}</span>
+                          <span className="refunds-approver-email adm-table__secondary">{item.approvedByEmail}</span>
                         )}
                         <span className="refunds-approver-role">{approverLabel(item)}</span>
                       </td>
-                      <td>{formatDate(item.approvedAt)}</td>
+                      <td className="adm-tabular">{formatDate(item.approvedAt)}</td>
                     </>
                   )}
                   {listTab === 'pending' && (
@@ -216,7 +233,7 @@ const RefundsPage = () => {
                       <PrimaryButton
                         type="button"
                         disabled={approvingId === item.refundUuid}
-                        onClick={() => handleApprove(item.refundUuid)}
+                        onClick={() => handleApprove(item)}
                       >
                         {approvingId === item.refundUuid ? 'Đang duyệt...' : 'Duyệt hoàn tiền'}
                       </PrimaryButton>
@@ -226,21 +243,8 @@ const RefundsPage = () => {
               ))}
             </tbody>
           </table>
-        </div>
       )}
-
-      {listTab === 'history' && refunds.length > 0 && (
-        <Pagination
-          currentPage={historyPage}
-          totalItems={refunds.length}
-          itemsPerPage={itemsPerPage}
-          onPageChange={setHistoryPage}
-          onItemsPerPageChange={(size) => {
-            setItemsPerPage(size);
-            setHistoryPage(1);
-          }}
-        />
-      )}
+      </AdminTableShell>
     </AdminPage>
   );
 };

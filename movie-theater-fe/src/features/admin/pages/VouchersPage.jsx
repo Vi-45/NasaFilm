@@ -6,7 +6,6 @@ import {
   Activity,
   CheckCircle,
   Pause,
-  ChevronDown,
   Edit2,
   Trash2,
 } from "lucide-react";
@@ -15,17 +14,32 @@ import { notificationService } from "../../../shared/services/notificationServic
 import Pagination from "../../../shared/components/Pagination";
 import AdminModal from "../components/AdminModal";
 import VoucherFormPanel from "../components/panels/VoucherFormPanel";
-import { PrimaryButton, GhostButton } from "../components";
+import {
+  AdminPage,
+  PageHeader,
+  AdminKpiGrid,
+  FilterPills,
+  StatusBadge,
+  AdminTableShell,
+  PrimaryButton,
+  GhostButton,
+} from "../components";
 import {
   formatDateForInput,
   formatDateTimeDisplay,
   formatDiscountDisplay,
   getVoucherLifecycleStatus,
-  getVoucherStatusClassName,
 } from "../utils/voucherFormUtils";
 import { useConfirm } from "../../../shared/context/ConfirmDialogContext";
 import { resolveTierLabelByMinScore } from "../../../shared/utils/memberTiers";
 import "./VouchersPage.css";
+
+function lifecycleVariant(tone) {
+  if (tone === "emerald") return "success";
+  if (tone === "rose") return "danger";
+  if (tone === "amber") return "warning";
+  return "muted";
+}
 
 const VouchersPage = () => {
   const confirm = useConfirm();
@@ -33,9 +47,8 @@ const VouchersPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
-  const [isFilterDropdownOpen, setIsFilterDropdownOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [itemsPerPage, setItemsPerPage] = useState(6);
   const [isDeleting, setIsDeleting] = useState(false);
   const [voucherModal, setVoucherModal] = useState({
     open: false,
@@ -100,39 +113,6 @@ const VouchersPage = () => {
     return filteredVouchers.slice(startIndex, startIndex + itemsPerPage);
   }, [filteredVouchers, currentPage, itemsPerPage]);
 
-  const filterOptions = [
-    {
-      value: "all",
-      label: "Tất cả trạng thái",
-      icon: (
-        <span className="w-1.5 h-1.5 rounded-full bg-blue-500 mr-2 shrink-0" />
-      ),
-    },
-    {
-      value: "ACTIVE",
-      label: "Hoạt động",
-      icon: (
-        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-2 shrink-0" />
-      ),
-    },
-    {
-      value: "INACTIVE",
-      label: "Đã vô hiệu",
-      icon: (
-        <span className="w-1.5 h-1.5 rounded-full bg-amber-500 mr-2 shrink-0" />
-      ),
-    },
-    {
-      value: "DELETED",
-      label: "Đã xóa",
-      icon: (
-        <span className="w-1.5 h-1.5 rounded-full bg-zinc-500 mr-2 shrink-0" />
-      ),
-    },
-  ];
-  const currentFilter =
-    filterOptions.find((opt) => opt.value === statusFilter) || filterOptions[0];
-
   const closeVoucherModal = () =>
     setVoucherModal({ open: false, mode: "create", voucher: null });
 
@@ -143,10 +123,10 @@ const VouchersPage = () => {
 
   const handleDeleteVoucher = async (voucher) => {
     const ok = await confirm({
-      title: 'Xóa voucher',
+      title: "Xóa voucher",
       message: `Bạn có chắc muốn xóa mã "${voucher.code}"? Voucher sẽ không còn hiển thị với khách hàng.`,
-      confirmLabel: 'Xóa voucher',
-      variant: 'danger',
+      confirmLabel: "Xóa voucher",
+      variant: "danger",
     });
     if (!ok) return;
     setIsDeleting(true);
@@ -176,185 +156,202 @@ const VouchersPage = () => {
       : undefined;
 
   return (
-    <div className="space-y-6 text-left">
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-        <div>
-          <p className="text-[10px] font-black uppercase tracking-widest text-red-500 mb-1.5">
-            Trung Tâm Khuyến Mãi
-          </p>
-          <h1 className="text-4xl font-black text-white uppercase leading-none tracking-tight">
-            Quản Lý Voucher &amp; Khuyến Mãi
-          </h1>
-          <p className="text-sm text-gray-400 mt-2">
-            Tạo chiến dịch chiết khấu, quản lý lượt sử dụng mã và thời hạn kích
-            hoạt voucher toàn hệ thống.
-          </p>
-        </div>
-        <button
-          type="button"
-          onClick={() =>
-            setVoucherModal({ open: true, mode: "create", voucher: null })
-          }
-          className="inline-flex items-center gap-1.5 rounded-lg bg-red-600 hover:bg-red-700 px-4 py-2.5 text-sm text-white font-bold transition shadow-md cursor-pointer shrink-0 self-start md:self-auto"
-        >
-          <Plus size={16} /> Tạo Voucher Mới
-        </button>
-      </div>
+    <AdminPage className="vouchers-page">
+      <PageHeader
+        eyebrow="Trung tâm khuyến mãi"
+        title="Quản lý voucher"
+        description="Tạo chiến dịch chiết khấu, quản lý lượt sử dụng mã và thời hạn kích hoạt voucher toàn hệ thống."
+        primaryAction={{
+          label: "Tạo voucher mới",
+          icon: <Plus size={16} />,
+          onClick: () =>
+            setVoucherModal({ open: true, mode: "create", voucher: null }),
+        }}
+      />
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6 text-left">
-        {[
+      <AdminKpiGrid
+        items={[
           {
-            label: "TỔNG VOUCHER",
+            label: "Tổng voucher",
             value: totalVouchers,
             icon: Ticket,
-            color: "text-indigo-400",
             kpiClass: "kpi-total",
           },
           {
-            label: "ĐANG HOẠT ĐỘNG",
+            label: "Đang hoạt động",
             value: activeVouchers,
             icon: CheckCircle,
-            color: "text-emerald-400",
             kpiClass: "kpi-active",
           },
           {
-            label: "VÔ HIỆU HÓA",
+            label: "Vô hiệu hóa",
             value: inactiveVouchers,
             icon: Pause,
-            color: "text-amber-400",
             kpiClass: "kpi-inactive",
           },
           {
-            label: "TỔNG LƯỢT SỬ DỤNG",
+            label: "Tổng lượt sử dụng",
             value: totalUsedCount,
             icon: Activity,
-            color: "text-blue-400",
             kpiClass: "kpi-used",
           },
-        ].map((kpi) => (
-          <div key={kpi.label} className={`kpi-card ${kpi.kpiClass}`}>
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-[9px] font-bold uppercase tracking-wider text-gray-500 leading-tight">
-                {kpi.label}
-              </span>
-              <kpi.icon className={`w-4 h-4 ${kpi.color} opacity-60`} />
+        ]}
+      />
+
+      <AdminTableShell
+        className="vouchers-shell"
+        toolbar={
+          <div className="vouchers-toolbar">
+            <div className="vouchers-search">
+              <Search className="vouchers-search__icon" aria-hidden="true" />
+              <input
+                className="vouchers-search__input"
+                placeholder="Tìm kiếm theo mã voucher..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
             </div>
-            <p className={`text-xl font-black ${kpi.color} leading-none`}>
-              {kpi.value}
+            <FilterPills
+              value={statusFilter}
+              onChange={setStatusFilter}
+              items={[
+                { id: "all", label: "Tất cả" },
+                { id: "ACTIVE", label: "Hoạt động", count: activeVouchers },
+                { id: "INACTIVE", label: "Vô hiệu", count: inactiveVouchers },
+                { id: "DELETED", label: "Đã xóa" },
+              ]}
+              ariaLabel="Lọc trạng thái voucher"
+            />
+          </div>
+        }
+        footer={
+          filteredVouchers.length > 0 ? (
+            <Pagination
+              currentPage={currentPage}
+              totalItems={filteredVouchers.length}
+              itemsPerPage={itemsPerPage}
+              onPageChange={setCurrentPage}
+              onItemsPerPageChange={setItemsPerPage}
+            />
+          ) : null
+        }
+      >
+        {isLoading ? (
+          <div className="vouchers-state">
+            <div className="vouchers-state__spinner" />
+            <p>Đang tải danh sách voucher...</p>
+          </div>
+        ) : filteredVouchers.length === 0 ? (
+          <div className="vouchers-state">
+            <Ticket className="vouchers-state__icon" />
+            <p className="vouchers-state__title">Không tìm thấy voucher nào</p>
+            <p className="vouchers-state__desc">
+              Hãy tạo voucher mới hoặc điều chỉnh bộ lọc.
             </p>
           </div>
-        ))}
-      </div>
+        ) : (
+          <div className="vouchers-grid">
+            {paginatedVouchers.map((v) => {
+              const lifecycle = getVoucherLifecycleStatus(v);
+              const usedCount = v.usedCount ?? 0;
+              const maxUsage = v.maxUsage;
+              const pct =
+                maxUsage > 0
+                  ? Math.min(100, Math.round((usedCount / maxUsage) * 100))
+                  : 0;
+              const ringR = 22;
+              const ring = 2 * Math.PI * ringR;
+              const dashOffset = ring - (pct / 100) * ring;
+              const discountLabel =
+                v.discountType === "PERCENTAGE"
+                  ? `${Math.round(v.discountValue * 100)}%`
+                  : `${Number(v.discountValue).toLocaleString("vi-VN")}đ`;
+              const usageFraction =
+                maxUsage > 0 ? `${usedCount}/${maxUsage}` : `${usedCount} lượt`;
+              const usagePct = maxUsage > 0 ? `${pct}%` : null;
+              const startLabel = v.startDate
+                ? formatDateTimeDisplay(formatDateForInput(v.startDate))
+                : null;
+              const endLabel = v.endDate
+                ? formatDateTimeDisplay(formatDateForInput(v.endDate))
+                : null;
 
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 p-1">
-        <div className="relative w-full sm:w-72 text-left">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
-          <input
-            className="w-full rounded-xl bg-[#0f172a] border border-[#242d42] pl-10 pr-4 py-2.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-[#FF3366]/50 transition-colors font-sans"
-            placeholder="Tìm kiếm theo mã voucher..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-        </div>
-        <div className="relative text-left z-20">
-          <button
-            type="button"
-            onClick={() => setIsFilterDropdownOpen(!isFilterDropdownOpen)}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#0f172a] border border-[#242d42] text-gray-300 text-xs font-semibold hover:text-white hover:border-[#475569] focus:outline-none transition-colors cursor-pointer min-w-[170px] h-[38px] justify-between"
-          >
-            <span className="flex items-center">
-              {currentFilter.icon}
-              <span>{currentFilter.label}</span>
-            </span>
-            <ChevronDown
-              className={`w-3.5 h-3.5 text-gray-500 transition-transform duration-200 ${isFilterDropdownOpen ? "rotate-180" : ""}`}
-            />
-          </button>
-          {isFilterDropdownOpen && (
-            <>
-              <div
-                className="fixed inset-0 z-10 bg-transparent"
-                onClick={() => setIsFilterDropdownOpen(false)}
-              />
-              <div className="absolute right-0 mt-1 w-48 bg-white border border-gray-200 rounded-lg shadow-xl p-1.5 space-y-0.5 z-20">
-                {filterOptions.map((opt) => (
-                  <button
-                    key={opt.value}
-                    type="button"
-                    onClick={() => {
-                      setStatusFilter(opt.value);
-                      setIsFilterDropdownOpen(false);
-                    }}
-                    className={`w-full flex items-center px-3 py-2 rounded-md hover:bg-gray-100 transition text-left text-xs font-semibold cursor-pointer ${statusFilter === opt.value ? "bg-red-50 text-red-600 font-bold border border-red-200" : "text-gray-700 border border-transparent"}`}
-                  >
-                    {opt.icon}
-                    <span>{opt.label}</span>
-                  </button>
-                ))}
-              </div>
-            </>
-          )}
-        </div>
-      </div>
+              return (
+                <article
+                  key={v.id}
+                  className={`voucher-ticket voucher-ticket--${lifecycle.tone}${
+                    lifecycle.soonExpiring ? " voucher-ticket--soon" : ""
+                  }`}
+                >
+                  <div className="voucher-ticket__stub">
+                    <h3 className="voucher-ticket__code">{v.code}</h3>
+                    <p className="voucher-ticket__discount">{discountLabel}</p>
 
-      {isLoading ? (
-        <div className="min-h-[320px] flex flex-col items-center justify-center gap-3 bg-[#1c2333]/50 border border-[#242d42] rounded-xl shadow-2xl">
-          <div className="w-10 h-10 border-2 border-[#FF3366] border-t-transparent rounded-full animate-spin" />
-          <p className="text-gray-400 text-sm font-sans">
-            Đang tải danh sách voucher...
-          </p>
-        </div>
-      ) : filteredVouchers.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-20 gap-3 bg-[#1c2333]/50 border border-[#242d42] rounded-xl shadow-2xl">
-          <Ticket className="w-14 h-14 text-zinc-700" />
-          <p className="font-bold text-white uppercase tracking-wider text-sm font-sans">
-            Không tìm thấy voucher nào
-          </p>
-          <p className="text-xs text-gray-500 font-sans">
-            Hãy tạo voucher mới hoặc điều chỉnh bộ lọc.
-          </p>
-        </div>
-      ) : (
-        <>
-          <div className="overflow-x-auto w-full">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="border-b border-[#242d42]">
-                  <th className="px-6 py-3.5 text-[10px] font-bold uppercase tracking-widest text-gray-400 font-sans">
-                    Mã Voucher
-                  </th>
-                  <th className="px-6 py-3.5 text-[10px] font-bold uppercase tracking-widest text-gray-400 font-sans">
-                    Chiết Khấu
-                  </th>
-                  <th className="px-6 py-3.5 text-[10px] font-bold uppercase tracking-widest text-gray-400 font-sans">
-                    Lượt Sử Dụng
-                  </th>
-                  <th className="px-6 py-3.5 text-[10px] font-bold uppercase tracking-widest text-gray-400 font-sans">
-                    Hiệu Lực
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {paginatedVouchers.map((v) => {
-                  const lifecycle = getVoucherLifecycleStatus(v);
-                  const usedCount = v.usedCount ?? 0;
-                  const pct =
-                    v.maxUsage > 0
-                      ? Math.min(
-                          100,
-                          Math.round((usedCount / v.maxUsage) * 100),
-                        )
-                      : 0;
-                  const progressColor =
-                    pct >= 85
-                      ? "bg-rose-500"
-                      : pct >= 60
-                        ? "bg-amber-500"
-                        : "bg-emerald-500";
+                    {maxUsage > 0 ? (
+                      <div className="voucher-ticket__ring" aria-hidden="true">
+                        <svg viewBox="0 0 56 56" className="voucher-ticket__ring-svg">
+                          <circle cx="28" cy="28" r={ringR} className="voucher-ticket__ring-track" />
+                          <circle
+                            cx="28"
+                            cy="28"
+                            r={ringR}
+                            className="voucher-ticket__ring-value"
+                            style={{
+                              strokeDasharray: ring,
+                              strokeDashoffset: dashOffset,
+                            }}
+                          />
+                        </svg>
+                        <span className="voucher-ticket__ring-label">
+                          <span className="voucher-ticket__ring-frac">{usageFraction}</span>
+                          <span className="voucher-ticket__ring-pct">{usagePct}</span>
+                        </span>
+                      </div>
+                    ) : (
+                      <p className="voucher-ticket__usage-plain">{usageFraction}</p>
+                    )}
+                  </div>
 
-                  return (
-                    <tr
-                      key={v.id}
+                  <div className="voucher-ticket__perforation" aria-hidden="true">
+                    <span className="voucher-ticket__notch voucher-ticket__notch--top" />
+                    <span className="voucher-ticket__dash" />
+                    <span className="voucher-ticket__notch voucher-ticket__notch--bottom" />
+                  </div>
+
+                  <div className="voucher-ticket__panel">
+                    {lifecycle.soonExpiring ? (
+                      <span className="voucher-ticket__tag">Sắp hết hạn</span>
+                    ) : (
+                      <span className="voucher-ticket__tag voucher-ticket__tag--spacer" aria-hidden="true" />
+                    )}
+
+                    <div className="voucher-ticket__status">
+                      <span
+                        className={`voucher-ticket__dot voucher-ticket__dot--${lifecycle.tone}`}
+                      />
+                      <span className={`voucher-ticket__status-text voucher-ticket__status-text--${lifecycle.tone}`}>
+                        {lifecycle.label}
+                      </span>
+                    </div>
+
+                    <div className="voucher-ticket__dates">
+                      {startLabel ? (
+                        <p>
+                          <span className="voucher-ticket__date-label">Từ:</span>{" "}
+                          <span className="voucher-ticket__date-value">{startLabel}</span>
+                        </p>
+                      ) : null}
+                      {endLabel ? (
+                        <p>
+                          <span className="voucher-ticket__date-label">Đến:</span>{" "}
+                          <span className="voucher-ticket__date-value">{endLabel}</span>
+                        </p>
+                      ) : null}
+                    </div>
+
+                    <button
+                      type="button"
+                      className="voucher-ticket__cta"
                       onClick={() =>
                         setVoucherModal({
                           open: true,
@@ -362,108 +359,23 @@ const VouchersPage = () => {
                           voucher: v,
                         })
                       }
-                      className="border-b border-[#242d42]/30 hover:bg-white/[0.03] transition-colors duration-150 cursor-pointer"
                     >
-                      <td className="px-6 py-4">
-                        <div className="flex flex-col gap-1 items-start">
-                          <span className="text-base font-extrabold text-white tracking-widest uppercase font-sans">
-                            {v.code}
-                          </span>
-                          <div className="flex items-center gap-1.5 flex-wrap">
-                            <span
-                              className={`px-2 py-0.5 rounded-full text-[10px] font-bold inline-flex items-center gap-1 font-sans border ${getVoucherStatusClassName(lifecycle.tone)}`}
-                            >
-                              <span
-                                className={`w-1 h-1 rounded-full ${lifecycle.tone === "emerald" ? "bg-emerald-400" : lifecycle.tone === "rose" ? "bg-rose-400" : lifecycle.tone === "amber" ? "bg-amber-400" : "bg-zinc-400"}`}
-                              />
-                              {lifecycle.label}
-                            </span>
-                            {lifecycle.soonExpiring && (
-                              <span className="bg-amber-500/10 border border-amber-500/20 text-amber-400 text-[8px] px-1.5 py-0.5 rounded-full font-bold">
-                                Sắp hết hạn
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex flex-col text-left">
-                          <span className="text-xs font-bold text-gray-400 font-sans">
-                            {v.discountType === "PERCENTAGE"
-                              ? "Phần trăm (%)"
-                              : "Cố định (đ)"}
-                          </span>
-                          <span className="text-lg font-black text-amber-400 font-sans">
-                            {v.discountType === "PERCENTAGE"
-                              ? `${Math.round(v.discountValue * 100)}%`
-                              : `${Number(v.discountValue).toLocaleString("vi-VN")} đ`}
-                          </span>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex flex-col gap-1.5 max-w-[150px] text-left">
-                          <div className="flex items-center justify-between text-[10px] font-bold text-gray-400 font-sans">
-                            <span>
-                              {usedCount} / {v.maxUsage ?? "∞"}
-                            </span>
-                            {v.maxUsage > 0 && <span>{pct}%</span>}
-                          </div>
-                          {v.maxUsage > 0 ? (
-                            <div className="h-1 rounded-full bg-[#1A2238] overflow-hidden">
-                              <div
-                                className={`h-full rounded-full transition-all ${progressColor}`}
-                                style={{ width: `${pct}%` }}
-                              />
-                            </div>
-                          ) : (
-                            <span className="text-[11px] text-gray-500 font-sans">
-                              Không giới hạn
-                            </span>
-                          )}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex flex-col gap-1 font-sans text-left">
-                          {v.startDate && (
-                            <span className="text-[11px] text-gray-400">
-                              Từ:{" "}
-                              {formatDateTimeDisplay(
-                                formatDateForInput(v.startDate),
-                              )}
-                            </span>
-                          )}
-                          {v.endDate && (
-                            <span className="text-[11px] text-gray-400">
-                              Đến:{" "}
-                              {formatDateTimeDisplay(
-                                formatDateForInput(v.endDate),
-                              )}
-                            </span>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+                      Chi tiết
+                    </button>
+                  </div>
+                </article>
+              );
+            })}
           </div>
-          <Pagination
-            currentPage={currentPage}
-            totalItems={filteredVouchers.length}
-            itemsPerPage={itemsPerPage}
-            onPageChange={setCurrentPage}
-            onItemsPerPageChange={setItemsPerPage}
-          />
-        </>
-      )}
+        )}
+      </AdminTableShell>
 
       <AdminModal
         open={voucherModal.open}
         onClose={closeVoucherModal}
         title={voucherModalTitle}
         subtitle={voucherModalSubtitle}
-        size={voucherModal.mode === "detail" ? "md" : "lg"}
+        size={voucherModal.mode === "detail" ? "md" : "xl"}
       >
         {voucherModal.mode === "detail" &&
           voucherModal.voucher &&
@@ -473,33 +385,31 @@ const VouchersPage = () => {
             const usedCount = v.usedCount ?? 0;
             return (
               <div className="space-y-5">
-                <div className="flex flex-col items-center gap-3 p-4 rounded-xl bg-white/[0.03] border border-white/[0.06]">
-                  <Ticket className="w-10 h-10 text-red-500" />
-                  <span className="text-xl font-black text-white uppercase tracking-widest">
+                <div className="flex flex-col items-center gap-3 p-4 rounded-[var(--adm-radius-sm)] bg-white/[0.03] border border-[var(--adm-border)]">
+                  <Ticket className="w-10 h-10 text-[var(--adm-accent)]" />
+                  <span className="text-xl font-black text-[var(--adm-text)] uppercase tracking-widest">
                     {v.code}
                   </span>
                   <span className="text-lg font-bold text-amber-400">
                     {formatDiscountDisplay(v)}
                   </span>
-                  <span
-                    className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${getVoucherStatusClassName(lifecycle.tone)}`}
-                  >
+                  <StatusBadge variant={lifecycleVariant(lifecycle.tone)}>
                     {lifecycle.label}
-                  </span>
+                  </StatusBadge>
                 </div>
                 <dl className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
                   <div>
-                    <dt className="text-[10px] uppercase tracking-wider text-gray-500 font-bold mb-0.5">
+                    <dt className="text-[10px] uppercase tracking-wider text-[var(--adm-text-dim)] font-bold mb-0.5">
                       Loại giảm
                     </dt>
-                    <dd className="text-white">
+                    <dd className="text-[var(--adm-text)]">
                       {v.discountType === "PERCENTAGE"
                         ? "Phần trăm (%)"
                         : "Số tiền cố định"}
                     </dd>
                   </div>
                   <div>
-                    <dt className="text-[10px] uppercase tracking-wider text-gray-500 font-bold mb-0.5">
+                    <dt className="text-[10px] uppercase tracking-wider text-[var(--adm-text-dim)] font-bold mb-0.5">
                       Giá trị giảm
                     </dt>
                     <dd className="text-amber-400 font-bold">
@@ -507,58 +417,58 @@ const VouchersPage = () => {
                     </dd>
                   </div>
                   <div>
-                    <dt className="text-[10px] uppercase tracking-wider text-gray-500 font-bold mb-0.5">
+                    <dt className="text-[10px] uppercase tracking-wider text-[var(--adm-text-dim)] font-bold mb-0.5">
                       Điểm đổi
                     </dt>
-                    <dd className="text-white">
+                    <dd className="text-[var(--adm-text)]">
                       {(v.pointsCost ?? 0) > 0
                         ? `${Number(v.pointsCost).toLocaleString("vi-VN")} điểm`
                         : "Không cần điểm"}
                     </dd>
                   </div>
                   <div>
-                    <dt className="text-[10px] uppercase tracking-wider text-gray-500 font-bold mb-0.5">
+                    <dt className="text-[10px] uppercase tracking-wider text-[var(--adm-text-dim)] font-bold mb-0.5">
                       Hạng thành viên
                     </dt>
-                    <dd className="text-white">
+                    <dd className="text-[var(--adm-text)]">
                       {resolveTierLabelByMinScore(v.minScore)}
                     </dd>
                   </div>
                   <div>
-                    <dt className="text-[10px] uppercase tracking-wider text-gray-500 font-bold mb-0.5">
+                    <dt className="text-[10px] uppercase tracking-wider text-[var(--adm-text-dim)] font-bold mb-0.5">
                       Giới hạn toàn hệ thống
                     </dt>
-                    <dd className="text-white">
+                    <dd className="text-[var(--adm-text)]">
                       {v.maxUsage != null
                         ? `${usedCount} / ${v.maxUsage} lượt`
                         : "Không giới hạn"}
                     </dd>
                   </div>
                   <div>
-                    <dt className="text-[10px] uppercase tracking-wider text-gray-500 font-bold mb-0.5">
+                    <dt className="text-[10px] uppercase tracking-wider text-[var(--adm-text-dim)] font-bold mb-0.5">
                       Giới hạn mỗi tài khoản
                     </dt>
-                    <dd className="text-white">
+                    <dd className="text-[var(--adm-text)]">
                       {v.maxUsagePerUser != null
                         ? `${v.maxUsagePerUser} lượt đổi`
                         : "Không giới hạn"}
                     </dd>
                   </div>
                   <div>
-                    <dt className="text-[10px] uppercase tracking-wider text-gray-500 font-bold mb-0.5">
+                    <dt className="text-[10px] uppercase tracking-wider text-[var(--adm-text-dim)] font-bold mb-0.5">
                       Kích hoạt
                     </dt>
-                    <dd className="text-white">
+                    <dd className="text-[var(--adm-text)]">
                       {(v.pointsCost ?? 0) > 0
                         ? "Đổi điểm trước khi sử dụng"
                         : "Khả dụng trực tiếp khi đặt vé"}
                     </dd>
                   </div>
                   <div>
-                    <dt className="text-[10px] uppercase tracking-wider text-gray-500 font-bold mb-0.5">
+                    <dt className="text-[10px] uppercase tracking-wider text-[var(--adm-text-dim)] font-bold mb-0.5">
                       Trạng thái vận hành
                     </dt>
-                    <dd className="text-white">
+                    <dd className="text-[var(--adm-text)]">
                       {v.status === "ACTIVE"
                         ? "Đang bật trong hệ thống"
                         : "Đã tắt thủ công"}
@@ -566,30 +476,30 @@ const VouchersPage = () => {
                   </div>
                   {v.startDate && (
                     <div>
-                      <dt className="text-[10px] uppercase tracking-wider text-gray-500 font-bold mb-0.5">
+                      <dt className="text-[10px] uppercase tracking-wider text-[var(--adm-text-dim)] font-bold mb-0.5">
                         Bắt đầu
                       </dt>
-                      <dd className="text-white">
+                      <dd className="text-[var(--adm-text)]">
                         {formatDateTimeDisplay(formatDateForInput(v.startDate))}
                       </dd>
                     </div>
                   )}
                   {v.endDate && (
                     <div>
-                      <dt className="text-[10px] uppercase tracking-wider text-gray-500 font-bold mb-0.5">
+                      <dt className="text-[10px] uppercase tracking-wider text-[var(--adm-text-dim)] font-bold mb-0.5">
                         Kết thúc
                       </dt>
-                      <dd className="text-white">
+                      <dd className="text-[var(--adm-text)]">
                         {formatDateTimeDisplay(formatDateForInput(v.endDate))}
                       </dd>
                     </div>
                   )}
                   {v.deletedAt && (
                     <div className="sm:col-span-2">
-                      <dt className="text-[10px] uppercase tracking-wider text-gray-500 font-bold mb-0.5">
+                      <dt className="text-[10px] uppercase tracking-wider text-[var(--adm-text-dim)] font-bold mb-0.5">
                         Ngày xóa
                       </dt>
-                      <dd className="text-white">
+                      <dd className="text-[var(--adm-text)]">
                         {new Date(v.deletedAt).toLocaleString("vi-VN")}
                       </dd>
                     </div>
@@ -622,7 +532,7 @@ const VouchersPage = () => {
                     </GhostButton>
                   </div>
                 ) : (
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-[var(--adm-text-dim)]">
                     Voucher đã được xóa và không thể chỉnh sửa.
                   </p>
                 )}
@@ -637,7 +547,7 @@ const VouchersPage = () => {
           />
         )}
       </AdminModal>
-    </div>
+    </AdminPage>
   );
 };
 

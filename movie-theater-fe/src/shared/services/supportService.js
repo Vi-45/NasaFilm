@@ -66,14 +66,38 @@ export const supportService = {
     return response.data.data ?? response.data;
   },
 
+  async uploadSupportImages(files) {
+    const formData = new FormData();
+    (files || []).forEach((file) => {
+      if (file) formData.append('files', file);
+    });
+    const response = await authService.api.post('/api/support-requests/images', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return response.data.data ?? response.data;
+  },
+
+  async uploadAdminSupportImages(files) {
+    const formData = new FormData();
+    (files || []).forEach((file) => {
+      if (file) formData.append('files', file);
+    });
+    const response = await authService.api.post('/api/admin/support/images', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return response.data.data ?? response.data;
+  },
+
   async cancelSupportRequest(ticketCode) {
     const response = await authService.api.post(`/api/support-requests/${ticketCode}/cancel`);
     return response.data.data ?? response.data;
   },
 
-  async getAdminSupportRequests() {
-    const response = await authService.api.get('/api/admin/support');
-    return response.data.data ?? response.data;
+  async getAdminSupportRequests({ page = 0, size = 100 } = {}) {
+    const response = await authService.api.get('/api/admin/support', { params: { page, size } });
+    const data = response.data.data ?? response.data;
+    if (Array.isArray(data)) return data;
+    return data?.content ?? [];
   },
 
   async getAdminSupportRequest(ticketCode) {

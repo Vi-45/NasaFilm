@@ -1,17 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { KeyRound, ArrowRight, Check, HelpCircle, Loader2, Mail, X } from 'lucide-react';
+import { KeyRound, ArrowRight, Check, HelpCircle, Loader2, Mail, Ticket, X } from 'lucide-react';
 import { movieService } from '../../../shared/services/movieService';
 import { vodService } from '../../../shared/services/vodService';
 import { notificationService } from '../../../shared/services/notificationService';
+import { showMissionCompletionToasts } from '../../../shared/services/missionService';
 import { useAuthContext } from '../../auth/hooks/useAuthContext';
 import { resolveMovieOnlinePrice } from '../../../shared/utils/systemConfig';
-import { matchBookingCode, getMoviePosterUrl, isVodTicketActive, canPurchaseVodTicket, canWatchOnlineDirectly, getOnlineWatchPath, setTemporaryVodToken, isLiveTicket } from '../utils/movieUtils';
+import { matchBookingCode, getMoviePosterUrl, isVodTicketActive, canPurchaseVodTicket, canWatchOnlineDirectly, getOnlineWatchPath, setTemporaryVodToken, isLiveTicket, isOnlineBooking } from '../utils/movieUtils';
 import { VOD_PLAYBACK_STATE } from '../../../shared/constants/vod';
 import { invalidateVodStatus } from '../hooks/useOnlineVodRoutes';
-import projectorImg from '../../../shared/assets/about_projector.png';
+import projectorImg from '../../../shared/assets/about_projector.webp';
 import '../styles/home-premium.css';
 import './TicketActivationPage.css';
+import { useConfirm } from '../../../shared/context/ConfirmDialogContext';
 
 const STEPS = [
   {
@@ -51,6 +53,7 @@ const isExpiredTicketError = (message) =>
 const formatAccessKey = (value) => value.toUpperCase().replace(/\s+/g, '').slice(0, 40);
 
 const TicketActivationPage = () => {
+  const confirm = useConfirm();
   const { movieId } = useParams();
   const navigate = useNavigate();
   const { isAuthenticated, user } = useAuthContext();
@@ -75,8 +78,26 @@ const TicketActivationPage = () => {
 
         if (isAuthenticated) {
           try {
-            const status = await vodService.getStatus(movieId);
+            let status = await vodService.getStatus(movieId);
+            if (!status?.hasPurchased && data?.uuid) {
+              try {
+                const bookings = await vodService.getMyBookings();
+                const hasOnlineBooking = (bookings || []).some(
+                  (booking) => isOnlineBooking(booking) && booking.movieUuid === data.uuid && isLiveTicket(booking)
+                );
+                if (hasOnlineBooking) {
+                  status = { ...status, hasPurchased: true, playbackState: VOD_PLAYBACK_STATE.WAITING_FOR_PLAY };
+                }
+              } catch {
+                // Giữ status gốc nếu không tải được lịch sử vé.
+              }
+            }
             setVodStatus(status);
+            // Đã kích hoạt / đang STREAMING → vào xem luôn, không bắt nhập mã lại
+            if (canWatchOnlineDirectly(status)) {
+              navigate(getOnlineWatchPath(movieId), { replace: true });
+              return;
+            }
           } catch {
             setVodStatus(null);
           }
@@ -90,7 +111,7 @@ const TicketActivationPage = () => {
       }
     };
     if (movieId) load();
-  }, [movieId, isAuthenticated]);
+  }, [movieId, isAuthenticated, navigate]);
 
   const handleBuyOnline = () => {
     if (!isAuthenticated) {
@@ -153,10 +174,19 @@ const TicketActivationPage = () => {
       return;
     }
 
+    const ok = await confirm({
+      title: 'Kích hoạt vé xem online',
+      message: 'Xác nhận kích hoạt mã vé? Thời gian xem sẽ bắt đầu tính ngay sau khi kích hoạt.',
+      highlight: code,
+      confirmLabel: 'Kích hoạt vé',
+      variant: 'warning',
+    });
+    if (!ok) return;
+
     setIsActivating(true);
     try {
       const bookings = await vodService.getMyBookings();
-      const matched = (bookings || []).find((b) => matchBookingCode(b, code, movieId));
+      const matched = (bookings || []).find((b) => matchBookingCode(b, code, movie?.uuid));
 
       if (!matched) {
         setError('Không tìm thấy vé online khớp mã này cho phim đang chọn.');
@@ -183,9 +213,14 @@ const TicketActivationPage = () => {
         return;
       }
 
+      // Kích hoạt thật trên BE: set firstPlayedAt/expiresAt để thời gian xem bắt đầu chạy ngay,
+      // không chờ tới lúc người dùng bấm Play trên trang xem.
+      const playSession = await vodService.activatePlay(movieId, matched.bookingUuid);
+      showMissionCompletionToasts(playSession?.missionCompletions);
+
       setTemporaryVodToken(movieId, matched.bookingUuid);
       invalidateVodStatus(movieId);
-      notificationService.success('Xác thực mã vé thành công! Nhấn Play để bắt đầu xem.');
+      notificationService.success('Kích hoạt vé thành công! Thời gian xem đã bắt đầu tính.');
       navigate(getOnlineWatchPath(movieId));
     } catch (err) {
       setError(
@@ -226,9 +261,9 @@ const TicketActivationPage = () => {
   return (
     <div className="ticket-activation-page text-white min-h-screen">
       <div className="max-w-7xl mx-auto pt-28 px-4 md:px-8 lg:px-20 no-print flex justify-end">
-        <button 
-          type="button" 
-          onClick={() => navigate('/profile')} 
+        <button
+          type="button"
+          onClick={() => navigate('/profile')}
           className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 text-white/80 hover:text-white text-xs font-semibold rounded-lg transition duration-200 cursor-pointer"
         >
           <X size={14} />
@@ -251,13 +286,33 @@ const TicketActivationPage = () => {
               <span className="text-white font-semibold">{movie.title}</span> với chất lượng 4K
               và nội dung độc quyền trên NASAFilm.
             </p>
-            {poster && (
-              <div className="mt-6 flex items-center gap-4">
-                <img src={poster} alt={movie.title} className="h-20 w-14 object-cover rounded border border-white/10" />
-                <div>
-                  <p className="text-xs uppercase tracking-wider text-white/40">Phim đang kích hoạt</p>
-                  <p className="font-bold text-white uppercase">{movie.title}</p>
-                </div>
+            {(poster || showBuyButton) && (
+              <div className="activation-movie-row">
+                {poster && (
+                  <div className="activation-movie-info">
+                    <img src={poster} alt={movie.title} className="h-20 w-14 object-cover rounded border border-white/10" />
+                    <div>
+                      <p className="text-xs uppercase tracking-wider text-white/40">Phim đang kích hoạt</p>
+                      <p className="font-bold text-white uppercase">{movie.title}</p>
+                    </div>
+                  </div>
+                )}
+                {showBuyButton && (
+                  <button
+                    type="button"
+                    onClick={handleBuyOnline}
+                    className="activation-btn-buy"
+                  >
+                    <span className="activation-btn-buy__icon" aria-hidden>
+                      <Ticket />
+                    </span>
+                    <span className="activation-btn-buy__content">
+                      <span className="activation-btn-buy__label">Vé xem online</span>
+                      <span className="activation-btn-buy__hint">Mua vé và xem phim tại nhà</span>
+                    </span>
+                    <ArrowRight className="activation-btn-buy__arrow" aria-hidden />
+                  </button>
+                )}
               </div>
             )}
           </section>
@@ -292,28 +347,36 @@ const TicketActivationPage = () => {
                       Bạn đã có vé online cho phim này. Mã vé đã được gửi tới{' '}
                       <strong>{maskEmail(user?.email)}</strong>.
                     </p>
-                    <p className="mt-2 text-xs text-sky-200/80">
-                      Kiểm tra hộp thư (kể cả Spam/Quảng cáo), sao chép mã vé rồi nhập vào ô phía trên.
-                    </p>
-                    {vodStatus?.playbackState === 'WAITING_FOR_PLAY' && (
-                    <button
-                      type="button"
-                      onClick={handleResendTicketEmail}
-                      disabled={isResending}
-                      className="mt-3 inline-flex items-center gap-2 rounded-lg border border-sky-400/30 bg-sky-500/10 px-3 py-2 text-xs font-bold uppercase tracking-wider text-sky-200 hover:bg-sky-500/15 disabled:opacity-60"
-                    >
-                      {isResending ? (
-                        <>
-                          <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                          Đang gửi...
-                        </>
-                      ) : (
-                        <>
-                          <Mail className="h-3.5 w-3.5" />
-                          Gửi lại mã vé qua email
-                        </>
-                      )}
-                    </button>
+                    {vodStatus?.playbackState === VOD_PLAYBACK_STATE.WAITING_FOR_PLAY ? (
+                      <>
+                        <p className="mt-2 text-xs text-sky-200/80">
+                          Kiểm tra hộp thư (kể cả Spam/Quảng cáo), sao chép mã vé rồi nhập vào ô phía trên để kích hoạt trước khi xem.
+                        </p>
+                        <div className="mt-3 flex flex-wrap gap-2">
+                          <button
+                            type="button"
+                            onClick={handleResendTicketEmail}
+                            disabled={isResending}
+                            className="inline-flex items-center gap-2 rounded-lg border border-sky-400/30 bg-sky-500/10 px-3 py-2 text-xs font-bold uppercase tracking-wider text-sky-200 hover:bg-sky-500/15 disabled:opacity-60"
+                          >
+                            {isResending ? (
+                              <>
+                                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                                Đang gửi...
+                              </>
+                            ) : (
+                              <>
+                                <Mail className="h-3.5 w-3.5" />
+                                Gửi lại mã vé qua email
+                              </>
+                            )}
+                          </button>
+                        </div>
+                      </>
+                    ) : (
+                      <p className="mt-2 text-xs text-sky-200/80">
+                        Vé đang hiệu lực — dùng nút bên dưới hoặc vào trang xem để tiếp tục.
+                      </p>
                     )}
                   </div>
                 )}
@@ -345,18 +408,6 @@ const TicketActivationPage = () => {
                   ))}
                 </div>
               </form>
-
-              {showBuyButton && (
-              <div className="activation-btn-buy-wrap">
-                <button
-                  type="button"
-                  onClick={handleBuyOnline}
-                  className="activation-btn-buy"
-                >
-                  Vé xem online
-                </button>
-              </div>
-              )}
 
             </div>
 

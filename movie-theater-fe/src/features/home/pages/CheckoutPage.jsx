@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Calendar, Clock, Armchair, Wallet, CreditCard, Landmark, Info, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, Calendar, Clock, Armchair, Wallet, CreditCard, Landmark, Info, AlertTriangle, QrCode } from 'lucide-react';
 import { vodService } from '../../../shared/services/vodService';
 import { getMemberDiscountRate, getMemberTierLabel } from '../../../shared/constants/member';
 import { bookingService } from '../../../shared/services/bookingService';
@@ -17,8 +17,10 @@ import PosterImage from '../../../shared/components/PosterImage';
 import { BOOKING_SESSION_KEYS, readBookingSession, clearAllBookingSessions } from '../../../shared/utils/bookingSessionStorage';
 import { removeOrbitRoom } from '../../../shared/utils/orbitRecentStorage';
 import { orbitService } from '../../../shared/services/orbitService';
+import { useConfirm } from '../../../shared/context/ConfirmDialogContext';
 
 const CheckoutPage = () => {
+  const confirm = useConfirm();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -28,8 +30,8 @@ const CheckoutPage = () => {
 
   const isStateValid = Boolean(
     checkoutState &&
-      ((checkoutState.isVod && checkoutState.movieUuid) ||
-        (!checkoutState.isVod && checkoutState.showtimeUuid))
+    ((checkoutState.isVod && checkoutState.movieUuid) ||
+      (!checkoutState.isVod && checkoutState.showtimeUuid))
   );
 
   const isVod = checkoutState?.isVod ?? false;
@@ -37,7 +39,7 @@ const CheckoutPage = () => {
   const theater = checkoutState?.theater ?? '';
   const movie = checkoutState?.movie ?? '';
   const moviePoster = checkoutState?.moviePoster ?? '';
-  const movieRating = checkoutState?.movieRating ?? null;
+  const _movieRating = checkoutState?.movieRating ?? null;
   const movieFormat = checkoutState?.movieFormat ?? '';
   const movieAgeRestriction = checkoutState?.movieAgeRestriction ?? '';
   const date = checkoutState?.date ?? '';
@@ -59,7 +61,7 @@ const CheckoutPage = () => {
   const [vodMovieMeta, setVodMovieMeta] = useState({ poster: '', ageRestriction: '' });
   const [theaterMovieMeta, setTheaterMovieMeta] = useState({ poster: '', ageRestriction: '' });
   const [paymentMethod, setPaymentMethod] = useState('wallet');
-  const [checkoutCombos, setCheckoutCombos] = useState(() => checkoutState?.selectedCombos || []);
+  const [checkoutCombos, _setCheckoutCombos] = useState(() => checkoutState?.selectedCombos || []);
   const [voucherInput, setVoucherInput] = useState('');
   const [discount, setDiscount] = useState(0);
   const [voucherError, setVoucherError] = useState('');
@@ -70,7 +72,8 @@ const CheckoutPage = () => {
   const [walletBalance, setWalletBalance] = useState(0);
   const [loadingProfile, setLoadingProfile] = useState(true);
   const [myVouchers, setMyVouchers] = useState([]);
-  const [loadingVouchers, setLoadingVouchers] = useState(true);
+  const [_loadingVouchers, setLoadingVouchers] = useState(true);
+  const orbitAutoAbortRef = useRef(false);
 
   const [activeCombos, setActiveCombos] = useState([]);
   useEffect(() => {
@@ -128,7 +131,7 @@ const CheckoutPage = () => {
           });
         }
       })
-      .catch(() => {});
+      .catch(() => { });
     return () => {
       cancelled = true;
     };
@@ -147,7 +150,7 @@ const CheckoutPage = () => {
           });
         }
       })
-      .catch(() => {});
+      .catch(() => { });
     return () => {
       cancelled = true;
     };
@@ -216,13 +219,26 @@ const CheckoutPage = () => {
     }
   }, [isStateValid, isVod, lockExpiresAt]);
 
+  useEffect(() => {
+    if (!isExpired || !isOrbit || !orbitRoomUuid || orbitAutoAbortRef.current) return;
+    orbitAutoAbortRef.current = true;
+    (async () => {
+      try {
+        await orbitService.abortCheckout(orbitRoomUuid);
+        notificationService.info('Hết thời gian thanh toán — phòng Orbit đã mở lại cho cả nhóm.');
+      } catch (err) {
+        console.error('Auto abort checkout on expiry failed:', err);
+      }
+    })();
+  }, [isExpired, isOrbit, orbitRoomUuid]);
+
   const memberDiscountRate = getMemberDiscountRate(userScore);
   const memberTier = getMemberTierLabel(userScore);
   const comboOriginalPrice = checkoutCombos.reduce((sum, c) => sum + (c.price * c.quantity), 0);
   const comboDiscountAmount = Math.round(comboOriginalPrice * memberDiscountRate);
   const comboPrice = comboOriginalPrice - comboDiscountAmount;
   const hasCombo = checkoutCombos.length > 0 || resolvedOtherMembersCombos.length > 0;
-  
+
   const ticketSum = isVod ? totalAmount : selectedSeats.reduce((acc, curr) => acc + curr.price, 0);
   const subtotal = ticketSum + comboPrice + otherMembersCombosTotal;
   const finalTotal = Math.max(0, subtotal - discount);
@@ -307,6 +323,26 @@ const CheckoutPage = () => {
       return;
     }
 
+    const paymentLabel = paymentMethod === 'wallet'
+      ? 'Số dư ví NASA'
+      : paymentMethod === 'card'
+        ? 'Thẻ Visa/Mastercard'
+        : paymentMethod === 'vietqr'
+          ? 'VietQR chuyển khoản'
+          : 'Apple Pay';
+    const seatLabel = isVod
+      ? 'Xem phim Online'
+      : `Ghế: ${selectedSeats.map((s) => s.id).join(', ')}`;
+    const ok = await confirm({
+      title: 'Xác nhận thanh toán',
+      message: 'Bạn có chắc muốn hoàn tất đặt vé và thanh toán?',
+      highlight: `${finalTotal.toLocaleString('vi-VN')} đ · ${paymentLabel}`,
+      detail: `${isVod ? movie : `${movie} · ${theater}`} · ${seatLabel}`,
+      confirmLabel: 'Thanh toán ngay',
+      variant: 'warning',
+    });
+    if (!ok) return;
+
     // Send only the host's own combos. For Orbit group bookings the server merges in each member's combos
     // authoritatively from the room (BookingService.confirmBooking), so pre-merging them here would
     // double-charge members. finalTotal above already reflects the full host + members amount.
@@ -314,6 +350,20 @@ const CheckoutPage = () => {
 
     if (paymentMethod === 'card') {
       navigate('/payment', {
+        state: {
+          amount: finalTotal,
+          checkoutState: {
+            ...checkoutState,
+            selectedCombos: hostCombos,
+            voucherCode: discount > 0 ? voucherInput.trim() : null,
+          },
+        },
+      });
+      return;
+    }
+
+    if (paymentMethod === 'vietqr') {
+      navigate('/payment/vietqr', {
         state: {
           amount: finalTotal,
           checkoutState: {
@@ -342,26 +392,26 @@ const CheckoutPage = () => {
           orbitRoomUuid,
         );
       }
-      
+
       const successMessage = isVod
         ? `Mua vé xem phim Online thành công! Hãy kích hoạt mã vé để bắt đầu xem.`
         : `Bạn đã đặt thành công vé xem phim ${movie} tại ${theater}. Suất chiếu lúc ${showtime} ngày ${date}. Ghế: ${selectedSeats.map(s => s.id).join(', ')}.`;
-      
+
       notificationService.addNotification(
         "Đặt vé thành công",
         successMessage,
         "success"
       );
-      
-      notificationService.success(`Đặt vé thành công! Bạn đã thanh toán ${(finalTotal).toLocaleString('vi-VN')} đ bằng ${
-        paymentMethod === 'wallet' ? 'Số dư tài khoản' : paymentMethod === 'card' ? 'Thẻ Visa/Mastercard' : 'Apple Pay'
-      }.`);
+
+      const methodLabel = paymentMethod === 'wallet' ? 'Số dư tài khoản' : paymentMethod === 'vietqr' ? 'VietQR chuyển khoản' : paymentMethod === 'card' ? 'Thẻ Visa/Mastercard' : 'Apple Pay';
+
+      notificationService.success(`Đặt vé thành công! Bạn đã thanh toán ${(finalTotal).toLocaleString('vi-VN')} đ bằng ${methodLabel}.`);
       showMissionCompletionToasts(response?.missionCompletions);
       clearAllBookingSessions();
       if (orbitRoomUuid) {
         removeOrbitRoom(orbitRoomUuid);
       }
-      
+
       if (isVod) {
         navigate('/booking-confirmed', {
           state: {
@@ -398,6 +448,13 @@ const CheckoutPage = () => {
 
   const handleBackToBooking = async () => {
     if (isOrbit && orbitRoomUuid) {
+      const ok = await confirm({
+        title: 'Quay lại phòng nhóm',
+        message: 'Phiên thanh toán nhóm sẽ bị hủy. Bạn có chắc muốn quay lại?',
+        confirmLabel: 'Quay lại',
+        variant: 'warning',
+      });
+      if (!ok) return;
       try {
         await orbitService.abortCheckout(orbitRoomUuid);
       } catch (err) {
@@ -415,11 +472,11 @@ const CheckoutPage = () => {
 
   return (
     <div className="checkout-wrapper">
-      
+
       <main className="mt-8 flex-grow pt-4 pb-20 px-4 md:px-16 lg:px-20 max-w-7xl mx-auto w-full">
         {/* Navigation Breadcrumb / Back Action */}
-        <div 
-          className="mb-8 flex items-center gap-2 group cursor-pointer w-fit" 
+        <div
+          className="mb-8 flex items-center gap-2 group cursor-pointer w-fit"
           onClick={handleBackToBooking}
         >
           <ArrowLeft className="w-4.5 h-4.5 text-[#c8c6c8] group-hover:-translate-x-1 group-hover:text-white transition-all duration-300 shrink-0" />
@@ -476,13 +533,12 @@ const CheckoutPage = () => {
                   <div className="mt-6 flex gap-2">
                     <span className="bg-white/5 text-gray-300 px-3 py-1 rounded-full text-[10px] font-black border border-white/10 uppercase tracking-wide">{resolvedFormat}</span>
                     {resolvedAge && (
-                      <span className={`px-3 py-1 rounded-full text-[10px] font-black border ${
-                        resolvedAge.toUpperCase() === 'P' 
-                          ? 'bg-emerald-600/10 text-emerald-500 border-emerald-500/20' 
-                          : resolvedAge.toUpperCase().includes('T18') 
-                            ? 'bg-red-600/10 text-red-500 border-red-500/20' 
-                            : 'bg-amber-600/10 text-amber-500 border-amber-500/20'
-                      }`}>
+                      <span className={`px-3 py-1 rounded-full text-[10px] font-black border ${resolvedAge.toUpperCase() === 'P'
+                        ? 'bg-emerald-600/10 text-emerald-500 border-emerald-500/20'
+                        : resolvedAge.toUpperCase().includes('T18')
+                          ? 'bg-red-600/10 text-red-500 border-red-500/20'
+                          : 'bg-amber-600/10 text-amber-500 border-amber-500/20'
+                        }`}>
                         {resolvedAge}
                       </span>
                     )}
@@ -581,11 +637,10 @@ const CheckoutPage = () => {
           <div className="lg:col-span-5 space-y-6">
             <section className="glass-panel p-6 rounded-2xl flex flex-col h-full text-left">
               {timeLeft !== null && !isVod && (
-                <div className={`flex items-center justify-between p-3.5 rounded-xl border text-xs font-bold mb-6 ${
-                  timeLeft < 60 
-                    ? 'bg-red-500/10 border-red-500/20 text-red-500 animate-pulse' 
-                    : 'bg-amber-500/10 border-amber-500/20 text-amber-500'
-                }`}>
+                <div className={`flex items-center justify-between p-3.5 rounded-xl border text-xs font-bold mb-6 ${timeLeft < 60
+                  ? 'bg-red-500/10 border-red-500/20 text-red-500 animate-pulse'
+                  : 'bg-amber-500/10 border-amber-500/20 text-amber-500'
+                  }`}>
                   <div className="flex items-center gap-1.5">
                     <Clock className={`w-4 h-4 shrink-0 ${timeLeft < 60 ? 'text-red-500' : 'text-amber-500'}`} />
                     <span>Thời gian thanh toán còn lại:</span>
@@ -597,24 +652,19 @@ const CheckoutPage = () => {
               )}
 
               <h2 className="text-xl font-bold mb-2 text-white uppercase tracking-wider">Phương thức thanh toán</h2>
-              <p className="text-[11px] text-amber-400/90 font-semibold mb-6 px-1">
-                Chế độ demo — Ví NASA trừ số dư thật (mock), thẻ/Apple Pay qua Mock Gateway. Cổng VNPay/MoMo sẽ tích hợp sau.
-              </p>
               <div className="space-y-4 flex-grow">
                 {/* Wallet Balance */}
-                <label className={`relative flex items-center p-4 rounded-xl border cursor-pointer hover:bg-white/5 transition-all group active:scale-[0.99] ${
-                  paymentMethod === 'wallet' ? 'border-red-600/50 bg-red-600/5 ring-1 ring-red-600/20' : 'border-white/10 bg-white/5'
-                }`}>
-                  <input 
-                    type="radio" 
-                    name="payment" 
+                <label className={`relative flex items-center p-4 rounded-xl border cursor-pointer hover:bg-white/5 transition-all group active:scale-[0.99] ${paymentMethod === 'wallet' ? 'border-red-600/50 bg-red-600/5 ring-1 ring-red-600/20' : 'border-white/10 bg-white/5'
+                  }`}>
+                  <input
+                    type="radio"
+                    name="payment"
                     checked={paymentMethod === 'wallet'}
                     onChange={() => setPaymentMethod('wallet')}
                     className="hidden"
                   />
-                  <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center mr-4 transition-all ${
-                    paymentMethod === 'wallet' ? 'border-red-600 bg-red-600' : 'border-white/30'
-                  }`}>
+                  <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center mr-4 transition-all ${paymentMethod === 'wallet' ? 'border-red-600 bg-red-600' : 'border-white/30'
+                    }`}>
                     <div className="w-1.5 h-1.5 rounded-full bg-white"></div>
                   </div>
                   <div className="flex-grow">
@@ -629,19 +679,17 @@ const CheckoutPage = () => {
                 </label>
 
                 {/* Credit Card */}
-                <label className={`relative flex items-center p-4 rounded-xl border cursor-pointer hover:bg-white/5 transition-all group active:scale-[0.99] ${
-                  paymentMethod === 'card' ? 'border-red-600/50 bg-red-600/5 ring-1 ring-red-600/20' : 'border-white/10 bg-white/5'
-                }`}>
-                  <input 
-                    type="radio" 
-                    name="payment" 
+                <label className={`relative flex items-center p-4 rounded-xl border cursor-pointer hover:bg-white/5 transition-all group active:scale-[0.99] ${paymentMethod === 'card' ? 'border-red-600/50 bg-red-600/5 ring-1 ring-red-600/20' : 'border-white/10 bg-white/5'
+                  }`}>
+                  <input
+                    type="radio"
+                    name="payment"
                     checked={paymentMethod === 'card'}
                     onChange={() => setPaymentMethod('card')}
                     className="hidden"
                   />
-                  <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center mr-4 transition-all ${
-                    paymentMethod === 'card' ? 'border-red-600 bg-red-600' : 'border-white/30'
-                  }`}>
+                  <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center mr-4 transition-all ${paymentMethod === 'card' ? 'border-red-600 bg-red-600' : 'border-white/30'
+                    }`}>
                     <div className="w-1.5 h-1.5 rounded-full bg-white"></div>
                   </div>
                   <div className="flex-grow">
@@ -651,42 +699,44 @@ const CheckoutPage = () => {
                   <CreditCard className="w-5 h-5 text-[#c8c5ca] group-hover:text-white transition-colors shrink-0" />
                 </label>
 
-                {/* Apple Pay / MoMo */}
-                <label className={`relative flex items-center p-4 rounded-xl border cursor-pointer hover:bg-white/5 transition-all group active:scale-[0.99] ${
-                  paymentMethod === 'apple' ? 'border-red-600/50 bg-red-600/5 ring-1 ring-red-600/20' : 'border-white/10 bg-white/5'
-                }`}>
-                  <input 
-                    type="radio" 
-                    name="payment" 
-                    checked={paymentMethod === 'apple'}
-                    onChange={() => setPaymentMethod('apple')}
+                {/* VietQR Bank Transfer */}
+                <label className={`relative flex items-center p-4 rounded-xl border cursor-pointer hover:bg-white/5 transition-all group active:scale-[0.99] ${paymentMethod === 'vietqr' ? 'border-blue-500/50 bg-blue-600/5 ring-1 ring-blue-500/20' : 'border-white/10 bg-white/5'
+                  }`}>
+                  <input
+                    type="radio"
+                    name="payment"
+                    checked={paymentMethod === 'vietqr'}
+                    onChange={() => setPaymentMethod('vietqr')}
                     className="hidden"
                   />
-                  <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center mr-4 transition-all ${
-                    paymentMethod === 'apple' ? 'border-red-600 bg-red-600' : 'border-white/30'
-                  }`}>
+                  <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center mr-4 transition-all ${paymentMethod === 'vietqr' ? 'border-blue-500 bg-blue-500' : 'border-white/30'
+                    }`}>
                     <div className="w-1.5 h-1.5 rounded-full bg-white"></div>
                   </div>
                   <div className="flex-grow">
-                    <div className="text-xs font-bold text-white">Ví Điện Tử (MoMo / ZaloPay)</div>
-                    <div className="text-[10px] font-semibold text-gray-400">Thanh toán nhanh chóng, an toàn</div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-bold text-white">VietQR — Chuyển khoản ngân hàng</span>
+                    </div>
+                    <div className="text-[10px] font-semibold text-gray-400">Quét mã QR · Xác nhận tức thì</div>
                   </div>
-                  <Landmark className="w-5 h-5 text-[#c8c5ca] group-hover:text-white transition-colors shrink-0" />
+                  <QrCode className="w-5 h-5 text-blue-400 group-hover:text-blue-300 transition-colors shrink-0" />
                 </label>
+
+
               </div>
 
               {/* Voucher Section */}
               <div className="mt-8 pt-6 border-t border-white/5">
                 <label className="block text-[10px] font-black uppercase text-gray-400 mb-2.5 ml-1 tracking-wider">Áp dụng Voucher</label>
                 <div className="flex gap-2">
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     placeholder="Nhập mã KM (Ví dụ: THDPV50, CINELUXE)"
                     value={voucherInput}
                     onChange={(e) => setVoucherInput(e.target.value.replace(/\s/g, '').toUpperCase())}
                     className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 flex-grow focus:outline-none focus:border-red-500/50 text-xs text-white transition-colors uppercase tracking-wider font-bold"
                   />
-                  <button 
+                  <button
                     onClick={handleApplyVoucher}
                     className="bg-white/10 text-white hover:bg-white/15 px-5 py-3 rounded-xl font-bold text-xs uppercase cursor-pointer active:scale-95 transition-all"
                   >
@@ -707,14 +757,13 @@ const CheckoutPage = () => {
                       {myVouchers.map((v) => {
                         const isSelected = voucherInput.trim().toUpperCase() === v.code.toUpperCase() && discount > 0;
                         return (
-                          <div 
+                          <div
                             key={v.id}
                             onClick={() => handleSelectVoucher(v.code)}
-                            className={`flex items-center justify-between p-3 rounded-xl border transition-all cursor-pointer ${
-                              isSelected 
-                                ? 'border-red-500/50 bg-red-500/10' 
-                                : 'border-white/5 bg-white/5 hover:bg-white/10 hover:border-white/10'
-                            }`}
+                            className={`flex items-center justify-between p-3 rounded-xl border transition-all cursor-pointer ${isSelected
+                              ? 'border-red-500/50 bg-red-500/10'
+                              : 'border-white/5 bg-white/5 hover:bg-white/10 hover:border-white/10'
+                              }`}
                           >
                             <div className="pr-2">
                               <div className="flex items-center gap-2">
@@ -732,11 +781,10 @@ const CheckoutPage = () => {
                             </div>
                             <button
                               type="button"
-                              className={`text-[10px] font-bold px-3 py-1.5 rounded-lg transition-all shrink-0 cursor-pointer ${
-                                isSelected 
-                                  ? 'bg-red-600 text-white shadow-md shadow-red-600/25' 
-                                  : 'bg-white/5 text-white hover:bg-white/10 border border-white/10'
-                              }`}
+                              className={`text-[10px] font-bold px-3 py-1.5 rounded-lg transition-all shrink-0 cursor-pointer ${isSelected
+                                ? 'bg-red-600 text-white shadow-md shadow-red-600/25'
+                                : 'bg-white/5 text-white hover:bg-white/10 border border-white/10'
+                                }`}
                             >
                               {isSelected ? 'Đang áp dụng' : 'Chọn'}
                             </button>
@@ -759,21 +807,20 @@ const CheckoutPage = () => {
                     <span className="block text-[10px] font-bold text-red-500 uppercase tracking-wider">Đã bao gồm VAT</span>
                   </div>
                 </div>
-                
+
                 {hasUncompletedMembers && (
                   <div className="p-3 rounded-xl border border-yellow-500/20 bg-yellow-500/10 text-yellow-500 text-[10px] font-black text-center mb-3">
                     Đang chờ tất cả thành viên khác hoàn tất chọn bắp nước trước khi thanh toán.
                   </div>
                 )}
 
-                <button 
+                <button
                   onClick={handlePay}
                   disabled={isPaying || isExpired || hasUncompletedMembers}
-                  className={`w-full py-4 rounded-xl font-black text-sm uppercase tracking-wider transition-all duration-300 flex items-center justify-center gap-2 ${
-                    isPaying || isExpired || hasUncompletedMembers
-                      ? 'bg-neutral-800 text-gray-500 cursor-not-allowed border border-white/5 shadow-none' 
-                      : 'bg-[#E61E2A] text-white neon-glow-red hover:scale-[1.01] active:scale-[0.99] cursor-pointer shadow-[0_0_20px_rgba(230,30,42,0.35)]'
-                  }`}
+                  className={`w-full py-4 rounded-xl font-black text-sm uppercase tracking-wider transition-all duration-300 flex items-center justify-center gap-2 ${isPaying || isExpired || hasUncompletedMembers
+                    ? 'bg-neutral-800 text-gray-500 cursor-not-allowed border border-white/5 shadow-none'
+                    : 'bg-[#E61E2A] text-white neon-glow-red hover:scale-[1.01] active:scale-[0.99] cursor-pointer shadow-[0_0_20px_rgba(230,30,42,0.35)]'
+                    }`}
                 >
                   {isPaying ? 'Đang xử lý thanh toán...' : isExpired ? 'Đã hết hạn giữ ghế' : (hasUncompletedMembers ? 'Chờ thành viên chọn bắp nước' : (isOrbit ? 'Xác nhận nhóm & Thanh toán' : 'Xác nhận & Thanh toán'))}
                 </button>
@@ -815,6 +862,7 @@ const CheckoutPage = () => {
           </div>
         </div>
       )}
+
     </div>
   );
 };

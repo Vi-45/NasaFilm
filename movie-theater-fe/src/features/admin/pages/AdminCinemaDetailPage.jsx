@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { Edit2, Loader2, MapPin, Plus, Tv, LayoutGrid, Trash2 } from 'lucide-react';
 import { cinemaService } from '../../../shared/services/cinemaService';
@@ -10,6 +10,7 @@ import {
   MetadataRow,
   PrimaryButton,
   GhostButton,
+  StatusBadge,
 } from '../components';
 import AdminModal from '../components/AdminModal';
 import CinemaRoomFormPanel from '../components/panels/CinemaRoomFormPanel';
@@ -69,7 +70,7 @@ const AdminCinemaDetailPage = () => {
         if (!isMounted) return;
         setCinema(detail);
         setRooms(roomList || []);
-      } catch (err) {
+      } catch {
         notificationService.error('Không thể tải chi nhánh');
         navigate('/admin/cinemas');
       } finally {
@@ -98,7 +99,11 @@ const AdminCinemaDetailPage = () => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         <div className="lg:col-span-4 flex flex-col gap-3">
           <div className="w-full max-w-xs rounded-xl bg-white/[0.03] border border-white/[0.06] p-6 flex flex-col items-center gap-3">
-            <MapPin className="w-10 h-10 text-red-500" />
+            {cinema.imageUrl ? (
+              <img src={cinema.imageUrl} alt={cinema.name} className="w-full h-36 rounded-lg object-cover" />
+            ) : (
+              <MapPin className="w-10 h-10 text-red-500" />
+            )}
             <p className="text-sm text-gray-400 text-center">{cinema.address}</p>
             {cinema.entranceNote && (
               <p className="text-xs text-amber-300/90 text-center">{cinema.entranceNote}</p>
@@ -147,7 +152,12 @@ const AdminCinemaDetailPage = () => {
                       <Tv className="w-4 h-4 text-gray-500 shrink-0" />
                       <div className="min-w-0">
                         <p className="text-sm text-white font-medium truncate">{room.name}</p>
-                        <p className="text-xs text-gray-500">{room.roomCode} · {room.roomType} · {room.status}</p>
+                        <p className="text-xs text-gray-500">
+                          {room.roomCode} · {room.roomType} ·{' '}
+                          <StatusBadge variant={room.status === 'ACTIVE' ? 'success' : 'warning'}>
+                            {room.status === 'ACTIVE' ? 'Đang mở' : room.status}
+                          </StatusBadge>
+                        </p>
                       </div>
                     </div>
                     <div className="flex items-center gap-2 shrink-0">

@@ -5,17 +5,17 @@ import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Repository;
 
 import com.thdpv.movietheater.booking.dto.response.SeatViewDto;
 import com.thdpv.movietheater.booking.entity.Showtime;
 import com.thdpv.movietheater.booking.enums.ShowtimeStatus;
 
-@Repository
 public interface ShowtimeRepository extends JpaRepository<Showtime, UUID> {
 
     @Query("""
@@ -245,6 +245,8 @@ public interface ShowtimeRepository extends JpaRepository<Showtime, UUID> {
 
     @Query("SELECT s FROM Showtime s ORDER BY s.startTime DESC")
     List<Showtime> findAllOrderByStartTimeDesc();
+
+    Page<Showtime> findAllByOrderByStartTimeDesc(Pageable pageable);
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("""

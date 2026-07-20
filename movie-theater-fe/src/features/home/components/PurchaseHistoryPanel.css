@@ -10,10 +10,15 @@
   flex: 1;
   min-height: 0;
   overflow-y: auto;
+  scrollbar-gutter: stable;
+}
+
+.ph-panel .panel-header {
+  margin-bottom: 0.25rem;
 }
 
 .ph-panel__intro {
-  margin-bottom: 0.25rem;
+  margin-bottom: 0;
 }
 
 .ph-panel__intro h2 {
@@ -252,6 +257,188 @@
   color: #f87171;
 }
 
+/* Hover ticket preview is portalled to body so scroll containers never clip it. */
+.ph-ticket-preview {
+  position: fixed;
+  z-index: 300;
+  pointer-events: none;
+  overflow: hidden;
+  border: 1px solid rgba(248, 113, 113, 0.28);
+  border-radius: 1rem;
+  background:
+    linear-gradient(145deg, rgba(20, 22, 32, 0.98), rgba(8, 10, 18, 0.99));
+  box-shadow:
+    0 24px 64px rgba(0, 0, 0, 0.6),
+    0 0 0 1px rgba(255, 255, 255, 0.04) inset;
+  color: #f8fafc;
+  animation: ph-ticket-preview-in 0.18s ease-out both;
+}
+
+.ph-ticket-preview--online {
+  border-color: rgba(167, 139, 250, 0.32);
+}
+
+@keyframes ph-ticket-preview-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.ph-ticket-preview__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.8rem 0.9rem;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+  background: linear-gradient(90deg, rgba(220, 38, 38, 0.12), transparent 75%);
+}
+
+.ph-ticket-preview--online .ph-ticket-preview__head {
+  background: linear-gradient(90deg, rgba(124, 58, 237, 0.15), transparent 75%);
+}
+
+.ph-ticket-preview__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: #fbbf24;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+.ph-ticket-preview__movie {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 0.85rem 0.9rem 0.7rem;
+}
+
+.ph-ticket-preview__movie span {
+  color: #64748b;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.ph-ticket-preview__movie strong {
+  font-size: 1rem;
+  font-weight: 900;
+  line-height: 1.35;
+}
+
+.ph-ticket-preview__details {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem;
+  margin: 0;
+  padding: 0 0.9rem 0.85rem;
+}
+
+.ph-ticket-preview__details div {
+  min-width: 0;
+  padding: 0.55rem 0.6rem;
+  border-radius: 0.6rem;
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.ph-ticket-preview__details dt {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-bottom: 0.25rem;
+  color: #64748b;
+  font-size: 0.6rem;
+  font-weight: 700;
+}
+
+.ph-ticket-preview__details dd {
+  margin: 0;
+  overflow: hidden;
+  color: #e2e8f0;
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ph-ticket-preview__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 0.9rem;
+  border-top: 1px solid rgba(251, 191, 36, 0.16);
+  background: rgba(251, 191, 36, 0.045);
+}
+
+.ph-ticket-preview__foot span {
+  color: #94a3b8;
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+.ph-ticket-preview__foot strong {
+  color: #fbbf24;
+  font-size: 1rem;
+  font-weight: 900;
+}
+
+.ph-invoice-hover-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgba(2, 3, 8, 0.82);
+  backdrop-filter: blur(5px) saturate(0.55);
+  pointer-events: none;
+  animation: ph-invoice-lights-out 0.16s ease-out both;
+}
+
+.ph-invoice-hover-preview {
+  position: relative;
+  z-index: 1;
+  width: min(560px, 100%);
+  max-height: calc(100vh - 2rem);
+  pointer-events: none;
+  animation: ph-ticket-preview-in 0.18s ease-out both;
+}
+
+@keyframes ph-invoice-lights-out {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.ph-invoice-wrap--preview {
+  width: 100%;
+  max-width: none;
+}
+
+.ph-invoice-wrap--preview .ph-invoice {
+  box-shadow:
+    0 28px 70px rgba(0, 0, 0, 0.68),
+    0 0 0 1px rgba(255, 255, 255, 0.04) inset;
+}
+
+.ph-invoice-wrap--preview .ph-invoice__scroll {
+  max-height: calc(100vh - 10rem);
+}
+
+.ph-invoice-wrap--preview .ph-refund-btn,
+.ph-invoice-wrap--preview button {
+  pointer-events: none;
+}
+
 .ph-status {
   display: inline-flex;
   align-items: center;
@@ -432,6 +619,24 @@
   border-bottom: none;
 }
 
+/* Scrollable body so long seat lists / many sections never push the page down;
+   only the header + top perforation stay outside the scroll area. */
+.ph-invoice__scroll {
+  max-height: min(58vh, 560px);
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(220, 38, 38, 0.35) transparent;
+}
+
+.ph-invoice__scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.ph-invoice__scroll::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(220, 38, 38, 0.35);
+}
+
 .ph-invoice__hero {
   display: flex;
   align-items: center;
@@ -552,6 +757,54 @@
   line-height: 1.4;
 }
 
+.ph-invoice__item--seats {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.4rem;
+}
+
+.ph-invoice__item--seats dd {
+  width: 100%;
+  text-align: left;
+}
+
+.ph-seat-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.ph-seat-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  color: #f1f5f9;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  line-height: 1.4;
+}
+
+.ph-seat-chip--more,
+.ph-seat-chip--collapse {
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  color: #fca5a5;
+  background: rgba(220, 38, 38, 0.14);
+  border: 1px dashed rgba(220, 38, 38, 0.35);
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.ph-seat-chip--more:hover,
+.ph-seat-chip--collapse:hover {
+  background: rgba(220, 38, 38, 0.22);
+  border-color: rgba(220, 38, 38, 0.5);
+}
+
 .ph-invoice__promo {
   display: flex;
   align-items: flex-start;
@@ -647,10 +900,19 @@
 }
 
 .ph-pagination {
-  margin-top: 0.5rem;
+  flex-shrink: 0;
+  margin-top: auto;
+  padding-top: 0.5rem;
+  padding-right: clamp(1rem, 5.5rem, 6.5rem);
   border-radius: 0.85rem;
-  overflow: hidden;
+  overflow: visible;
   border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(8, 11, 20, 0.55);
+}
+
+.ph-pagination > div {
+  border-top: none !important;
+  background: transparent !important;
 }
 
 @media (max-width: 768px) {

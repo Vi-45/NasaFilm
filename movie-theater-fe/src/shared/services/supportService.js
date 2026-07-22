@@ -1,8 +1,27 @@
 import { authService } from '../../features/auth/api/authService';
+import { compressSupportImages } from '../utils/supportImageCompress';
+
+/** Ticket/tin nhắn cần staff chú ý trên sidebar. */
+function needsStaffAttention(ticket) {
+  if (!ticket) return false;
+  if (ticket.liveRequested && !ticket.liveConnected) return true;
+  const status = `${ticket.status || ''}`.toUpperCase();
+  if (status === 'PENDING' || status === 'OPEN' || status === 'NEW' || status === 'LIVE_REQUESTED') {
+    return true;
+  }
+  if (status === 'IN_PROGRESS') {
+    const sender = `${ticket.lastMessageSender || ''}`.toUpperCase();
+    return sender === 'USER';
+  }
+  return false;
+}
 
 export const supportService = {
   async chatSupport(payload) {
-    const response = await authService.api.post('/api/support-ai/chat', payload);
+    const response = await authService.api.post('/api/support-ai/chat', payload, {
+      // Prevent infinite "đang xử lý" when BE/AI stalls (default axios = no timeout).
+      timeout: 45000,
+    });
     return response.data.data ?? response.data;
   },
 
@@ -67,23 +86,27 @@ export const supportService = {
   },
 
   async uploadSupportImages(files) {
+    const compressed = await compressSupportImages(files);
     const formData = new FormData();
-    (files || []).forEach((file) => {
+    compressed.forEach((file) => {
       if (file) formData.append('files', file);
     });
     const response = await authService.api.post('/api/support-requests/images', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
+      timeout: 60000,
     });
     return response.data.data ?? response.data;
   },
 
   async uploadAdminSupportImages(files) {
+    const compressed = await compressSupportImages(files);
     const formData = new FormData();
-    (files || []).forEach((file) => {
+    compressed.forEach((file) => {
       if (file) formData.append('files', file);
     });
     const response = await authService.api.post('/api/admin/support/images', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
+      timeout: 60000,
     });
     return response.data.data ?? response.data;
   },
@@ -93,8 +116,10 @@ export const supportService = {
     return response.data.data ?? response.data;
   },
 
-  async getAdminSupportRequests({ page = 0, size = 100 } = {}) {
-    const response = await authService.api.get('/api/admin/support', { params: { page, size } });
+  async getAdminSupportRequests({ page = 0, size = 100, unpaged = false } = {}) {
+    const response = await authService.api.get('/api/admin/support', {
+      params: unpaged ? { unpaged: true } : { page, size },
+    });
     const data = response.data.data ?? response.data;
     if (Array.isArray(data)) return data;
     return data?.content ?? [];
@@ -113,6 +138,28 @@ export const supportService = {
   async getPendingLiveSupportRequests() {
     const response = await authService.api.get('/api/admin/support-live/pending');
     return response.data.data ?? response.data;
+  },
+
+  /**
+   * Số ticket/tin cần staff chú ý: chờ nhận, live request, hoặc đang xử lý mà khách vừa nhắn.
+   */
+  async getSupportAttentionCount() {
+    const [tickets, livePending] = await Promise.all([
+      this.getAdminSupportRequests({ page: 0, size: 100 }),
+      this.getPendingLiveSupportRequests().catch(() => []),
+    ]);
+    const list = Array.isArray(tickets) ? tickets : [];
+    const liveList = Array.isArray(livePending) ? livePending : [];
+    const codes = new Set();
+
+    const markIfAttention = (ticket) => {
+      if (!ticket?.ticketCode) return;
+      if (needsStaffAttention(ticket)) codes.add(ticket.ticketCode);
+    };
+
+    list.forEach(markIfAttention);
+    liveList.forEach(markIfAttention);
+    return codes.size;
   },
 
   async acceptLiveSupport(ticketCode) {

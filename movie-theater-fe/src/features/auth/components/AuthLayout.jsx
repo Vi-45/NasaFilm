@@ -1,6 +1,6 @@
-import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { CinemaAuthBackground } from './CinemaAuthBackground';
+import { useCosmosHomeTransition } from './CosmosHomeTransition.jsx';
 import nasaFilmLogo from '../../../shared/assets/NASAFILM.jpg';
 import './AuthLayout.css';
 
@@ -11,27 +11,45 @@ export const AuthLayout = ({
   heroDescription = 'Trải nghiệm những bộ phim hay nhất, trên màn ảnh lớn gần bạn nhất.',
   tagline = 'Điện ảnh. Không khoảng cách.',
 }) => {
+  const { startTransition } = useCosmosHomeTransition({
+    to: '/',
+    durationMs: 3400,
+  });
+
   const brand = heroTitle.replace(/\s/g, '');
   const nasaPart = brand.toUpperCase().startsWith('NASA') ? 'NASA' : brand.slice(0, 4);
   const filmPart = brand.toUpperCase().startsWith('NASA')
     ? brand.slice(4) || 'FILM'
     : brand.slice(4);
 
-  const BrandBlock = ({ compact = false, showCopy = true }) => (
-    <div className={`auth-cinema__brand-block${compact ? ' auth-cinema__brand-block--compact' : ''}`}>
-      <Link to="/" className="auth-cinema__brand" aria-label="NASAFILM — về trang chủ">
+  const BrandBlock = ({ compact = false, showCopy = true, onScreen = false }) => (
+    <div
+      className={[
+        'auth-cinema__brand-block',
+        compact ? 'auth-cinema__brand-block--compact' : '',
+        onScreen ? 'auth-cinema__brand-block--on-screen' : '',
+      ]
+        .filter(Boolean)
+        .join(' ')}
+    >
+      <a
+        href="/"
+        className="auth-cinema__brand"
+        aria-label="NASAFILM — về trang chủ"
+        onClick={startTransition}
+      >
         <img
           src={nasaFilmLogo}
           alt=""
-          className="auth-cinema__logo"
-          width={72}
-          height={72}
+          className={`auth-cinema__logo${compact ? ' auth-cinema__logo--compact' : ''}`}
+          width={compact ? 48 : 72}
+          height={compact ? 48 : 72}
         />
         <span className="auth-cinema__wordmark">
           <span className="auth-cinema__brand-nasa">{nasaPart}</span>
           <span className="auth-cinema__brand-film">{filmPart || 'FILM'}</span>
         </span>
-      </Link>
+      </a>
 
       {showCopy ? (
         <>
@@ -45,6 +63,12 @@ export const AuthLayout = ({
   return (
     <div className="auth-cinema">
       <CinemaAuthBackground />
+
+      {showHero ? (
+        <div className="auth-cinema__screen-plane">
+          <BrandBlock showCopy onScreen />
+        </div>
+      ) : null}
 
       <div className="auth-cinema__content">
         {showHero ? (
@@ -61,14 +85,7 @@ export const AuthLayout = ({
               <div className="auth-cinema__form-slot">{children}</div>
             </motion.div>
 
-            <motion.aside
-              className="auth-cinema__hero"
-              initial={{ opacity: 0, x: 18 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.55, delay: 0.05, ease: [0.22, 1, 0.36, 1] }}
-            >
-              <BrandBlock showCopy />
-            </motion.aside>
+            <aside className="auth-cinema__hero" aria-hidden="true" />
           </div>
         ) : (
           <motion.div
@@ -77,7 +94,12 @@ export const AuthLayout = ({
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <Link to="/" className="auth-cinema__brand auth-cinema__brand--compact">
+            <a
+              href="/"
+              className="auth-cinema__brand auth-cinema__brand--compact"
+              aria-label="NASAFILM — về trang chủ"
+              onClick={startTransition}
+            >
               <img
                 src={nasaFilmLogo}
                 alt=""
@@ -89,7 +111,7 @@ export const AuthLayout = ({
                 <span className="auth-cinema__brand-nasa">NASA</span>
                 <span className="auth-cinema__brand-film">FILM</span>
               </span>
-            </Link>
+            </a>
             {children}
           </motion.div>
         )}

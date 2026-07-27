@@ -235,6 +235,9 @@ const resolveSupportErrorMessage = (error, fallback) => {
   const apiMessage = error?.response?.data?.message || error?.message;
   const msgNorm = normalise(`${apiMessage || ''}`);
   const codeText = `${code || ''}`;
+  if (msgNorm.includes('refresh token') || msgNorm.includes('session_expired') || msgNorm.includes('phien dang nhap da het han')) {
+    return 'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.';
+  }
   if (status === 429 || code === 429 || codeText.includes('RATE_LIMIT') || msgNorm.includes('qua nhanh')) {
     return 'Bạn gửi tin nhắn quá nhanh. Vui lòng đợi vài giây rồi thử lại.';
   }
@@ -512,6 +515,7 @@ const NasaAiAssistantWidget = () => {
   const ownerLabel = useMemo(() => getOwnerLabel(currentUser), [currentUser]);
   const isAdminUser = useMemo(() => hasAdminAccess(currentUser), [currentUser]);
   const isLoggedInCustomer = Boolean(currentUser?.email) && !isAdminUser;
+  const canUseNasaBot = Boolean(currentUser?.email);
 
   useEffect(() => {
     openRef.current = open;
@@ -2204,6 +2208,11 @@ const NasaAiAssistantWidget = () => {
             ? `Mở NASA BOT, ${unreadStaffTicketCodes.length} tin nhắn mới`
             : 'Mở NASA BOT'}
           onClick={() => {
+            if (!canUseNasaBot) {
+              notificationService.info('Vui lòng đăng nhập để sử dụng NASA BOT.');
+              navigate('/login', { state: { from: location.pathname || '/' } });
+              return;
+            }
             const pendingTicket = unreadStaffTicketCodes[0];
             setOpen(true);
             setShowTicketDrawer(false);

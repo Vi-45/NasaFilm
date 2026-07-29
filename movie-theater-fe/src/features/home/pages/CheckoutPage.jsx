@@ -118,6 +118,10 @@ const CheckoutPage = () => {
       navigate('/', { replace: true });
     }
   }, [isStateValid, navigate]);
+  
+  const handleBackToConcessions = async () => {
+    navigate('/concessions');
+  };
 
   useEffect(() => {
     if (!isStateValid || !isVod || !movieUuid) return;
@@ -505,6 +509,14 @@ const CheckoutPage = () => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* Left Column: Order Summary & Details */}
           <div className="lg:col-span-7 space-y-6 text-left">
+  <div
+    className="mb-4 flex items-center gap-2 text-gray-400 hover:text-white transition-colors cursor-pointer w-fit"
+    onClick={handleBackToConcessions}
+  >
+    <ArrowLeft className="h-4 w-4" />
+    <span className="text-sm font-semibold">Quay lại đặt bắp nước</span>
+  </div>
+
             <section className="glass-panel p-6 rounded-2xl">
               <h2 className="text-xl font-bold mb-6 border-l-4 border-red-600 pl-4 uppercase tracking-wider text-white">Tóm tắt đơn hàng</h2>
               <div className="flex flex-col md:flex-row gap-6">

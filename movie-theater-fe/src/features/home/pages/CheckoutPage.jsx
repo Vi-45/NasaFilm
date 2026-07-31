@@ -125,9 +125,7 @@ const CheckoutPage = () => {
     }
   }, [isStateValid, navigate]);
   
-  const handleBackToConcessions = async () => {
-    navigate('/concessions');
-  };
+
 
   useEffect(() => {
     if (!isStateValid || !isVod || !movieUuid) return;
@@ -525,6 +523,7 @@ const CheckoutPage = () => {
   const handleBackToConcessions = () => {
     if (isVod) {
       navigate(-1);
+
       return;
     }
     const payload = buildBookingPayload();
